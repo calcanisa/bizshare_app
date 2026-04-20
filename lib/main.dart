@@ -9,15 +9,31 @@ void main() {
   runApp(const SeshaApp());
 }
 
-class SeshaApp extends StatelessWidget {
+class SeshaApp extends StatefulWidget {
   const SeshaApp({super.key});
+
+  @override
+  State<SeshaApp> createState() => _SeshaAppState();
+}
+
+class _SeshaAppState extends State<SeshaApp> {
+  late final ApiService _apiService;
+  late final AuthProvider _authProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    _apiService = ApiService();
+    _authProvider = AuthProvider();
+    _apiService.onUnauthorized = () => _authProvider.logout();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider<ApiService>(create: (_) => ApiService()),
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        Provider<ApiService>.value(value: _apiService),
+        ChangeNotifierProvider<AuthProvider>.value(value: _authProvider),
       ],
       child: MaterialApp(
         title: 'Sesha',

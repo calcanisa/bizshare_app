@@ -1,10 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter/widgets.dart';
 
 class ApiService {
   static const String baseUrl = 'http://192.168.10.215:8000';
   static const _storage = FlutterSecureStorage();
   late final Dio _dio;
+
+  // Set this from outside to trigger logout
+  void Function()? onUnauthorized;
 
   ApiService() {
     _dio = Dio(BaseOptions(
@@ -22,15 +26,31 @@ class ApiService {
         return handler.next(options);
       },
       onError: (error, handler) async {
-        if (error.response?.statusCode == 401) {
+        final status = error.response?.statusCode;
+
+        if (status == 403) {
+          await _storage.deleteAll();
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            onUnauthorized?.call();
+          });
+          return handler.next(error);
+        }
+
+        if (status == 401) {
           final refreshed = await _refreshToken();
           if (refreshed) {
             final token = await _storage.read(key: 'access_token');
             error.requestOptions.headers['Authorization'] = 'Bearer $token';
             final response = await _dio.fetch(error.requestOptions);
             return handler.resolve(response);
+          } else {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              onUnauthorized?.call();
+            });
+            return handler.next(error);
           }
         }
+
         return handler.next(error);
       },
     ));
@@ -52,21 +72,17 @@ class ApiService {
     }
   }
 
-    Future<Map<String, dynamic>> login(String email, String password) async {
-      try {
-        print('POST to: $baseUrl/api/token/');
-        print('Email: $email');
-        final response = await _dio.post('/api/token/', data: {
-          'email': email,
-          'password': password,
-        });
-        print('Response: ${response.data}');
-        return response.data;
-      } catch (e) {
-        print('Dio error: $e');
-        rethrow;
-      }
+  Future<Map<String, dynamic>> login(String email, String password) async {
+    try {
+      final response = await _dio.post('/api/token/', data: {
+        'email': email,
+        'password': password,
+      });
+      return response.data;
+    } catch (e) {
+      rethrow;
     }
+  }
 
   Future<void> saveTokens(String access, String refresh) async {
     await _storage.write(key: 'access_token', value: access);

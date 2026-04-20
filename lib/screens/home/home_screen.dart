@@ -7,6 +7,15 @@ import '../directory/directory_screen.dart';
 import '../mail/mail_screen.dart';
 import '../alerts/alerts_screen.dart';
 import '../profile/profile_screen.dart';
+import '../classifieds/classifieds_screen.dart';
+import '../events/events_screen.dart';
+import '../jobs/jobs_screen.dart';
+import '../leads/leads_screen.dart';
+import '../opportunities/opportunities_screen.dart';
+import '../projects/projects_screen.dart';
+import '../websites/websites_screen.dart';
+import '../account/account_screen.dart';
+import '../settings/settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,18 +29,24 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<int> _history = [];
 
   final List<Map<String, dynamic>> _sections = [
+    {'title': 'Account', 'icon': Icons.account_circle_outlined},
+    {'title': 'Settings', 'icon': Icons.settings_outlined},
+    {'title': 'Profile', 'icon': Icons.person_outline},
     {'title': 'Alerts', 'icon': Icons.notifications_outlined},
+    {'title': 'Mail', 'icon': Icons.mail_outline},
+    {'title': 'Cart', 'icon': Icons.shopping_cart_outlined},
+    {'title': 'Bookmarks', 'icon': Icons.bookmark_outline},
     {'title': 'Classifieds', 'icon': Icons.sell_outlined},
     {'title': 'Contacts', 'icon': Icons.contacts_outlined},
     {'title': 'Directory', 'icon': Icons.business},
     {'title': 'Events', 'icon': Icons.event_outlined},
     {'title': 'Jobs', 'icon': Icons.work_outline},
     {'title': 'Leads', 'icon': Icons.people_outline},
-    {'title': 'Mail', 'icon': Icons.mail_outline},
     {'title': 'Opportunities', 'icon': Icons.trending_up},
+    {'title': 'People', 'icon': Icons.group_outlined},
     {'title': 'Products', 'icon': Icons.shopping_bag_outlined},
-    {'title': 'Profile', 'icon': Icons.person_outline},
     {'title': 'Projects', 'icon': Icons.lightbulb_outline},
+    {'title': 'Services', 'icon': Icons.miscellaneous_services_outlined},
     {'title': 'Websites', 'icon': Icons.language},
   ];
 
@@ -42,23 +57,29 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void _navigateToNamed(String name) {
+    final index = _sections.indexWhere((s) => s['title'] == name);
+    if (index != -1) _navigateTo(index);
+  }
+
   void _goBack() {
     if (_history.isNotEmpty) {
-      setState(() {
-        _currentIndex = _history.removeLast();
-      });
+      setState(() => _currentIndex = _history.removeLast());
     } else {
       SystemNavigator.pop();
     }
   }
 
   Widget _currentScreen() {
-    if (_currentIndex == -1)
+    if (_currentIndex == -1) {
       return DashboardScreen(
-        onProfileTap: () =>
-            _navigateTo(_sections.indexWhere((s) => s['title'] == 'Profile')),
+        onProfileTap: () => _navigateToNamed('Profile'),
+        onNavigate: _navigateToNamed,
       );
+    }
     switch (_sections[_currentIndex]['title']) {
+      case 'Account':
+        return const AccountScreen();
       case 'Directory':
         return const DirectoryScreen();
       case 'Mail':
@@ -67,6 +88,22 @@ class _HomeScreenState extends State<HomeScreen> {
         return const AlertsScreen();
       case 'Profile':
         return const ProfileScreen();
+      case 'Classifieds':
+        return const ClassifiedsScreen();
+      case 'Events':
+        return const EventsScreen();
+      case 'Jobs':
+        return const JobsScreen();
+      case 'Leads':
+        return const LeadsScreen();
+      case 'Opportunities':
+        return const OpportunitiesScreen();
+      case 'Projects':
+        return const ProjectsScreen();
+      case 'Settings':
+        return const SettingsScreen();
+      case 'Websites':
+        return const WebsitesScreen();
       default:
         return Center(
           child: Text(
@@ -88,18 +125,22 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar: AppBar(
           backgroundColor: const Color(0xFF094a25),
           iconTheme: const IconThemeData(color: Colors.white),
-          title: Image.asset('assets/img/sesha.png', height: 35),
+          title: GestureDetector(
+            onTap: () => setState(() {
+              _history.add(_currentIndex);
+              _currentIndex = -1;
+            }),
+            child: Image.asset('assets/img/sesha.png', height: 35),
+          ),
           actions: [
             IconButton(
               icon: const Icon(Icons.mail_outline, color: Colors.white),
-              onPressed: () => _navigateTo(
-                  _sections.indexWhere((s) => s['title'] == 'Mail')),
+              onPressed: () => _navigateToNamed('Mail'),
             ),
             IconButton(
               icon:
                   const Icon(Icons.notifications_outlined, color: Colors.white),
-              onPressed: () => _navigateTo(
-                  _sections.indexWhere((s) => s['title'] == 'Alerts')),
+              onPressed: () => _navigateToNamed('Alerts'),
             ),
             IconButton(
               icon: const Icon(Icons.logout, color: Colors.white),
@@ -115,12 +156,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: ListView(
                   padding: EdgeInsets.zero,
                   children: [
+                    // Header
                     DrawerHeader(
                       decoration: const BoxDecoration(color: Color(0xFF094a25)),
                       child: Center(
                         child: Image.asset('assets/img/sesha.png', height: 60),
                       ),
                     ),
+
+                    // Dashboard
                     ListTile(
                       leading: const Icon(Icons.dashboard_outlined,
                           color: Color(0xFF094a25)),
@@ -129,38 +173,67 @@ class _HomeScreenState extends State<HomeScreen> {
                       selectedTileColor:
                           const Color(0xFF094a25).withOpacity(0.1),
                       onTap: () {
-                        _navigateTo(-1);
+                        setState(() {
+                          _history.add(_currentIndex);
+                          _currentIndex = -1;
+                        });
                         Navigator.pop(context);
                       },
                     ),
-                    ..._sections.asMap().entries.map((entry) {
-                      final index = entry.key;
-                      final section = entry.value;
-                      return ListTile(
-                        leading: Icon(section['icon'] as IconData,
-                            color: const Color(0xFF094a25)),
-                        title: Text(section['title'] as String),
-                        selected: _currentIndex == index,
-                        selectedTileColor:
-                            const Color(0xFF094a25).withOpacity(0.1),
-                        onTap: () {
-                          _navigateTo(index);
-                          Navigator.pop(context);
-                        },
-                      );
-                    }),
-                    const Divider(),
-                    _drawerItem(
-                        Icons.account_circle_outlined, 'Account', () {}),
-                    _drawerItem(Icons.settings_outlined, 'Settings', () {}),
-                    const Divider(),
-                    _drawerItem(Icons.logout, 'Logout', () {
-                      Provider.of<AuthProvider>(context, listen: false)
-                          .logout();
-                    }),
+
+                    const Divider(height: 1),
+
+                    // ── USER ──────────────────────────────────────────
+                    _sectionHeader('User'),
+                    _navItem('Account'),
+                    _navItem('Settings'),
+                    _navItem('Profile'),
+
+                    const Divider(height: 1),
+
+                    // ── ENGAGEMENT ────────────────────────────────────
+                    _sectionHeader('Engagement'),
+                    _navItem('Alerts'),
+                    _navItem('Mail'),
+                    _navItem('Cart'),
+                    _navItem('Bookmarks'),
+
+                    const Divider(height: 1),
+
+                    // ── APPLICATIONS ──────────────────────────────────
+                    _sectionHeader('Applications'),
+                    _navItem('Classifieds'),
+                    _navItem('Contacts'),
+                    _navItem('Directory'),
+                    _navItem('Events'),
+                    _navItem('Jobs'),
+                    _navItem('Leads'),
+                    _navItem('Opportunities'),
+                    _navItem('People'),
+                    _navItem('Products'),
+                    _navItem('Projects'),
+                    _navItem('Services'),
+                    _navItem('Websites'),
+
+                    const Divider(height: 1),
+
+                    // Logout
+                    ListTile(
+                      leading:
+                          const Icon(Icons.logout, color: Color(0xFFbc2023)),
+                      title: const Text('Logout',
+                          style: TextStyle(color: Color(0xFFbc2023))),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Provider.of<AuthProvider>(context, listen: false)
+                            .logout();
+                      },
+                    ),
                   ],
                 ),
               ),
+
+              // Footer
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -195,13 +268,56 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  ListTile _drawerItem(IconData icon, String title, VoidCallback onTap) {
+  Widget _sectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 2),
+      child: Text(
+        title.toUpperCase(),
+        style: const TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+          color: Colors.black45,
+          letterSpacing: 1.2,
+        ),
+      ),
+    );
+  }
+
+  Widget _navItem(String title) {
+    final index = _sections.indexWhere((s) => s['title'] == title);
+    final isSelected = _currentIndex == index;
+    final icon =
+        index != -1 ? _sections[index]['icon'] as IconData : Icons.circle;
+
+    // Not yet wired to a screen — greyed out, not tappable
+    if (index == -1) {
+      return ListTile(
+        dense: true,
+        leading: Icon(icon, size: 18, color: Colors.black26),
+        title: Text(title,
+            style: const TextStyle(fontSize: 14, color: Colors.black38)),
+      );
+    }
+
     return ListTile(
-      leading: Icon(icon, color: const Color(0xFF094a25)),
-      title: Text(title),
+      dense: true,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+      leading: Icon(icon,
+          size: 20, color: isSelected ? Colors.white : const Color(0xFF094a25)),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 14,
+          color: isSelected ? Colors.white : Colors.black87,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        ),
+      ),
+      selected: isSelected,
+      selectedTileColor: const Color(0xFF094a25),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
       onTap: () {
+        _navigateTo(index);
         Navigator.pop(context);
-        onTap();
       },
     );
   }

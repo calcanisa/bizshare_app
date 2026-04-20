@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../services/api_service.dart';
 import 'package:provider/provider.dart';
+import '../../services/api_service.dart';
+import '../../widgets/filter_chip_bar.dart';
 
 class DirectoryScreen extends StatefulWidget {
   const DirectoryScreen({super.key});
@@ -11,122 +12,954 @@ class DirectoryScreen extends StatefulWidget {
 }
 
 class _DirectoryScreenState extends State<DirectoryScreen> {
+  int _tab = 1;
+
+  // Tab 1 - My Businesses
+  List<dynamic> _myBusinesses = [];
+  bool _loadingMine = false;
+
+  // Tab 2 - Following
+  List<dynamic> _following = [];
+  bool _loadingFollowing = false;
+
+  // Tab 3 - All Businesses
+  List<dynamic> _categories = [];
   List<dynamic> _businesses = [];
-  bool _isLoading = false;
-  bool _hasMore = true;
-  int _page = 1;
-  String _search = '';
-  final TextEditingController _searchController = TextEditingController();
+  bool _loadingAll = false;
+  bool _hasMore = false;
+  int _currentPage = 1;
+  int _totalCount = 0;
+  int? _selectedCategory;
   final ScrollController _scrollController = ScrollController();
+
+  // Filter state
+  List<dynamic> _provinces = [];
+  List<dynamic> _cities = [];
+  List<dynamic> _areas = [];
+  List<dynamic> _subcategories = [];
+  int? _filterSubcategory;
+  int? _filterProvince;
+  int? _filterCity;
+  int? _filterArea;
+  String? _filterBusinessType;
+  String? _filterBusinessSize;
+
+  // Temp filter state for bottom sheet
+  int? _tempSubcategory;
+  int? _tempProvince;
+  int? _tempCity;
+  int? _tempArea;
+  String? _tempBusinessType;
+  String? _tempBusinessSize;
+
+  final Map<String, String> _typeLabels = {
+    'sole': 'Sole Proprietor',
+    'partnership': 'Partnership',
+    'closed': 'Closed Corporation',
+    'public': 'Public Company',
+    'personal': 'Personal Liability',
+    'nonprofit': 'Non Profit',
+    'state': 'State Owned',
+  };
+
+  final Map<String, String> _sizeLabels = {
+    '10': '1-10 People',
+    '50': '11-50 People',
+    '100': '51-100 People',
+    '101': '100+ People',
+    '1001': '1000+ People',
+    '10001': '10,000+ People',
+  };
+
+  bool get _hasActiveFilters =>
+      _filterSubcategory != null ||
+      _filterProvince != null ||
+      _filterCity != null ||
+      _filterArea != null ||
+      _filterBusinessType != null ||
+      _filterBusinessSize != null;
 
   @override
   void initState() {
     super.initState();
-    _loadBusinesses();
+    _loadMyBusinesses();
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
-        if (!_isLoading && _hasMore) _loadBusinesses();
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 200) {
+        if (!_loadingAll && _hasMore) _loadMoreBusinesses();
       }
     });
   }
 
   @override
   void dispose() {
-    _searchController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
+  Future<void> _loadMyBusinesses() async {
+    setState(() => _loadingMine = true);
+    try {
+      final api = context.read<ApiService>();
+      final response =
+          await api.dio.get('/api/v1/directory/businesses/current/');
+      setState(() => _myBusinesses = response.data ?? []);
+    } catch (_) {}
+    setState(() => _loadingMine = false);
+  }
+
+  Future<void> _loadFollowing() async {
+    setState(() => _loadingFollowing = true);
+    try {
+      final api = context.read<ApiService>();
+      final response =
+          await api.dio.get('/api/v1/directory/business/following/current/');
+      setState(
+          () => _following = response.data['results'] ?? response.data ?? []);
+    } catch (_) {}
+    setState(() => _loadingFollowing = false);
+  }
+
+  Future<void> _loadCategories() async {
+    if (_categories.isNotEmpty) return;
+    try {
+      final api = context.read<ApiService>();
+      final response =
+          await api.dio.get('/api/v1/directory/business/categories/top/');
+      final data = response.data;
+      setState(
+          () => _categories = data is List ? data : (data['results'] ?? []));
+    } catch (_) {}
+  }
+
+  Future<void> _loadProvinces() async {
+    if (_provinces.isNotEmpty) return;
+    try {
+      final api = context.read<ApiService>();
+      final response = await api.dio.get('/api/v1/locations/provinces/');
+      setState(
+          () => _provinces = response.data['results'] ?? response.data ?? []);
+    } catch (_) {}
+  }
+
+  Future<void> _loadCities(int provinceId) async {
+    try {
+      final api = context.read<ApiService>();
+      final response =
+          await api.dio.get('/api/v1/locations/cities/$provinceId/');
+      setState(() => _cities = response.data['results'] ?? response.data ?? []);
+    } catch (_) {}
+  }
+
+  Future<void> _loadAreas(int cityId) async {
+    try {
+      final api = context.read<ApiService>();
+      final response = await api.dio.get('/api/v1/locations/areas/$cityId/');
+      setState(() => _areas = response.data['results'] ?? response.data ?? []);
+    } catch (_) {}
+  }
+
   Future<void> _loadBusinesses({bool refresh = false}) async {
-    if (_isLoading) return;
+    if (_loadingAll || _selectedCategory == null) return;
     if (refresh) {
       setState(() {
         _businesses = [];
-        _page = 1;
-        _hasMore = true;
+        _currentPage = 1;
+        _hasMore = false;
+        _totalCount = 0;
       });
     }
-    setState(() => _isLoading = true);
+    setState(() => _loadingAll = true);
     try {
       final api = context.read<ApiService>();
-      final params = <String, dynamic>{'page': _page};
-      if (_search.isNotEmpty) params['search'] = _search;
-      final response = await api.dio.get('/api/v1/directory/businesses/', queryParameters: params);
+      final params = <String, dynamic>{
+        'page': _currentPage,
+        'category': _selectedCategory,
+      };
+      if (_filterSubcategory != null)
+        params['subcategory'] = _filterSubcategory;
+      if (_filterProvince != null) params['province'] = _filterProvince;
+      if (_filterCity != null) params['city'] = _filterCity;
+      if (_filterArea != null) params['area'] = _filterArea;
+      if (_filterBusinessType != null)
+        params['business_type'] = _filterBusinessType;
+      if (_filterBusinessSize != null) params['size'] = _filterBusinessSize;
+
+      final response = await api.dio
+          .get('/api/v1/directory/businesses/', queryParameters: params);
       final results = response.data['results'] as List? ?? [];
       setState(() {
         _businesses.addAll(results);
-        _page++;
+        _currentPage++;
         _hasMore = response.data['next'] != null;
+        _totalCount = response.data['count'] ?? 0;
       });
     } catch (_) {}
-    setState(() => _isLoading = false);
+    setState(() => _loadingAll = false);
   }
+
+  Future<void> _loadMoreBusinesses() async {
+    await _loadBusinesses();
+  }
+
+  Future<void> _unfollow(int id) async {
+    try {
+      final api = context.read<ApiService>();
+      await api.dio.post('/api/v1/directory/business/$id/follow/');
+      setState(() => _following.removeWhere((b) => b['id'] == id));
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Business unfollowed')));
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _deleteBusiness(int id) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Business'),
+        content: const Text(
+            'Are you sure you want to delete this business? This cannot be undone.'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Delete', style: TextStyle(color: Colors.red))),
+        ],
+      ),
+    );
+    if (confirm != true) return;
+    try {
+      final api = context.read<ApiService>();
+      await api.dio.delete('/api/v1/directory/business/$id/d/');
+      setState(() => _myBusinesses.removeWhere((b) => b['id'] == id));
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Business deleted')));
+      }
+    } catch (_) {}
+  }
+
+  void _openFilterSheet() async {
+    await _loadProvinces();
+    // Set temp values from current filters
+    _tempSubcategory = _filterSubcategory;
+    _tempProvince = _filterProvince;
+    _tempCity = _filterCity;
+    _tempArea = _filterArea;
+    _tempBusinessType = _filterBusinessType;
+    _tempBusinessSize = _filterBusinessSize;
+
+    if (_tempProvince != null) await _loadCities(_tempProvince!);
+    if (_tempCity != null) await _loadAreas(_tempCity!);
+
+    if (!mounted) return;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      builder: (context) => _buildFilterSheet(),
+    );
+  }
+
+  Widget _buildFilterSheet() {
+    return StatefulBuilder(
+      builder: (context, setSheetState) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.85,
+          maxChildSize: 0.95,
+          minChildSize: 0.5,
+          expand: false,
+          builder: (context, scrollController) {
+            return Column(
+              children: [
+                // Header
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF094a25),
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(16)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Text('Filter Businesses',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold)),
+                      const Spacer(),
+                      TextButton(
+                        onPressed: () {
+                          setSheetState(() {
+                            _tempSubcategory = null;
+                            _tempProvince = null;
+                            _tempCity = null;
+                            _tempArea = null;
+                            _tempBusinessType = null;
+                            _tempBusinessSize = null;
+                            _cities = [];
+                            _areas = [];
+                          });
+                        },
+                        child: const Text('Reset',
+                            style: TextStyle(color: Color(0xFFf8b324))),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: ListView(
+                    controller: scrollController,
+                    padding: const EdgeInsets.all(16),
+                    children: [
+                      // Subcategory
+                      if (_subcategories.isNotEmpty) ...[
+                        _filterLabel('Sub Category'),
+                        _filterDropdown<int>(
+                          value: _tempSubcategory,
+                          hint: 'All Sub Categories',
+                          items: _subcategories
+                              .map((s) => DropdownMenuItem<int>(
+                                    value: s['id'],
+                                    child: Text(s['name'] ?? ''),
+                                  ))
+                              .toList(),
+                          onChanged: (v) =>
+                              setSheetState(() => _tempSubcategory = v),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                      // Province
+                      _filterLabel('Province'),
+                      _filterDropdown<int>(
+                        value: _tempProvince,
+                        hint: 'All Provinces',
+                        items: _provinces
+                            .map((p) => DropdownMenuItem<int>(
+                                  value: p['id'],
+                                  child: Text(p['name'] ?? ''),
+                                ))
+                            .toList(),
+                        onChanged: (v) async {
+                          setSheetState(() {
+                            _tempProvince = v;
+                            _tempCity = null;
+                            _tempArea = null;
+                            _cities = [];
+                            _areas = [];
+                          });
+                          if (v != null) {
+                            await _loadCities(v);
+                            setSheetState(() {});
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      // City
+                      if (_cities.isNotEmpty) ...[
+                        _filterLabel('City'),
+                        _filterDropdown<int>(
+                          value: _tempCity,
+                          hint: 'All Cities',
+                          items: _cities
+                              .map((c) => DropdownMenuItem<int>(
+                                    value: c['id'],
+                                    child: Text(c['name'] ?? ''),
+                                  ))
+                              .toList(),
+                          onChanged: (v) async {
+                            setSheetState(() {
+                              _tempCity = v;
+                              _tempArea = null;
+                              _areas = [];
+                            });
+                            if (v != null) {
+                              await _loadAreas(v);
+                              setSheetState(() {});
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                      // Area
+                      if (_areas.isNotEmpty) ...[
+                        _filterLabel('Area'),
+                        _filterDropdown<int>(
+                          value: _tempArea,
+                          hint: 'All Areas',
+                          items: _areas
+                              .map((a) => DropdownMenuItem<int>(
+                                    value: a['id'],
+                                    child: Text(a['name'] ?? ''),
+                                  ))
+                              .toList(),
+                          onChanged: (v) => setSheetState(() => _tempArea = v),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                      // Business Type
+                      _filterLabel('Business Type'),
+                      _filterDropdown<String>(
+                        value: _tempBusinessType,
+                        hint: 'All Types',
+                        items: _typeLabels.entries
+                            .map((e) => DropdownMenuItem<String>(
+                                  value: e.key,
+                                  child: Text(e.value),
+                                ))
+                            .toList(),
+                        onChanged: (v) =>
+                            setSheetState(() => _tempBusinessType = v),
+                      ),
+                      const SizedBox(height: 16),
+                      // Business Size
+                      _filterLabel('Business Size'),
+                      _filterDropdown<String>(
+                        value: _tempBusinessSize,
+                        hint: 'All Sizes',
+                        items: _sizeLabels.entries
+                            .map((e) => DropdownMenuItem<String>(
+                                  value: e.key,
+                                  child: Text(e.value),
+                                ))
+                            .toList(),
+                        onChanged: (v) =>
+                            setSheetState(() => _tempBusinessSize = v),
+                      ),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
+                ),
+                // Apply button
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _filterSubcategory = _tempSubcategory;
+                          _filterProvince = _tempProvince;
+                          _filterCity = _tempCity;
+                          _filterArea = _tempArea;
+                          _filterBusinessType = _tempBusinessType;
+                          _filterBusinessSize = _tempBusinessSize;
+                        });
+                        Navigator.pop(context);
+                        _loadBusinesses(refresh: true);
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF094a25),
+                          padding: const EdgeInsets.symmetric(vertical: 14)),
+                      child: const Text('Apply Filters',
+                          style: TextStyle(color: Colors.white, fontSize: 16)),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _filterLabel(String label) => Padding(
+        padding: const EdgeInsets.only(bottom: 6),
+        child: Text(label,
+            style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF094a25),
+                fontSize: 13)),
+      );
+
+  Widget _filterDropdown<T>({
+    required T? value,
+    required String hint,
+    required List<DropdownMenuItem<T>> items,
+    required void Function(T?) onChanged,
+  }) =>
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.black26),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton<T>(
+            value: value,
+            hint: Text(hint, style: const TextStyle(color: Colors.black45)),
+            isExpanded: true,
+            items: [
+              DropdownMenuItem<T>(
+                value: null,
+                child:
+                    Text(hint, style: const TextStyle(color: Colors.black45)),
+              ),
+              ...items,
+            ],
+            onChanged: onChanged,
+          ),
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.all(12),
-          color: Colors.white,
+          color: const Color(0xFF094a25),
           child: Row(
             children: [
-              Expanded(
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Search businesses...',
-                    prefixIcon: const Icon(Icons.search, color: Color(0xFF094a25)),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFF094a25)),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
-                  ),
-                  onSubmitted: (value) {
-                    _search = value;
-                    _loadBusinesses(refresh: true);
-                  },
-                ),
-              ),
-              const SizedBox(width: 8),
-              ElevatedButton(
-                onPressed: () {
-                  _search = _searchController.text;
-                  _loadBusinesses(refresh: true);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF094a25),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                ),
-                child: const Text('Search', style: TextStyle(color: Colors.white)),
-              ),
+              _tabBtn(1, 'My Businesses'),
+              _tabBtn(2, 'Following'),
+              _tabBtn(3, 'All'),
             ],
           ),
         ),
         Expanded(
-          child: RefreshIndicator(
-            onRefresh: () => _loadBusinesses(refresh: true),
+          child: _tab == 1
+              ? _myBusinessesTab()
+              : _tab == 2
+                  ? _followingTab()
+                  : _allBusinessesTab(),
+        ),
+      ],
+    );
+  }
+
+  Widget _tabBtn(int index, String label) {
+    final active = _tab == index;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          setState(() => _tab = index);
+          if (index == 2 && _following.isEmpty) _loadFollowing();
+          if (index == 3) _loadCategories();
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          color: active ? Colors.white : const Color(0xFF094a25),
+          child: Text(label,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: active ? const Color(0xFF094a25) : Colors.white60,
+                fontSize: 13,
+                fontWeight: active ? FontWeight.bold : FontWeight.normal,
+              )),
+        ),
+      ),
+    );
+  }
+
+  Widget _myBusinessesTab() {
+    if (_loadingMine) {
+      return const Center(
+          child: CircularProgressIndicator(color: Color(0xFF094a25)));
+    }
+    if (_myBusinesses.isEmpty) {
+      return const Center(
+        child: Text('You have not created any business listings.',
+            style: TextStyle(color: Color(0xFF094a25))),
+      );
+    }
+    return RefreshIndicator(
+      onRefresh: _loadMyBusinesses,
+      color: const Color(0xFF094a25),
+      child: ListView.builder(
+        itemCount: _myBusinesses.length,
+        itemBuilder: (context, index) => _myBusinessCard(_myBusinesses[index]),
+      ),
+    );
+  }
+
+  Widget _myBusinessCard(Map<String, dynamic> business) {
+    final name = business['name'] ?? '';
+    final hero = business['hero'];
+    final published = business['published'] ?? false;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+            child: hero != null && hero.toString().isNotEmpty
+                ? CachedNetworkImage(
+                    imageUrl: hero,
+                    height: 160,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorWidget: (_, __, ___) =>
+                        Container(height: 160, color: const Color(0xFF094a25)))
+                : Container(height: 160, color: const Color(0xFF094a25)),
+          ),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(10),
             color: const Color(0xFF094a25),
-            child: _businesses.isEmpty && !_isLoading
-                ? const Center(child: Text('No businesses found'))
-                : ListView.builder(
-                    controller: _scrollController,
-                    itemCount: _businesses.length + (_hasMore ? 1 : 0),
+            child: Text(name,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                    color: Color(0xFFf8b324),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15)),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              children: [
+                if (published) ...[
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {},
+                      style: OutlinedButton.styleFrom(
+                          foregroundColor: const Color(0xFF094a25)),
+                      child: const Text('Edit'),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                ],
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => _deleteBusiness(business['id']),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFbc2023)),
+                    child: const Text('Delete',
+                        style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _followingTab() {
+    if (_loadingFollowing) {
+      return const Center(
+          child: CircularProgressIndicator(color: Color(0xFF094a25)));
+    }
+    if (_following.isEmpty) {
+      return const Center(
+          child: Text('You are not following any businesses.',
+              style: TextStyle(color: Color(0xFF094a25))));
+    }
+    return RefreshIndicator(
+      onRefresh: _loadFollowing,
+      color: const Color(0xFF094a25),
+      child: ListView.builder(
+        itemCount: _following.length,
+        itemBuilder: (context, index) => _followingCard(_following[index]),
+      ),
+    );
+  }
+
+  Widget _followingCard(Map<String, dynamic> business) {
+    final name = business['name'] ?? '';
+    final hero = business['hero'];
+    final hasUpdates = business['has_updates'] ?? false;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(8)),
+                child: hero != null && hero.toString().isNotEmpty
+                    ? CachedNetworkImage(
+                        imageUrl: hero,
+                        height: 140,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorWidget: (_, __, ___) => Container(
+                            height: 140, color: const Color(0xFF094a25)))
+                    : Container(height: 140, color: const Color(0xFF094a25)),
+              ),
+              if (hasUpdates)
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFf8b324),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Text('Updated',
+                        style: TextStyle(
+                            fontSize: 11, fontWeight: FontWeight.bold)),
+                  ),
+                ),
+            ],
+          ),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(10),
+            color: const Color(0xFF094a25),
+            child: Text(name,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                    color: Color(0xFFf8b324),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15)),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => _unfollow(business['id']),
+                    style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFF094a25)),
+                    child: const Text('Unfollow'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _allBusinessesTab() {
+    return Column(
+      children: [
+        // Category + Filter bar
+        Container(
+          color: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  height: 36,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    itemCount: _categories.length,
                     itemBuilder: (context, index) {
-                      if (index == _businesses.length) {
-                        return const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(16),
-                            child: CircularProgressIndicator(color: Color(0xFF094a25)),
+                      final cat = _categories[index];
+                      final isSelected = _selectedCategory == cat['id'];
+                      return GestureDetector(
+                        onTap: () {
+                          final category = _categories.firstWhere(
+                              (c) => c['id'] == cat['id'],
+                              orElse: () => {});
+                          setState(() {
+                            _selectedCategory = cat['id'];
+                            _subcategories = category['sub_categories'] ?? [];
+                            _businesses = [];
+                            _currentPage = 1;
+                            _filterSubcategory = null;
+                          });
+                          _loadBusinesses(refresh: true);
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(right: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? const Color(0xFF094a25)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(
+                                color: const Color(0xFF094a25), width: 1),
                           ),
-                        );
-                      }
-                      return _businessCard(_businesses[index]);
+                          child: Text(cat['name'] ?? '',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : const Color(0xFF094a25))),
+                        ),
+                      );
                     },
                   ),
+                ),
+              ),
+              if (_selectedCategory != null)
+                Stack(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.tune, color: Color(0xFF094a25)),
+                      onPressed: _openFilterSheet,
+                    ),
+                    if (_hasActiveFilters)
+                      Positioned(
+                        top: 6,
+                        right: 6,
+                        child: Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFbc2023),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+            ],
           ),
+        ),
+        // Active filter chips
+        if (_hasActiveFilters)
+          Container(
+            height: 40,
+            color: Colors.grey.shade50,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              children: [
+                if (_filterSubcategory != null)
+                  ActiveFilterChip(
+                    label: _subcategories.firstWhere(
+                            (s) => s['id'] == _filterSubcategory,
+                            orElse: () => {'name': 'Sub Cat'})['name'] ??
+                        '',
+                    onRemove: () {
+                      setState(() => _filterSubcategory = null);
+                      _loadBusinesses(refresh: true);
+                    },
+                  ),
+                if (_filterProvince != null)
+                  ActiveFilterChip(
+                    label: _provinces.firstWhere(
+                            (p) => p['id'] == _filterProvince,
+                            orElse: () => {'name': 'Province'})['name'] ??
+                        '',
+                    onRemove: () {
+                      setState(() {
+                        _filterProvince = null;
+                        _filterCity = null;
+                        _filterArea = null;
+                      });
+                      _loadBusinesses(refresh: true);
+                    },
+                  ),
+                if (_filterCity != null)
+                  ActiveFilterChip(
+                    label: _cities.firstWhere((c) => c['id'] == _filterCity,
+                            orElse: () => {'name': 'City'})['name'] ??
+                        '',
+                    onRemove: () {
+                      setState(() {
+                        _filterCity = null;
+                        _filterArea = null;
+                      });
+                      _loadBusinesses(refresh: true);
+                    },
+                  ),
+                if (_filterArea != null)
+                  ActiveFilterChip(
+                    label: _areas.firstWhere((a) => a['id'] == _filterArea,
+                            orElse: () => {'name': 'Area'})['name'] ??
+                        '',
+                    onRemove: () {
+                      setState(() => _filterArea = null);
+                      _loadBusinesses(refresh: true);
+                    },
+                  ),
+                if (_filterBusinessType != null)
+                  ActiveFilterChip(
+                    label: _typeLabels[_filterBusinessType] ??
+                        _filterBusinessType!,
+                    onRemove: () {
+                      setState(() => _filterBusinessType = null);
+                      _loadBusinesses(refresh: true);
+                    },
+                  ),
+                if (_filterBusinessSize != null)
+                  ActiveFilterChip(
+                    label: _sizeLabels[_filterBusinessSize] ??
+                        _filterBusinessSize!,
+                    onRemove: () {
+                      setState(() => _filterBusinessSize = null);
+                      _loadBusinesses(refresh: true);
+                    },
+                  ),
+              ],
+            ),
+          ),
+        // Results count
+        if (_totalCount > 0)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            color: Colors.grey.shade50,
+            child: Row(
+              children: [
+                Text('$_totalCount businesses found',
+                    style:
+                        const TextStyle(fontSize: 12, color: Colors.black45)),
+              ],
+            ),
+          ),
+        // Business list
+        Expanded(
+          child: _selectedCategory == null
+              ? const Center(
+                  child: Text('Select a category above to start',
+                      style: TextStyle(color: Color(0xFF094a25))))
+              : _loadingAll && _businesses.isEmpty
+                  ? const Center(
+                      child:
+                          CircularProgressIndicator(color: Color(0xFF094a25)))
+                  : _businesses.isEmpty
+                      ? const Center(
+                          child: Text('No businesses found',
+                              style: TextStyle(color: Color(0xFF094a25))))
+                      : RefreshIndicator(
+                          onRefresh: () => _loadBusinesses(refresh: true),
+                          color: const Color(0xFF094a25),
+                          child: ListView.builder(
+                            controller: _scrollController,
+                            itemCount: _businesses.length + (_hasMore ? 1 : 0),
+                            itemBuilder: (context, index) {
+                              if (index == _businesses.length) {
+                                return const Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(16),
+                                    child: CircularProgressIndicator(
+                                        color: Color(0xFF094a25)),
+                                  ),
+                                );
+                              }
+                              return _businessCard(_businesses[index]);
+                            },
+                          ),
+                        ),
         ),
       ],
     );
@@ -137,21 +970,29 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
     final name = business['name'] ?? '';
     final description = business['description'] ?? '';
     final branches = business['branches'] as List? ?? [];
+    final categories = business['categories'] as List? ?? [];
+    final businessType = business['business_type'] ?? '';
+
     String location = '';
     if (branches.isNotEmpty) {
       final branch = branches[0];
-      final city = branch['city']?['name'] ?? branch['area']?['city']?['name'] ?? '';
-      final province = branch['city']?['province']?['name'] ?? branch['area']?['city']?['province']?['name'] ?? '';
-      if (city.isNotEmpty) location = '$province / $city';
+      if (branch['area'] != null) {
+        location =
+            '${branch['area']['city']['name']} / ${branch['area']['name']}';
+      } else if (branch['city'] != null) {
+        location =
+            '${branch['city']['province']['name']} / ${branch['city']['name']}';
+      }
     }
-    final categories = business['categories'] as List? ?? [];
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)],
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
+        ],
       ),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -160,14 +1001,13 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(6),
-              child: logo != null
+              child: logo != null && logo.toString().isNotEmpty
                   ? CachedNetworkImage(
                       imageUrl: logo,
-                      width: 70, height: 70,
+                      width: 70,
+                      height: 70,
                       fit: BoxFit.contain,
-                      placeholder: (_, __) => _logoPlaceholder(),
-                      errorWidget: (_, __, ___) => _logoPlaceholder(),
-                    )
+                      errorWidget: (_, __, ___) => _logoPlaceholder())
                   : _logoPlaceholder(),
             ),
             const SizedBox(width: 12),
@@ -175,21 +1015,39 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF094a25))),
+                  Text(name,
+                      style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF094a25))),
                   if (description.isNotEmpty) ...[
                     const SizedBox(height: 4),
                     Text(
-                      description.length > 100 ? '${description.substring(0, 100)}...' : description,
-                      style: const TextStyle(fontSize: 12, color: Colors.black54),
+                      description.length > 100
+                          ? '${description.substring(0, 100)}...'
+                          : description,
+                      style:
+                          const TextStyle(fontSize: 12, color: Colors.black54),
+                    ),
+                  ],
+                  if (businessType.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      'Type: ${_typeLabels[businessType] ?? businessType}',
+                      style:
+                          const TextStyle(fontSize: 11, color: Colors.black45),
                     ),
                   ],
                   if (location.isNotEmpty) ...[
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(Icons.location_on_outlined, size: 12, color: Colors.black45),
+                        const Icon(Icons.location_on_outlined,
+                            size: 12, color: Colors.black45),
                         const SizedBox(width: 2),
-                        Text(location, style: const TextStyle(fontSize: 11, color: Colors.black45)),
+                        Text(location,
+                            style: const TextStyle(
+                                fontSize: 11, color: Colors.black45)),
                       ],
                     ),
                   ],
@@ -199,14 +1057,16 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                       spacing: 4,
                       runSpacing: 4,
                       children: categories.take(3).map((cat) {
-                        final catName = cat['name'] ?? '';
                         return Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
                             color: const Color(0xFF094a25),
                             borderRadius: BorderRadius.circular(4),
                           ),
-                          child: Text(catName, style: const TextStyle(color: Colors.white, fontSize: 10)),
+                          child: Text(cat['name'] ?? '',
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 10)),
                         );
                       }).toList(),
                     ),
@@ -221,11 +1081,10 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
     );
   }
 
-  Widget _logoPlaceholder() {
-    return Container(
-      width: 70, height: 70,
-      color: const Color(0xFF094a25).withOpacity(0.1),
-      child: const Icon(Icons.business, color: Color(0xFF094a25), size: 32),
-    );
-  }
+  Widget _logoPlaceholder() => Container(
+        width: 70,
+        height: 70,
+        color: const Color(0xFF094a25).withOpacity(0.1),
+        child: const Icon(Icons.business, color: Color(0xFF094a25), size: 32),
+      );
 }

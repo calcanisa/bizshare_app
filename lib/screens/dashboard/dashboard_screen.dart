@@ -5,7 +5,8 @@ import '../../services/api_service.dart';
 
 class DashboardScreen extends StatefulWidget {
   final VoidCallback? onProfileTap;
-  const DashboardScreen({super.key, this.onProfileTap});
+  final void Function(String)? onNavigate;
+  const DashboardScreen({super.key, this.onProfileTap, this.onNavigate});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -210,46 +211,51 @@ class _DashboardScreenState extends State<DashboardScreen> {
       {
         'key': 'directory.Business',
         'label': 'Businesses',
-        'icon': Icons.business
+        'icon': Icons.business,
+        'route': 'Directory'
       },
       {
         'key': 'classifieds.Classified',
         'label': 'Classifieds',
-        'icon': Icons.sell_outlined
+        'icon': Icons.sell_outlined,
+        'route': 'Classifieds'
       },
-      {'key': 'events.Event', 'label': 'Events', 'icon': Icons.event_outlined},
-      {'key': 'jobs.Job', 'label': 'Jobs', 'icon': Icons.work_outline},
       {
-        'key': 'jobs.JobApplication',
-        'label': 'Job Apps',
-        'icon': Icons.assignment_outlined
+        'key': 'events.Event',
+        'label': 'Events',
+        'icon': Icons.event_outlined,
+        'route': 'Events'
+      },
+      {
+        'key': 'jobs.Job',
+        'label': 'Jobs',
+        'icon': Icons.work_outline,
+        'route': 'Jobs'
       },
       {
         'key': 'directory.ServiceLeadMatches',
         'label': 'Leads',
-        'icon': Icons.people_outline
+        'icon': Icons.people_outline,
+        'route': 'Leads'
       },
       {
         'key': 'opportunities.Opportunity',
         'label': 'Opportunities',
-        'icon': Icons.trending_up
-      },
-      {
-        'key': 'opportunities.OpportunityApplication',
-        'label': 'Opp Apps',
-        'icon': Icons.assignment_turned_in_outlined
+        'icon': Icons.trending_up,
+        'route': 'Opportunities'
       },
       {
         'key': 'projects.Project',
         'label': 'Projects',
-        'icon': Icons.lightbulb_outline
+        'icon': Icons.lightbulb_outline,
+        'route': 'Projects'
       },
       {
-        'key': 'projects.ProjectInterest',
-        'label': 'Proj Interests',
-        'icon': Icons.favorite_outline
+        'key': 'websites.Website',
+        'label': 'Websites',
+        'icon': Icons.language,
+        'route': 'Websites'
       },
-      {'key': 'websites.Website', 'label': 'Websites', 'icon': Icons.language},
     ];
 
     return Container(
@@ -266,38 +272,41 @@ class _DashboardScreenState extends State<DashboardScreen> {
               runSpacing: 16,
               children: items.map((item) {
                 final width = (MediaQuery.of(context).size.width - 56) / 4;
-                return SizedBox(
-                  width: width,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF094a25),
-                          borderRadius: BorderRadius.circular(8),
+                return GestureDetector(
+                  onTap: () => widget.onNavigate?.call(item['route'] as String),
+                  child: SizedBox(
+                    width: width,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF094a25),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(item['icon'] as IconData,
+                              color: Colors.white, size: 22),
                         ),
-                        child: Icon(item['icon'] as IconData,
-                            color: Colors.white, size: 22),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${provider.count(item['key'] as String)}',
-                        style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF094a25)),
-                      ),
-                      Text(
-                        item['label'] as String,
-                        style:
-                            const TextStyle(fontSize: 9, color: Colors.black54),
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
+                        const SizedBox(height: 4),
+                        Text(
+                          '${provider.count(item['key'] as String)}',
+                          style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF094a25)),
+                        ),
+                        Text(
+                          item['label'] as String,
+                          style: const TextStyle(
+                              fontSize: 10, color: Colors.black87),
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
                   ),
                 );
               }).toList(),
@@ -314,6 +323,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         'key': 'directory.Business',
         'label': 'Businesses',
         'icon': Icons.business,
+        'route': 'Directory',
         'viewKey': 'directory.BusinessView',
         'clickKey': 'directory.BusinessClick',
         'extraKey': null,
@@ -323,6 +333,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         'key': 'classifieds.Classified',
         'label': 'Classifieds',
         'icon': Icons.sell_outlined,
+        'route': 'Classifieds',
         'viewKey': 'classifieds.ClassifiedView',
         'clickKey': 'classifieds.ClassifiedClick',
         'extraKey': null,
@@ -332,6 +343,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         'key': 'events.Event',
         'label': 'Events',
         'icon': Icons.event_outlined,
+        'route': 'Events',
         'viewKey': 'events.EventView',
         'clickKey': 'events.EventClick',
         'extraKey': null,
@@ -341,6 +353,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         'key': 'jobs.Job',
         'label': 'Jobs',
         'icon': Icons.work_outline,
+        'route': 'Jobs',
         'viewKey': 'jobs.JobView',
         'clickKey': 'jobs.JobClick',
         'extraKey': 'jobs.JobApplication',
@@ -350,6 +363,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         'key': 'opportunities.Opportunity',
         'label': 'Opportunities',
         'icon': Icons.trending_up,
+        'route': 'Opportunities',
         'viewKey': 'opportunities.OpportunityView',
         'clickKey': 'opportunities.OpportunityClick',
         'extraKey': 'opportunities.OpportunityApplicationsReceived',
@@ -359,6 +373,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         'key': 'projects.Project',
         'label': 'Projects',
         'icon': Icons.lightbulb_outline,
+        'route': 'Projects',
         'viewKey': 'projects.ProjectView',
         'clickKey': 'projects.ProjectClick',
         'extraKey': 'projects.ProjectInterestReceived',
@@ -368,6 +383,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         'key': 'websites.Website',
         'label': 'Websites',
         'icon': Icons.language,
+        'route': 'Websites',
         'viewKey': 'websites.WebsiteView',
         'clickKey': 'websites.WebsiteClick',
         'extraKey': null,
@@ -413,10 +429,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Icon(s['icon'] as IconData, color: const Color(0xFF094a25), size: 28),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(
-              s['label'] as String,
-              style: const TextStyle(
-                  fontWeight: FontWeight.w600, color: Color(0xFF094a25)),
+            child: GestureDetector(
+              onTap: () => widget.onNavigate?.call(s['route'] as String),
+              child: Text(
+                s['label'] as String,
+                style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF094a25),
+                    decoration: TextDecoration.underline,
+                    decorationColor: Color(0xFF094a25)),
+              ),
             ),
           ),
           _miniStat('Views', provider.count(s['viewKey'] as String)),
