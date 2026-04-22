@@ -28,14 +28,6 @@ class ApiService {
       onError: (error, handler) async {
         final status = error.response?.statusCode;
 
-        if (status == 403) {
-          await _storage.deleteAll();
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            onUnauthorized?.call();
-          });
-          return handler.next(error);
-        }
-
         if (status == 401) {
           final refreshed = await _refreshToken();
           if (refreshed) {
@@ -72,11 +64,13 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> login(String email, String password) async {
+  Future<Map<String, dynamic>> login(
+      String email, String password, bool rememberMe) async {
     try {
       final response = await _dio.post('/api/token/', data: {
         'email': email,
         'password': password,
+        'remember_me': rememberMe,
       });
       return response.data;
     } catch (e) {
@@ -84,9 +78,12 @@ class ApiService {
     }
   }
 
-  Future<void> saveTokens(String access, String refresh) async {
+  Future<void> saveTokens(String access, String refresh,
+      {bool rememberMe = false}) async {
     await _storage.write(key: 'access_token', value: access);
     await _storage.write(key: 'refresh_token', value: refresh);
+    await _storage.write(
+        key: 'remember_me', value: rememberMe ? 'true' : 'false');
   }
 
   Future<void> clearTokens() async {

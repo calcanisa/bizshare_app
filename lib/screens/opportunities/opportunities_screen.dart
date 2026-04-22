@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../../services/api_service.dart';
+import '../opportunities/opportunity_screen.dart';
+import '../opportunities/add_opportunity.dart';
 
 class OpportunitiesScreen extends StatefulWidget {
   const OpportunitiesScreen({super.key});
@@ -579,7 +581,19 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                 style: TextStyle(color: Color(0xFF094a25))),
             const SizedBox(height: 12),
             ElevatedButton(
-              onPressed: () {}, // TODO: open add opportunity modal
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AddOpportunityModal(
+                    action: 'add',
+                    onSave: (data) {
+                      Navigator.pop(context);
+                      setState(() => _myOpps.insert(0, data));
+                    },
+                    onCancel: () => Navigator.pop(context),
+                  ),
+                ),
+              ),
               style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF094a25)),
               child:
@@ -594,6 +608,30 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
       color: const Color(0xFF094a25),
       child: ListView(
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+            child: ElevatedButton.icon(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AddOpportunityModal(
+                    action: 'add',
+                    onSave: (data) {
+                      Navigator.pop(context);
+                      setState(() => _myOpps.insert(0, data));
+                    },
+                    onCancel: () => Navigator.pop(context),
+                  ),
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF094a25),
+                  minimumSize: const Size(double.infinity, 44)),
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text('Post Opportunity',
+                  style: TextStyle(color: Colors.white)),
+            ),
+          ),
           if (_currentOpps.isNotEmpty) ...[
             _listHeader('Current Opportunities'),
             ..._currentOpps
@@ -630,134 +668,158 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     final isOnline = category != null && category['parent'] == 2;
     final isPublished = opp['published'] == true;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: past ? Colors.grey.shade100 : Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
-        ],
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => OpportunityDetailScreen(opportunityId: opp['id']),
+        ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: imageUrl != null
-                      ? CachedNetworkImage(
-                          imageUrl: imageUrl,
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.contain,
-                          errorWidget: (_, __, ___) => _imagePlaceholder())
-                      : _imagePlaceholder(),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(title,
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: past
-                                  ? Colors.black54
-                                  : const Color(0xFF094a25))),
-                      const SizedBox(height: 4),
-                      Text(
-                          description.length > 60
-                              ? '${description.substring(0, 60)}...'
-                              : description,
-                          style: const TextStyle(
-                              fontSize: 12, color: Colors.black54)),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          _metaTag(
-                            isOnline ? 'Online' : 'Offline',
-                            isOnline
-                                ? const Color(0xFF094a25)
-                                : const Color(0xFFbc2023),
-                          ),
-                          if (category != null) ...[
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: Text(category['name'] ?? '',
-                                  style: const TextStyle(
-                                      fontSize: 11, color: Colors.black45),
-                                  overflow: TextOverflow.ellipsis),
-                            ),
-                          ],
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      if (validUntil != null)
-                        Text(
-                            'Valid until: ${_formatDate(validUntil.toString())}',
-                            style: const TextStyle(
-                                fontSize: 11, color: Colors.black45)),
-                      const SizedBox(height: 2),
-                      oppValue != null
-                          ? Text('Value: R$oppValue',
-                              style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF094a25)))
-                          : const Text('Value: Quote',
-                              style: TextStyle(
-                                  fontSize: 12, color: Colors.black45)),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                if (!past && isPublished) ...[
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {}, // TODO: edit opportunity
-                      style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF094a25),
-                          padding: const EdgeInsets.symmetric(vertical: 4)),
-                      child: const Text('Edit', style: TextStyle(fontSize: 12)),
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {}, // TODO: feature opportunity
-                      style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFFf8b324),
-                          side: const BorderSide(color: Color(0xFFf8b324)),
-                          padding: const EdgeInsets.symmetric(vertical: 4)),
-                      child:
-                          const Text('Feature', style: TextStyle(fontSize: 12)),
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                ],
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () => _deleteOpp(opp['id']),
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFbc2023),
-                        padding: const EdgeInsets.symmetric(vertical: 4)),
-                    child: const Text('Delete',
-                        style: TextStyle(color: Colors.white, fontSize: 12)),
-                  ),
-                ),
-              ],
-            ),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: past ? Colors.grey.shade100 : Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
           ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: imageUrl != null
+                        ? CachedNetworkImage(
+                            imageUrl: imageUrl,
+                            width: 80,
+                            height: 80,
+                            fit: BoxFit.contain,
+                            errorWidget: (_, __, ___) => _imagePlaceholder())
+                        : _imagePlaceholder(),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(title,
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: past
+                                    ? Colors.black54
+                                    : const Color(0xFF094a25))),
+                        const SizedBox(height: 4),
+                        Text(
+                            description.length > 60
+                                ? '${description.substring(0, 60)}...'
+                                : description,
+                            style: const TextStyle(
+                                fontSize: 12, color: Colors.black54)),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            _metaTag(
+                              isOnline ? 'Online' : 'Offline',
+                              isOnline
+                                  ? const Color(0xFF094a25)
+                                  : const Color(0xFFbc2023),
+                            ),
+                            if (category != null) ...[
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(category['name'] ?? '',
+                                    style: const TextStyle(
+                                        fontSize: 11, color: Colors.black45),
+                                    overflow: TextOverflow.ellipsis),
+                              ),
+                            ],
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        if (validUntil != null)
+                          Text(
+                              'Valid until: ${_formatDate(validUntil.toString())}',
+                              style: const TextStyle(
+                                  fontSize: 11, color: Colors.black45)),
+                        const SizedBox(height: 2),
+                        oppValue != null
+                            ? Text('Value: R$oppValue',
+                                style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF094a25)))
+                            : const Text('Value: Quote',
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.black45)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  if (!past && isPublished) ...[
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => AddOpportunityModal(
+                              action: 'edit',
+                              opportunity: opp,
+                              onSave: (data) {
+                                Navigator.pop(context);
+                                final i = _myOpps
+                                    .indexWhere((o) => o['id'] == data['id']);
+                                if (i != -1) setState(() => _myOpps[i] = data);
+                              },
+                              onCancel: () => Navigator.pop(context),
+                            ),
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFF094a25),
+                            padding: const EdgeInsets.symmetric(vertical: 4)),
+                        child:
+                            const Text('Edit', style: TextStyle(fontSize: 12)),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () {}, // TODO: feature
+                        style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFFf8b324),
+                            side: const BorderSide(color: Color(0xFFf8b324)),
+                            padding: const EdgeInsets.symmetric(vertical: 4)),
+                        child: const Text('Feature',
+                            style: TextStyle(fontSize: 12)),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                  ],
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => _deleteOpp(opp['id']),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFbc2023),
+                          padding: const EdgeInsets.symmetric(vertical: 4)),
+                      child: const Text('Delete',
+                          style: TextStyle(color: Colors.white, fontSize: 12)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1114,155 +1176,178 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
         (opp['user'] as Map)['id'] == _accountId;
     final applied = _hasApplied(opp['id']);
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
-        ],
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => OpportunityDetailScreen(opportunityId: opp['id']),
+        ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: imageUrl != null
-                      ? CachedNetworkImage(
-                          imageUrl: imageUrl,
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.contain,
-                          errorWidget: (_, __, ___) => _imagePlaceholder())
-                      : _imagePlaceholder(),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Text(title,
-                                style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF094a25))),
-                          ),
-                          const SizedBox(width: 6),
-                          _metaTag(
-                            isOnline ? 'Online' : 'Offline',
-                            isOnline
-                                ? const Color(0xFF094a25)
-                                : const Color(0xFFbc2023),
-                          ),
-                        ],
-                      ),
-                      if (category != null) ...[
-                        const SizedBox(height: 3),
-                        Text(category['name'] ?? '',
-                            style: const TextStyle(
-                                fontSize: 11, color: Colors.black45)),
-                      ],
-                      const SizedBox(height: 5),
-                      Text(
-                          description.length > 100
-                              ? '${description.substring(0, 100)}...'
-                              : description,
-                          style: const TextStyle(
-                              fontSize: 12, color: Colors.black87)),
-                    ],
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: imageUrl != null
+                        ? CachedNetworkImage(
+                            imageUrl: imageUrl,
+                            width: 80,
+                            height: 80,
+                            fit: BoxFit.contain,
+                            errorWidget: (_, __, ___) => _imagePlaceholder())
+                        : _imagePlaceholder(),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                          oppValue != null
-                              ? 'Value: R$oppValue'
-                              : 'Value: Quote',
-                          style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: oppValue != null
-                                  ? const Color(0xFF094a25)
-                                  : Colors.black45)),
-                      if (validUntil != null) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                            'Valid until: ${_formatDate(validUntil.toString())}',
-                            style: const TextStyle(
-                                fontSize: 11, color: Colors.black45)),
-                      ],
-                      if (applications.isNotEmpty) ...[
-                        const SizedBox(height: 4),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Icon(Icons.people_outline,
-                                size: 13, color: Color(0xFFf8b324)),
-                            const SizedBox(width: 3),
-                            Text(
-                                '${applications.length} application${applications.length == 1 ? '' : 's'}',
-                                style: const TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFFf8b324))),
+                            Expanded(
+                              child: Text(title,
+                                  style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF094a25))),
+                            ),
+                            const SizedBox(width: 6),
+                            _metaTag(
+                              isOnline ? 'Online' : 'Offline',
+                              isOnline
+                                  ? const Color(0xFF094a25)
+                                  : const Color(0xFFbc2023),
+                            ),
                           ],
                         ),
+                        if (category != null) ...[
+                          const SizedBox(height: 3),
+                          Text(category['name'] ?? '',
+                              style: const TextStyle(
+                                  fontSize: 11, color: Colors.black45)),
+                        ],
+                        const SizedBox(height: 5),
+                        Text(
+                            description.length > 100
+                                ? '${description.substring(0, 100)}...'
+                                : description,
+                            style: const TextStyle(
+                                fontSize: 12, color: Colors.black87)),
                       ],
-                    ],
+                    ),
                   ),
-                ),
-                if (isOwner) ...[
-                  OutlinedButton(
-                    onPressed: () {}, // TODO: edit
-                    style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFF094a25),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 4)),
-                    child: const Text('Edit', style: TextStyle(fontSize: 12)),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                            oppValue != null
+                                ? 'Value: R$oppValue'
+                                : 'Value: Quote',
+                            style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: oppValue != null
+                                    ? const Color(0xFF094a25)
+                                    : Colors.black45)),
+                        if (validUntil != null) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                              'Valid until: ${_formatDate(validUntil.toString())}',
+                              style: const TextStyle(
+                                  fontSize: 11, color: Colors.black45)),
+                        ],
+                        if (applications.isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              const Icon(Icons.people_outline,
+                                  size: 13, color: Color(0xFFf8b324)),
+                              const SizedBox(width: 3),
+                              Text(
+                                  '${applications.length} application${applications.length == 1 ? '' : 's'}',
+                                  style: const TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFFf8b324))),
+                            ],
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
-                  const SizedBox(width: 6),
-                  ElevatedButton(
-                    onPressed: () => _deleteOpp(opp['id']),
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFbc2023),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 4)),
-                    child: const Text('Delete',
-                        style: TextStyle(color: Colors.white, fontSize: 12)),
-                  ),
-                ] else
-                  ElevatedButton(
-                    onPressed: applied ? null : () {}, // TODO: open apply modal
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: applied
-                            ? Colors.grey.shade400
-                            : const Color(0xFF094a25),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8)),
-                    child: Text(applied ? 'Applied' : 'Apply',
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 12)),
-                  ),
-              ],
-            ),
-          ],
+                  if (isOwner) ...[
+                    OutlinedButton(
+                      onPressed: () {}, // TODO: edit
+                      style: OutlinedButton.styleFrom(
+                          foregroundColor: const Color(0xFF094a25),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 4)),
+                      child: const Text('Edit', style: TextStyle(fontSize: 12)),
+                    ),
+                    const SizedBox(width: 6),
+                    ElevatedButton(
+                      onPressed: () => _deleteOpp(opp['id']),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFbc2023),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 4)),
+                      child: const Text('Delete',
+                          style: TextStyle(color: Colors.white, fontSize: 12)),
+                    ),
+                  ] else
+                    ElevatedButton(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AddOpportunityModal(
+                            action: 'edit',
+                            opportunity: opp,
+                            onSave: (data) {
+                              Navigator.pop(context);
+                              final i = _allOpps
+                                  .indexWhere((o) => o['id'] == data['id']);
+                              if (i != -1) setState(() => _allOpps[i] = data);
+                            },
+                            onCancel: () => Navigator.pop(context),
+                          ),
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: applied
+                              ? Colors.grey.shade400
+                              : const Color(0xFF094a25),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8)),
+                      child: Text(applied ? 'Applied' : 'Apply',
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 12)),
+                    ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

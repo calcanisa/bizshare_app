@@ -16,12 +16,14 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String?> login(String email, String password) async {
+  Future<String?> login(String email, String password,
+      {bool rememberMe = false}) async {
     _isLoading = true;
     notifyListeners();
     try {
-      final data = await _api.login(email, password);
-      await _api.saveTokens(data['access'], data['refresh']);
+      final data = await _api.login(email, password, rememberMe);
+      await _api.saveTokens(data['access'], data['refresh'],
+          rememberMe: rememberMe);
       _isLoggedIn = true;
       _isLoading = false;
       notifyListeners();

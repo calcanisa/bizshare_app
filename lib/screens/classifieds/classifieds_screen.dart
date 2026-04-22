@@ -3,6 +3,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../../services/api_service.dart';
 import '../../widgets/filter_chip_bar.dart';
+import '../classifieds/classified_screen.dart';
+import '../classifieds/add_classified.dart';
 
 class ClassifiedsScreen extends StatefulWidget {
   const ClassifiedsScreen({super.key});
@@ -204,6 +206,40 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
             .showSnackBar(const SnackBar(content: Text('Ad renewed')));
       }
     } catch (_) {}
+  }
+
+  void _openAddAd() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AddClassifiedModal(
+          action: 'add',
+          onSave: (data) {
+            Navigator.pop(context);
+            setState(() => _myAds.insert(0, data));
+          },
+          onCancel: () => Navigator.pop(context),
+        ),
+      ),
+    );
+  }
+
+  void _openEditAd(Map<String, dynamic> ad) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AddClassifiedModal(
+          action: 'edit',
+          ad: ad,
+          onSave: (data) {
+            Navigator.pop(context);
+            final i = _myAds.indexWhere((a) => a['id'] == data['id']);
+            if (i != -1) setState(() => _myAds[i] = data);
+          },
+          onCancel: () => Navigator.pop(context),
+        ),
+      ),
+    );
   }
 
   bool _isExpired(Map<String, dynamic> ad) {
@@ -559,9 +595,23 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
     final expiredAds = _myAds.where((a) => _isExpired(a)).toList();
 
     if (_myAds.isEmpty) {
-      return const Center(
-        child: Text('You have not created any ads.',
-            style: TextStyle(color: Color(0xFF094a25))),
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('You have not created any ads.',
+                style: TextStyle(color: Color(0xFF094a25))),
+            const SizedBox(height: 12),
+            ElevatedButton.icon(
+              onPressed: _openAddAd,
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF094a25)),
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text('Create Ad',
+                  style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
       );
     }
 
@@ -570,6 +620,18 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
       color: const Color(0xFF094a25),
       child: ListView(
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+            child: ElevatedButton.icon(
+              onPressed: _openAddAd,
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF094a25),
+                  padding: const EdgeInsets.symmetric(vertical: 12)),
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text('Create New Ad',
+                  style: TextStyle(color: Colors.white)),
+            ),
+          ),
           if (currentAds.isNotEmpty) ...[
             _listHeader('Current Classifieds'),
             ...currentAds.map((ad) => _myAdCard(ad, expired: false)),
@@ -602,7 +664,6 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
     final imageUrl = defaultImage?['image'];
     final price = ad['price'];
     final createdAt = ad['created_at'];
-
     String location = '';
     if (ad['area'] != null) {
       location =
@@ -611,119 +672,128 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
       location = '${ad['city']['province']['name']} / ${ad['city']['name']}';
     }
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
-        ],
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ClassifiedDetailScreen(adId: ad['id']),
+        ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: imageUrl != null
-                  ? CachedNetworkImage(
-                      imageUrl: imageUrl,
-                      width: 90,
-                      height: 90,
-                      fit: BoxFit.contain,
-                      errorWidget: (_, __, ___) => _imagePlaceholder())
-                  : _imagePlaceholder(),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title,
-                      style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF094a25))),
-                  if (price != null) ...[
-                    const SizedBox(height: 4),
-                    Text(_formatPrice(price),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: imageUrl != null
+                    ? CachedNetworkImage(
+                        imageUrl: imageUrl,
+                        width: 90,
+                        height: 90,
+                        fit: BoxFit.contain,
+                        errorWidget: (_, __, ___) => _imagePlaceholder())
+                    : _imagePlaceholder(),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title,
                         style: const TextStyle(
-                            fontSize: 13,
+                            fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFFbc2023))),
-                  ],
-                  if (location.isNotEmpty) ...[
-                    const SizedBox(height: 4),
+                            color: Color(0xFF094a25))),
+                    if (price != null) ...[
+                      const SizedBox(height: 4),
+                      Text(_formatPrice(price),
+                          style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFbc2023))),
+                    ],
+                    if (location.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(Icons.location_on_outlined,
+                              size: 12, color: Colors.black45),
+                          const SizedBox(width: 2),
+                          Expanded(
+                            child: Text(location,
+                                style: const TextStyle(
+                                    fontSize: 11, color: Colors.black45),
+                                overflow: TextOverflow.ellipsis),
+                          ),
+                        ],
+                      ),
+                    ],
+                    if (createdAt != null) ...[
+                      const SizedBox(height: 4),
+                      Text('Placed: ${_formatDate(createdAt)}',
+                          style: const TextStyle(
+                              fontSize: 11, color: Colors.black45)),
+                    ],
+                    const SizedBox(height: 8),
                     Row(
                       children: [
-                        const Icon(Icons.location_on_outlined,
-                            size: 12, color: Colors.black45),
-                        const SizedBox(width: 2),
+                        if (!expired) ...[
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () {},
+                              style: OutlinedButton.styleFrom(
+                                  foregroundColor: const Color(0xFF094a25),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 4)),
+                              child: const Text('Edit',
+                                  style: TextStyle(fontSize: 12)),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                        ],
+                        if (expired) ...[
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () => _renewAd(ad['id']),
+                              style: OutlinedButton.styleFrom(
+                                  foregroundColor: const Color(0xFF094a25),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 4)),
+                              child: const Text('Renew',
+                                  style: TextStyle(fontSize: 12)),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                        ],
                         Expanded(
-                          child: Text(location,
-                              style: const TextStyle(
-                                  fontSize: 11, color: Colors.black45),
-                              overflow: TextOverflow.ellipsis),
+                          child: ElevatedButton(
+                            onPressed: () => _deleteAd(ad['id']),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFbc2023),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4)),
+                            child: const Text('Delete',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 12)),
+                          ),
                         ),
                       ],
                     ),
                   ],
-                  if (createdAt != null) ...[
-                    const SizedBox(height: 4),
-                    Text('Placed: ${_formatDate(createdAt)}',
-                        style: const TextStyle(
-                            fontSize: 11, color: Colors.black45)),
-                  ],
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      if (!expired) ...[
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: () {},
-                            style: OutlinedButton.styleFrom(
-                                foregroundColor: const Color(0xFF094a25),
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 4)),
-                            child: const Text('Edit',
-                                style: TextStyle(fontSize: 12)),
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                      ],
-                      if (expired) ...[
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: () => _renewAd(ad['id']),
-                            style: OutlinedButton.styleFrom(
-                                foregroundColor: const Color(0xFF094a25),
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 4)),
-                            child: const Text('Renew',
-                                style: TextStyle(fontSize: 12)),
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                      ],
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () => _deleteAd(ad['id']),
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFbc2023),
-                              padding: const EdgeInsets.symmetric(vertical: 4)),
-                          child: const Text('Delete',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 12)),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -942,7 +1012,6 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
     final price = ad['price'];
     final createdAt = ad['created_at'];
     final category = ad['category'];
-
     String location = '';
     if (ad['area'] != null) {
       location =
@@ -951,82 +1020,91 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
       location = '${ad['city']['province']['name']} / ${ad['city']['name']}';
     }
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
-        ],
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ClassifiedDetailScreen(adId: ad['id']),
+        ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: imageUrl != null
-                  ? CachedNetworkImage(
-                      imageUrl: imageUrl,
-                      width: 90,
-                      height: 90,
-                      fit: BoxFit.contain,
-                      errorWidget: (_, __, ___) => _imagePlaceholder())
-                  : _imagePlaceholder(),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title,
-                      style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF094a25))),
-                  if (price != null) ...[
-                    const SizedBox(height: 4),
-                    Text(_formatPrice(price),
-                        style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFFbc2023))),
-                  ],
-                  if (category != null && category['parent'] != null) ...[
-                    const SizedBox(height: 4),
-                    Text('${category['parent']['name']} / ${category['name']}',
-                        style: const TextStyle(
-                            fontSize: 11, color: Colors.black45)),
-                  ],
-                  if (location.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        const Icon(Icons.location_on_outlined,
-                            size: 12, color: Colors.black45),
-                        const SizedBox(width: 2),
-                        Expanded(
-                          child: Text(location,
-                              style: const TextStyle(
-                                  fontSize: 11, color: Colors.black45),
-                              overflow: TextOverflow.ellipsis),
-                        ),
-                      ],
-                    ),
-                  ],
-                  if (createdAt != null) ...[
-                    const SizedBox(height: 4),
-                    Text('Placed: ${_formatDate(createdAt)}',
-                        style: const TextStyle(
-                            fontSize: 11, color: Colors.black45)),
-                  ],
-                ],
-              ),
-            ),
-            const Icon(Icons.chevron_right, color: Colors.black26),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
           ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: imageUrl != null
+                    ? CachedNetworkImage(
+                        imageUrl: imageUrl,
+                        width: 90,
+                        height: 90,
+                        fit: BoxFit.contain,
+                        errorWidget: (_, __, ___) => _imagePlaceholder())
+                    : _imagePlaceholder(),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title,
+                        style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF094a25))),
+                    if (price != null) ...[
+                      const SizedBox(height: 4),
+                      Text(_formatPrice(price),
+                          style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFbc2023))),
+                    ],
+                    if (category != null && category['parent'] != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                          '${category['parent']['name']} / ${category['name']}',
+                          style: const TextStyle(
+                              fontSize: 11, color: Colors.black45)),
+                    ],
+                    if (location.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(Icons.location_on_outlined,
+                              size: 12, color: Colors.black45),
+                          const SizedBox(width: 2),
+                          Expanded(
+                            child: Text(location,
+                                style: const TextStyle(
+                                    fontSize: 11, color: Colors.black45),
+                                overflow: TextOverflow.ellipsis),
+                          ),
+                        ],
+                      ),
+                    ],
+                    if (createdAt != null) ...[
+                      const SizedBox(height: 4),
+                      Text('Placed: ${_formatDate(createdAt)}',
+                          style: const TextStyle(
+                              fontSize: 11, color: Colors.black45)),
+                    ],
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: Colors.black26),
+            ],
+          ),
         ),
       ),
     );

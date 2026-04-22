@@ -3,6 +3,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../../services/api_service.dart';
 import '../../widgets/filter_chip_bar.dart';
+import '../events/event_screen.dart';
+import '../events/add_event.dart';
 
 class EventsScreen extends StatefulWidget {
   const EventsScreen({super.key});
@@ -174,6 +176,40 @@ class _EventsScreenState extends State<EventsScreen> {
             .showSnackBar(const SnackBar(content: Text('Event deleted')));
       }
     } catch (_) {}
+  }
+
+  void _openAddEvent() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AddEventModal(
+          action: 'add',
+          onSave: (data) {
+            Navigator.pop(context);
+            setState(() => _myEvents.insert(0, data));
+          },
+          onCancel: () => Navigator.pop(context),
+        ),
+      ),
+    );
+  }
+
+  void _openEditEvent(Map<String, dynamic> event) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AddEventModal(
+          action: 'edit',
+          event: event,
+          onSave: (data) {
+            Navigator.pop(context);
+            final i = _myEvents.indexWhere((e) => e['id'] == data['id']);
+            if (i != -1) setState(() => _myEvents[i] = data);
+          },
+          onCancel: () => Navigator.pop(context),
+        ),
+      ),
+    );
   }
 
   String _formatDateTime(String? dateStr) {
@@ -482,9 +518,23 @@ class _EventsScreenState extends State<EventsScreen> {
     final pastEvents = _myEvents.where((e) => e['is_current'] != true).toList();
 
     if (_myEvents.isEmpty) {
-      return const Center(
-        child: Text('You have not created any events.',
-            style: TextStyle(color: Color(0xFF094a25))),
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('You have not created any events.',
+                style: TextStyle(color: Color(0xFF094a25))),
+            const SizedBox(height: 12),
+            ElevatedButton.icon(
+              onPressed: _openAddEvent,
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF094a25)),
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text('Create Event',
+                  style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
       );
     }
 
@@ -493,6 +543,18 @@ class _EventsScreenState extends State<EventsScreen> {
       color: const Color(0xFF094a25),
       child: ListView(
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+            child: ElevatedButton.icon(
+              onPressed: _openAddEvent,
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF094a25),
+                  minimumSize: const Size(double.infinity, 44)),
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text('Create New Event',
+                  style: TextStyle(color: Colors.white)),
+            ),
+          ),
           if (currentEvents.isNotEmpty) ...[
             _listHeader('Current Events'),
             ...currentEvents.map((e) => _myEventCard(e)),
@@ -524,77 +586,88 @@ class _EventsScreenState extends State<EventsScreen> {
     final endDate = event['end_date'];
     final repeats = event['repeats'] ?? false;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: past ? Colors.grey.shade100 : Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
-        ],
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => EventDetailScreen(eventId: event['id']),
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
-            child: flyer != null && flyer.toString().isNotEmpty
-                ? CachedNetworkImage(
-                    imageUrl: flyer,
-                    height: 160,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorWidget: (_, __, ___) =>
-                        Container(height: 160, color: const Color(0xFF094a25)))
-                : Container(height: 120, color: const Color(0xFF094a25)),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(name,
-                    style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF094a25))),
-                const SizedBox(height: 6),
-                _eventDetail('Starts', _formatDateTime(startDate)),
-                _eventDetail('Ends', _formatDateTime(endDate)),
-                if (!past) _eventDetail('Repeats', repeats ? 'Yes' : 'No'),
-                if (!past) ...[
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () {},
-                          style: OutlinedButton.styleFrom(
-                              foregroundColor: const Color(0xFF094a25),
-                              padding: const EdgeInsets.symmetric(vertical: 4)),
-                          child: const Text('Edit',
-                              style: TextStyle(fontSize: 12)),
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () => _deleteEvent(event['id']),
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFbc2023),
-                              padding: const EdgeInsets.symmetric(vertical: 4)),
-                          child: const Text('Delete',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 12)),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ],
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: past ? Colors.grey.shade100 : Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(8)),
+              child: flyer != null && flyer.toString().isNotEmpty
+                  ? CachedNetworkImage(
+                      imageUrl: flyer,
+                      height: 160,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorWidget: (_, __, ___) => Container(
+                          height: 160, color: const Color(0xFF094a25)))
+                  : Container(height: 120, color: const Color(0xFF094a25)),
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(name,
+                      style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF094a25))),
+                  const SizedBox(height: 6),
+                  _eventDetail('Starts', _formatDateTime(startDate)),
+                  _eventDetail('Ends', _formatDateTime(endDate)),
+                  if (!past) _eventDetail('Repeats', repeats ? 'Yes' : 'No'),
+                  if (!past) ...[
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => _openEditEvent(event),
+                            style: OutlinedButton.styleFrom(
+                                foregroundColor: const Color(0xFF094a25),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4)),
+                            child: const Text('Edit',
+                                style: TextStyle(fontSize: 12)),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () => _deleteEvent(event['id']),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFbc2023),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4)),
+                            child: const Text('Delete',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 12)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -798,7 +871,6 @@ class _EventsScreenState extends State<EventsScreen> {
     final startDate = event['start_date'];
     final endDate = event['end_date'];
     final venues = event['venues'] as List? ?? [];
-
     String location = '';
     if (venues.isNotEmpty) {
       final venue = venues[0];
@@ -810,72 +882,80 @@ class _EventsScreenState extends State<EventsScreen> {
       }
     }
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
-        ],
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => EventDetailScreen(eventId: event['id']),
+        ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: flyer != null && flyer.toString().isNotEmpty
-                  ? CachedNetworkImage(
-                      imageUrl: flyer,
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.cover,
-                      errorWidget: (_, __, ___) => _imagePlaceholder())
-                  : _imagePlaceholder(),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(name,
-                      style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF094a25))),
-                  if (description.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      description.length > 100
-                          ? '${description.substring(0, 100)}...'
-                          : description,
-                      style:
-                          const TextStyle(fontSize: 12, color: Colors.black54),
-                    ),
-                  ],
-                  const SizedBox(height: 4),
-                  _eventDetail('Starts', _formatDateTime(startDate)),
-                  _eventDetail('Ends', _formatDateTime(endDate)),
-                  if (location.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        const Icon(Icons.location_on_outlined,
-                            size: 12, color: Colors.black45),
-                        const SizedBox(width: 2),
-                        Text(location,
-                            style: const TextStyle(
-                                fontSize: 11, color: Colors.black45)),
-                      ],
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            const Icon(Icons.chevron_right, color: Colors.black26),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
           ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: flyer != null && flyer.toString().isNotEmpty
+                    ? CachedNetworkImage(
+                        imageUrl: flyer,
+                        width: 80,
+                        height: 80,
+                        fit: BoxFit.cover,
+                        errorWidget: (_, __, ___) => _imagePlaceholder())
+                    : _imagePlaceholder(),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(name,
+                        style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF094a25))),
+                    if (description.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        description.length > 100
+                            ? '${description.substring(0, 100)}...'
+                            : description,
+                        style: const TextStyle(
+                            fontSize: 12, color: Colors.black54),
+                      ),
+                    ],
+                    const SizedBox(height: 4),
+                    _eventDetail('Starts', _formatDateTime(startDate)),
+                    _eventDetail('Ends', _formatDateTime(endDate)),
+                    if (location.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(Icons.location_on_outlined,
+                              size: 12, color: Colors.black45),
+                          const SizedBox(width: 2),
+                          Text(location,
+                              style: const TextStyle(
+                                  fontSize: 11, color: Colors.black45)),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: Colors.black26),
+            ],
+          ),
         ),
       ),
     );

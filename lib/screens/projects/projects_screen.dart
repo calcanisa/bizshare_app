@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../../services/api_service.dart';
+import '../projects/project_screen.dart';
 
 class ProjectsScreen extends StatefulWidget {
   const ProjectsScreen({super.key});
@@ -11,23 +12,18 @@ class ProjectsScreen extends StatefulWidget {
 }
 
 class _ProjectsScreenState extends State<ProjectsScreen> {
-  // Account info
   int? _accountId;
   Set<int> _interestProjectIds = {};
   bool _loadingAccount = true;
 
-  // Tab
   int _tab = 1;
 
-  // Tab 1 – Your Projects
   List<dynamic> _myProjects = [];
   bool _loadingMine = false;
 
-  // Tab 2 – Your Interests
   List<dynamic> _myInterests = [];
   bool _loadingInterests = false;
 
-  // Tab 3 – All Projects
   List<dynamic> _allProjects = [];
   bool _loadingAll = false;
   int _currentPage = 1;
@@ -37,14 +33,12 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
   int _selectedPageSize = 20;
   String _selectedOrdering = 'date-last';
 
-  // Filter state (applied)
   List<dynamic> _categories = [];
   int? _filterCategory;
   String? _filterStage;
   String? _filterTeamSize;
   String? _filterLookingFor;
 
-  // Temp filter state (in-sheet)
   int? _tempCategory;
   String? _tempStage;
   String? _tempTeamSize;
@@ -92,33 +86,29 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
       final response = await api.dio.get('/api/v1/users/current/');
       final data = response.data;
       final interests = data['interests'] as List? ?? [];
-      setState(() {
-        _accountId = data['id'];
-        _interestProjectIds = interests.map<int>((i) {
-          final proj = i['project'];
-          return proj is int ? proj : int.tryParse(proj.toString()) ?? 0;
-        }).toSet();
-        _loadingAccount = false;
-      });
-    } catch (_) {
-      setState(() => _loadingAccount = false);
-    }
-    _loadMyProjects();
+      // Set account data but do NOT set _loadingAccount=false yet
+      _accountId = data['id'];
+      _interestProjectIds = interests.map<int>((i) {
+        final proj = i['project'];
+        return proj is int ? proj : int.tryParse(proj.toString()) ?? 0;
+      }).toSet();
+    } catch (_) {}
+    // Wait for my projects to load before showing UI
+    await _loadMyProjects();
     _loadCategories();
+    // Now safe to show UI — both _accountId and _myProjects are ready
+    setState(() => _loadingAccount = false);
   }
 
   Future<void> _loadMyProjects() async {
-    setState(() => _loadingMine = true);
+    _loadingMine = true;
     try {
       final api = context.read<ApiService>();
       final response = await api.dio.get('/api/v1/projects/user/');
       final data = response.data;
-      setState(
-          () => _myProjects = data is List ? data : (data['results'] ?? []));
-    } catch (_) {
-      _showSnack('Could not load your projects. Try again.');
-    }
-    setState(() => _loadingMine = false);
+      _myProjects = data is List ? data : (data['results'] ?? []);
+    } catch (_) {}
+    _loadingMine = false;
   }
 
   Future<void> _loadMyInterests() async {
@@ -238,6 +228,13 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
   bool _hasShownInterest(int projectId) =>
       _interestProjectIds.contains(projectId);
 
+  // Check ownership using _myProjects list — guaranteed accurate
+  // since it's loaded before UI renders
+  bool _isMyProject(Map<String, dynamic> project) {
+    final projectId = project['id'];
+    return _myProjects.any((p) => p['id'] == projectId);
+  }
+
   String _capitalize(String? s) {
     if (s == null || s.isEmpty) return '';
     return s[0].toUpperCase() + s.substring(1);
@@ -254,7 +251,6 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
     _tempStage = _filterStage;
     _tempTeamSize = _filterTeamSize;
     _tempLookingFor = _filterLookingFor;
-
     if (!mounted) return;
     showModalBottomSheet(
       context: context,
@@ -318,9 +314,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                         hint: 'All Categories',
                         items: _categories
                             .map((c) => DropdownMenuItem<int>(
-                                  value: c['id'],
-                                  child: Text(c['name'] ?? ''),
-                                ))
+                                value: c['id'], child: Text(c['name'] ?? '')))
                             .toList(),
                         onChanged: (v) =>
                             setSheetState(() => _tempCategory = v),
@@ -332,9 +326,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                         hint: 'All Stages',
                         items: _stageOptions
                             .map((s) => DropdownMenuItem<String>(
-                                  value: s.$1,
-                                  child: Text(s.$2),
-                                ))
+                                value: s.$1, child: Text(s.$2)))
                             .toList(),
                         onChanged: (v) => setSheetState(() => _tempStage = v),
                       ),
@@ -345,9 +337,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                         hint: 'Any Size',
                         items: _teamSizeOptions
                             .map((s) => DropdownMenuItem<String>(
-                                  value: s.$1,
-                                  child: Text(s.$2),
-                                ))
+                                value: s.$1, child: Text(s.$2)))
                             .toList(),
                         onChanged: (v) =>
                             setSheetState(() => _tempTeamSize = v),
@@ -359,9 +349,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                         hint: 'Any Type',
                         items: _lookingForOptions
                             .map((s) => DropdownMenuItem<String>(
-                                  value: s.$1,
-                                  child: Text(s.$2),
-                                ))
+                                value: s.$1, child: Text(s.$2)))
                             .toList(),
                         onChanged: (v) =>
                             setSheetState(() => _tempLookingFor = v),
@@ -419,9 +407,8 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
       Container(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.black26),
-          borderRadius: BorderRadius.circular(8),
-        ),
+            border: Border.all(color: Colors.black26),
+            borderRadius: BorderRadius.circular(8)),
         child: DropdownButtonHideUnderline(
           child: DropdownButton<T>(
             value: value,
@@ -432,14 +419,12 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                   value: null,
                   child: Text(hint,
                       style: const TextStyle(color: Colors.black45))),
-              ...items,
+              ...items
             ],
             onChanged: onChanged,
           ),
         ),
       );
-
-  // ─── Build ───────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -477,9 +462,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
         onTap: () {
           setState(() => _tab = index);
           if (index == 2 && _myInterests.isEmpty) _loadMyInterests();
-          if (index == 3 && _allProjects.isEmpty) {
-            _fetchAllProjects(page: 1);
-          }
+          if (index == 3 && _allProjects.isEmpty) _fetchAllProjects(page: 1);
         },
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
@@ -496,8 +479,6 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
     );
   }
 
-  // ─── Tab 1 — Your Projects ───────────────────────────────────────────────
-
   Widget _myProjectsTab() {
     if (_loadingMine) {
       return const Center(
@@ -512,7 +493,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                 style: TextStyle(color: Color(0xFF094a25))),
             const SizedBox(height: 12),
             ElevatedButton(
-              onPressed: () {}, // TODO: open create project modal
+              onPressed: () {},
               style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF094a25)),
               child: const Text('Create One',
@@ -523,7 +504,10 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
       );
     }
     return RefreshIndicator(
-      onRefresh: _loadMyProjects,
+      onRefresh: () async {
+        await _loadMyProjects();
+        setState(() {});
+      },
       color: const Color(0xFF094a25),
       child: ListView.builder(
         padding: const EdgeInsets.all(12),
@@ -540,91 +524,97 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
     final imageUrl = project['image'];
     final category = project['category'] as Map<String, dynamic>?;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: imageUrl != null
-                  ? CachedNetworkImage(
-                      imageUrl: imageUrl,
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.cover,
-                      errorWidget: (_, __, ___) => _imagePlaceholder())
-                  : _imagePlaceholder(),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title,
-                      style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF094a25))),
-                  const SizedBox(height: 4),
-                  Text(
-                      description.length > 80
-                          ? '${description.substring(0, 80)}...'
-                          : description,
-                      style:
-                          const TextStyle(fontSize: 12, color: Colors.black54)),
-                  if (category != null) ...[
-                    const SizedBox(height: 4),
-                    Text('Category: ${category['name'] ?? ''}',
-                        style: const TextStyle(
-                            fontSize: 11, color: Colors.black45)),
-                  ],
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () {}, // TODO: edit project
-                          style: OutlinedButton.styleFrom(
-                              foregroundColor: const Color(0xFF094a25),
-                              padding: const EdgeInsets.symmetric(vertical: 4)),
-                          child: const Text('Edit',
-                              style: TextStyle(fontSize: 12)),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () => _deleteProject(project['id']),
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFbc2023),
-                              padding: const EdgeInsets.symmetric(vertical: 4)),
-                          child: const Text('Delete',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 12)),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+    return GestureDetector(
+      onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (_) => ProjectDetailScreen(projectId: project['id']))),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
           ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: imageUrl != null
+                    ? CachedNetworkImage(
+                        imageUrl: imageUrl,
+                        width: 80,
+                        height: 80,
+                        fit: BoxFit.cover,
+                        errorWidget: (_, __, ___) => _imagePlaceholder())
+                    : _imagePlaceholder(),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title,
+                        style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF094a25))),
+                    const SizedBox(height: 4),
+                    Text(
+                        description.length > 80
+                            ? '${description.substring(0, 80)}...'
+                            : description,
+                        style: const TextStyle(
+                            fontSize: 12, color: Colors.black54)),
+                    if (category != null) ...[
+                      const SizedBox(height: 4),
+                      Text('Category: ${category['name'] ?? ''}',
+                          style: const TextStyle(
+                              fontSize: 11, color: Colors.black45)),
+                    ],
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () {},
+                            style: OutlinedButton.styleFrom(
+                                foregroundColor: const Color(0xFF094a25),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4)),
+                            child: const Text('Edit',
+                                style: TextStyle(fontSize: 12)),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () => _deleteProject(project['id']),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFbc2023),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4)),
+                            child: const Text('Delete',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 12)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
-
-  // ─── Tab 2 — Your Interests ──────────────────────────────────────────────
 
   Widget _myInterestsTab() {
     if (_loadingInterests) {
@@ -633,9 +623,8 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
     }
     if (_myInterests.isEmpty) {
       return const Center(
-        child: Text('You have not shown interest in any projects.',
-            style: TextStyle(color: Color(0xFF094a25))),
-      );
+          child: Text('You have not shown interest in any projects.',
+              style: TextStyle(color: Color(0xFF094a25))));
     }
     return RefreshIndicator(
       onRefresh: _loadMyInterests,
@@ -689,7 +678,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () {}, // TODO: edit interest
+                    onPressed: () {},
                     style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF094a25),
                         padding: const EdgeInsets.symmetric(vertical: 4)),
@@ -719,26 +708,21 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 70,
-            child: Text('$label:',
-                style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF094a25))),
-          ),
+              width: 70,
+              child: Text('$label:',
+                  style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF094a25)))),
           Expanded(
-            child: Text(value,
-                style: const TextStyle(fontSize: 12, color: Colors.black87)),
-          ),
+              child: Text(value,
+                  style: const TextStyle(fontSize: 12, color: Colors.black87))),
         ],
       );
-
-  // ─── Tab 3 — All Projects ────────────────────────────────────────────────
 
   Widget _allProjectsTab() {
     return Column(
       children: [
-        // Controls bar
         Container(
           color: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -747,31 +731,26 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
               Stack(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.tune, color: Color(0xFF094a25)),
-                    onPressed: _openFilterSheet,
-                  ),
+                      icon: const Icon(Icons.tune, color: Color(0xFF094a25)),
+                      onPressed: _openFilterSheet),
                   if (_hasActiveFilters)
                     Positioned(
-                      top: 6,
-                      right: 6,
-                      child: Container(
-                        width: 8,
-                        height: 8,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFbc2023),
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
+                        top: 6,
+                        right: 6,
+                        child: Container(
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(
+                                color: Color(0xFFbc2023),
+                                shape: BoxShape.circle))),
                 ],
               ),
               const Spacer(),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black12),
-                  borderRadius: BorderRadius.circular(6),
-                ),
+                    border: Border.all(color: Colors.black12),
+                    borderRadius: BorderRadius.circular(6)),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
                     value: _selectedOrdering,
@@ -799,8 +778,6 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
             ],
           ),
         ),
-
-        // Active filter chips
         if (_hasActiveFilters)
           Container(
             height: 40,
@@ -855,8 +832,6 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
               ],
             ),
           ),
-
-        // Count + page size
         if (_totalCount > 0)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -893,8 +868,6 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
               ],
             ),
           ),
-
-        // Content
         Expanded(
           child: _loadingAll
               ? const Center(
@@ -909,9 +882,8 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                       child: ListView.builder(
                         itemCount: _allProjects.length + 1,
                         itemBuilder: (context, index) {
-                          if (index == _allProjects.length) {
+                          if (index == _allProjects.length)
                             return _paginationBar();
-                          }
                           return _allProjectCard(
                               _allProjects[index] as Map<String, dynamic>);
                         },
@@ -929,117 +901,122 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
     final stage = project['stage'];
     final lookingFor = project['looking_for'];
     final projectSize = project['project_size'];
-    final isOwner = _accountId != null &&
-        project['user'] is Map &&
-        (project['user'] as Map)['id'] == _accountId;
+    final isOwner = project['is_owner'] == true;
     final interested = _hasShownInterest(project['id']);
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: imageUrl != null
-                      ? CachedNetworkImage(
-                          imageUrl: imageUrl,
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.cover,
-                          errorWidget: (_, __, ___) => _imagePlaceholder())
-                      : _imagePlaceholder(),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(title,
-                          style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF094a25))),
-                      const SizedBox(height: 5),
-                      Text(
-                          description.length > 100
-                              ? '${description.substring(0, 100)}...'
-                              : description,
-                          style: const TextStyle(
-                              fontSize: 12, color: Colors.black87)),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (stage != null)
-                        _metaRow(
-                            'Project Stage', _capitalize(stage.toString())),
-                      if (lookingFor != null)
-                        _metaRow(
-                            'Looking For', _capitalize(lookingFor.toString())),
-                      if (lookingFor == 'investor' && projectSize != null)
-                        _metaRow('Funding Size', 'R$projectSize'),
-                    ],
-                  ),
-                ),
-                if (isOwner) ...[
-                  OutlinedButton(
-                    onPressed: () {}, // TODO: edit project
-                    style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFF094a25),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 4)),
-                    child: const Text('Edit', style: TextStyle(fontSize: 12)),
-                  ),
-                  const SizedBox(width: 6),
-                  ElevatedButton(
-                    onPressed: () => _deleteProject(project['id']),
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFbc2023),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 4)),
-                    child: const Text('Delete',
-                        style: TextStyle(color: Colors.white, fontSize: 12)),
-                  ),
-                ] else
-                  ElevatedButton(
-                    onPressed: interested
-                        ? null
-                        : () {}, // TODO: open show interest modal
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: interested
-                            ? Colors.grey.shade400
-                            : const Color(0xFF094a25),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 8)),
-                    child: Text(interested ? 'Interest Shown' : 'Show Interest',
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 12)),
-                  ),
-              ],
-            ),
+    debugPrint(
+        'isOwner: $isOwner  interested: $interested  is_owner raw: ${project['is_owner']}');
+    return GestureDetector(
+      onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (_) => ProjectDetailScreen(projectId: project['id']))),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
           ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: imageUrl != null
+                        ? CachedNetworkImage(
+                            imageUrl: imageUrl,
+                            width: 80,
+                            height: 80,
+                            fit: BoxFit.cover,
+                            errorWidget: (_, __, ___) => _imagePlaceholder())
+                        : _imagePlaceholder(),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(title,
+                            style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF094a25))),
+                        const SizedBox(height: 5),
+                        Text(
+                            description.length > 100
+                                ? '${description.substring(0, 100)}...'
+                                : description,
+                            style: const TextStyle(
+                                fontSize: 12, color: Colors.black87)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (stage != null)
+                          _metaRow(
+                              'Project Stage', _capitalize(stage.toString())),
+                        if (lookingFor != null)
+                          _metaRow('Looking For',
+                              _capitalize(lookingFor.toString())),
+                        if (lookingFor == 'investor' && projectSize != null)
+                          _metaRow('Funding Size', 'R$projectSize'),
+                      ],
+                    ),
+                  ),
+                  if (isOwner) ...[
+                    OutlinedButton(
+                      onPressed: () {},
+                      style: OutlinedButton.styleFrom(
+                          foregroundColor: const Color(0xFF094a25),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 4)),
+                      child: const Text('Edit', style: TextStyle(fontSize: 12)),
+                    ),
+                    const SizedBox(width: 6),
+                    ElevatedButton(
+                      onPressed: () => _deleteProject(project['id']),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFbc2023),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 4)),
+                      child: const Text('Delete',
+                          style: TextStyle(color: Colors.white, fontSize: 12)),
+                    ),
+                  ],
+                  if (!isOwner)
+                    ElevatedButton(
+                      onPressed: interested ? null : () {},
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: interested
+                              ? Colors.grey.shade400
+                              : const Color(0xFF094a25),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 8)),
+                      child: Text(
+                          interested ? 'Interest Shown' : 'Show Interest',
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 12)),
+                    ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1063,9 +1040,8 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: const Color(0xFF094a25).withOpacity(0.08),
-              borderRadius: BorderRadius.circular(4),
-            ),
+                color: const Color(0xFF094a25).withOpacity(0.08),
+                borderRadius: BorderRadius.circular(4)),
             child: Text('Page $_currentPage of $totalPages',
                 style: const TextStyle(
                     fontSize: 12,
@@ -1086,15 +1062,12 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xFF094a25)),
-            borderRadius: BorderRadius.circular(4),
-          ),
+              border: Border.all(color: const Color(0xFF094a25)),
+              borderRadius: BorderRadius.circular(4)),
           child: Text(label,
               style: const TextStyle(fontSize: 12, color: Color(0xFF094a25))),
         ),
       );
-
-  // ─── Shared helpers ──────────────────────────────────────────────────────
 
   Widget _metaRow(String label, String value) => Padding(
         padding: const EdgeInsets.only(bottom: 3),
@@ -1126,10 +1099,9 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                 style: const TextStyle(fontSize: 11, color: Color(0xFF094a25))),
             const SizedBox(width: 4),
             GestureDetector(
-              onTap: onRemove,
-              child:
-                  const Icon(Icons.close, size: 12, color: Color(0xFF094a25)),
-            ),
+                onTap: onRemove,
+                child: const Icon(Icons.close,
+                    size: 12, color: Color(0xFF094a25))),
           ],
         ),
       );

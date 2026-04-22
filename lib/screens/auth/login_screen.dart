@@ -13,6 +13,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _rememberMe = false;
   String? _error;
 
   @override
@@ -28,6 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final error = await auth.login(
       _emailController.text.trim(),
       _passwordController.text,
+      rememberMe: _rememberMe,
     );
     if (error != null) {
       setState(() => _error = error);
@@ -101,12 +103,35 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   onSubmitted: (_) => _login(),
                 ),
+                const SizedBox(height: 12),
+
+                // Remember me
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _rememberMe,
+                      onChanged: (v) =>
+                          setState(() => _rememberMe = v ?? false),
+                      activeColor: const Color(0xFFf8b324),
+                      checkColor: Colors.black,
+                      side: const BorderSide(color: Colors.white54),
+                    ),
+                    GestureDetector(
+                      onTap: () => setState(() => _rememberMe = !_rememberMe),
+                      child: const Text(
+                        'Remember me for 30 days',
+                        style: TextStyle(color: Colors.white70, fontSize: 14),
+                      ),
+                    ),
+                  ],
+                ),
+
                 if (_error != null) ...[
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
                   Text(_error!,
                       style: const TextStyle(color: Colors.redAccent)),
                 ],
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
                   height: 50,

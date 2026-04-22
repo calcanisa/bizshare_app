@@ -3,6 +3,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../../services/api_service.dart';
 import '../../widgets/filter_chip_bar.dart';
+import '../directory/business_screen.dart';
+import '../directory/add_business_screen.dart';
 
 class DirectoryScreen extends StatefulWidget {
   const DirectoryScreen({super.key});
@@ -14,15 +16,12 @@ class DirectoryScreen extends StatefulWidget {
 class _DirectoryScreenState extends State<DirectoryScreen> {
   int _tab = 1;
 
-  // Tab 1 - My Businesses
   List<dynamic> _myBusinesses = [];
   bool _loadingMine = false;
 
-  // Tab 2 - Following
   List<dynamic> _following = [];
   bool _loadingFollowing = false;
 
-  // Tab 3 - All Businesses
   List<dynamic> _categories = [];
   List<dynamic> _businesses = [];
   bool _loadingAll = false;
@@ -32,7 +31,6 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
   int? _selectedCategory;
   final ScrollController _scrollController = ScrollController();
 
-  // Filter state
   List<dynamic> _provinces = [];
   List<dynamic> _cities = [];
   List<dynamic> _areas = [];
@@ -44,7 +42,6 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
   String? _filterBusinessType;
   String? _filterBusinessSize;
 
-  // Temp filter state for bottom sheet
   int? _tempSubcategory;
   int? _tempProvince;
   int? _tempCity;
@@ -243,9 +240,45 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
     } catch (_) {}
   }
 
+  void _openAddBusiness() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AddBusinessModal(
+          action: 'add',
+          onSave: (data) {
+            Navigator.pop(context);
+            setState(() => _myBusinesses.insert(0, data));
+          },
+          onCancel: () => Navigator.pop(context),
+        ),
+      ),
+    );
+  }
+
+  void _openEditBusiness(Map<String, dynamic> business) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AddBusinessModal(
+          action: 'edit',
+          business: business,
+          onSave: (data) {
+            Navigator.pop(context);
+            setState(() {
+              final index =
+                  _myBusinesses.indexWhere((b) => b['id'] == data['id']);
+              if (index != -1) _myBusinesses[index] = data;
+            });
+          },
+          onCancel: () => Navigator.pop(context),
+        ),
+      ),
+    );
+  }
+
   void _openFilterSheet() async {
     await _loadProvinces();
-    // Set temp values from current filters
     _tempSubcategory = _filterSubcategory;
     _tempProvince = _filterProvince;
     _tempCity = _filterCity;
@@ -277,7 +310,6 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
           builder: (context, scrollController) {
             return Column(
               children: [
-                // Header
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -318,7 +350,6 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                     controller: scrollController,
                     padding: const EdgeInsets.all(16),
                     children: [
-                      // Subcategory
                       if (_subcategories.isNotEmpty) ...[
                         _filterLabel('Sub Category'),
                         _filterDropdown<int>(
@@ -335,7 +366,6 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                         ),
                         const SizedBox(height: 16),
                       ],
-                      // Province
                       _filterLabel('Province'),
                       _filterDropdown<int>(
                         value: _tempProvince,
@@ -361,7 +391,6 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      // City
                       if (_cities.isNotEmpty) ...[
                         _filterLabel('City'),
                         _filterDropdown<int>(
@@ -387,7 +416,6 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                         ),
                         const SizedBox(height: 16),
                       ],
-                      // Area
                       if (_areas.isNotEmpty) ...[
                         _filterLabel('Area'),
                         _filterDropdown<int>(
@@ -403,7 +431,6 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                         ),
                         const SizedBox(height: 16),
                       ],
-                      // Business Type
                       _filterLabel('Business Type'),
                       _filterDropdown<String>(
                         value: _tempBusinessType,
@@ -418,7 +445,6 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                             setSheetState(() => _tempBusinessType = v),
                       ),
                       const SizedBox(height: 16),
-                      // Business Size
                       _filterLabel('Business Size'),
                       _filterDropdown<String>(
                         value: _tempBusinessSize,
@@ -436,7 +462,6 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                     ],
                   ),
                 ),
-                // Apply button
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: SizedBox(
@@ -558,24 +583,60 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
     );
   }
 
+  // ─── Tab 1 — My Businesses ───────────────────────────────────────────────
+
   Widget _myBusinessesTab() {
     if (_loadingMine) {
       return const Center(
           child: CircularProgressIndicator(color: Color(0xFF094a25)));
     }
-    if (_myBusinesses.isEmpty) {
-      return const Center(
-        child: Text('You have not created any business listings.',
-            style: TextStyle(color: Color(0xFF094a25))),
-      );
-    }
     return RefreshIndicator(
       onRefresh: _loadMyBusinesses,
       color: const Color(0xFF094a25),
-      child: ListView.builder(
-        itemCount: _myBusinesses.length,
-        itemBuilder: (context, index) => _myBusinessCard(_myBusinesses[index]),
-      ),
+      child: _myBusinesses.isEmpty
+          ? ListView(
+              children: [
+                const SizedBox(height: 60),
+                const Center(
+                  child: Text('You have not created any business listings.',
+                      style: TextStyle(color: Color(0xFF094a25))),
+                ),
+                const SizedBox(height: 16),
+                Center(
+                  child: ElevatedButton.icon(
+                    onPressed: _openAddBusiness,
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF094a25),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 12)),
+                    icon: const Icon(Icons.add, color: Colors.white),
+                    label: const Text('Create Business',
+                        style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+              ],
+            )
+          : ListView.builder(
+              itemCount: _myBusinesses.length + 1,
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+                    child: ElevatedButton.icon(
+                      onPressed: _openAddBusiness,
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF094a25),
+                          padding: const EdgeInsets.symmetric(vertical: 12)),
+                      icon: const Icon(Icons.add, color: Colors.white),
+                      label: const Text('Create New Business',
+                          style: TextStyle(color: Colors.white)),
+                    ),
+                  );
+                }
+                return _myBusinessCard(
+                    _myBusinesses[index - 1] as Map<String, dynamic>);
+              },
+            ),
     );
   }
 
@@ -584,72 +645,83 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
     final hero = business['hero'];
     final published = business['published'] ?? false;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
-        ],
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => BusinessDetailScreen(businessId: business['id']),
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
-            child: hero != null && hero.toString().isNotEmpty
-                ? CachedNetworkImage(
-                    imageUrl: hero,
-                    height: 160,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorWidget: (_, __, ___) =>
-                        Container(height: 160, color: const Color(0xFF094a25)))
-                : Container(height: 160, color: const Color(0xFF094a25)),
-          ),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(10),
-            color: const Color(0xFF094a25),
-            child: Text(name,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                    color: Color(0xFFf8b324),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15)),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Row(
-              children: [
-                if (published) ...[
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(8)),
+              child: hero != null && hero.toString().isNotEmpty
+                  ? CachedNetworkImage(
+                      imageUrl: hero,
+                      height: 140,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorWidget: (_, __, ___) => Container(
+                          height: 140, color: const Color(0xFF094a25)))
+                  : Container(height: 140, color: const Color(0xFF094a25)),
+            ),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(10),
+              color: const Color(0xFF094a25),
+              child: Text(name,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      color: Color(0xFFf8b324),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15)),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                children: [
+                  if (published) ...[
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => _openEditBusiness(business),
+                        style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFF094a25)),
+                        child: const Text('Edit'),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
                   Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {},
-                      style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF094a25)),
-                      child: const Text('Edit'),
+                    child: ElevatedButton(
+                      onPressed: () => _deleteBusiness(business['id']),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFbc2023)),
+                      child: const Text('Delete',
+                          style: TextStyle(color: Colors.white)),
                     ),
                   ),
-                  const SizedBox(width: 8),
                 ],
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () => _deleteBusiness(business['id']),
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFbc2023)),
-                    child: const Text('Delete',
-                        style: TextStyle(color: Colors.white)),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
+
+  // ─── Tab 2 — Following ───────────────────────────────────────────────────
 
   Widget _followingTab() {
     if (_loadingFollowing) {
@@ -676,86 +748,95 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
     final hero = business['hero'];
     final hasUpdates = business['has_updates'] ?? false;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
-        ],
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => BusinessDetailScreen(businessId: business['id']),
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(8)),
-                child: hero != null && hero.toString().isNotEmpty
-                    ? CachedNetworkImage(
-                        imageUrl: hero,
-                        height: 140,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        errorWidget: (_, __, ___) => Container(
-                            height: 140, color: const Color(0xFF094a25)))
-                    : Container(height: 140, color: const Color(0xFF094a25)),
-              ),
-              if (hasUpdates)
-                Positioned(
-                  top: 8,
-                  left: 8,
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFf8b324),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: const Text('Updated',
-                        style: TextStyle(
-                            fontSize: 11, fontWeight: FontWeight.bold)),
-                  ),
-                ),
-            ],
-          ),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(10),
-            color: const Color(0xFF094a25),
-            child: Text(name,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                    color: Color(0xFFf8b324),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15)),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Row(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Stack(
               children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => _unfollow(business['id']),
-                    style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFF094a25)),
-                    child: const Text('Unfollow'),
-                  ),
+                ClipRRect(
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(8)),
+                  child: hero != null && hero.toString().isNotEmpty
+                      ? CachedNetworkImage(
+                          imageUrl: hero,
+                          height: 140,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          errorWidget: (_, __, ___) => Container(
+                              height: 140, color: const Color(0xFF094a25)))
+                      : Container(height: 140, color: const Color(0xFF094a25)),
                 ),
+                if (hasUpdates)
+                  Positioned(
+                    top: 8,
+                    left: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFf8b324),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Text('Updated',
+                          style: TextStyle(
+                              fontSize: 11, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
               ],
             ),
-          ),
-        ],
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(10),
+              color: const Color(0xFF094a25),
+              child: Text(name,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      color: Color(0xFFf8b324),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15)),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => _unfollow(business['id']),
+                      style: OutlinedButton.styleFrom(
+                          foregroundColor: const Color(0xFF094a25)),
+                      child: const Text('Unfollow'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
+  // ─── Tab 3 — All Businesses ──────────────────────────────────────────────
+
   Widget _allBusinessesTab() {
     return Column(
       children: [
-        // Category + Filter bar
         Container(
           color: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 8),
@@ -834,7 +915,6 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
             ],
           ),
         ),
-        // Active filter chips
         if (_hasActiveFilters)
           Container(
             height: 40,
@@ -913,7 +993,6 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
               ],
             ),
           ),
-        // Results count
         if (_totalCount > 0)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -926,7 +1005,6 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
               ],
             ),
           ),
-        // Business list
         Expanded(
           child: _selectedCategory == null
               ? const Center(
@@ -966,116 +1044,79 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
   }
 
   Widget _businessCard(Map<String, dynamic> business) {
-    final logo = business['logo'];
     final name = business['name'] ?? '';
+    final logo = business['logo'];
     final description = business['description'] ?? '';
-    final branches = business['branches'] as List? ?? [];
     final categories = business['categories'] as List? ?? [];
-    final businessType = business['business_type'] ?? '';
 
-    String location = '';
-    if (branches.isNotEmpty) {
-      final branch = branches[0];
-      if (branch['area'] != null) {
-        location =
-            '${branch['area']['city']['name']} / ${branch['area']['name']}';
-      } else if (branch['city'] != null) {
-        location =
-            '${branch['city']['province']['name']} / ${branch['city']['name']}';
-      }
-    }
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
-        ],
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => BusinessDetailScreen(businessId: business['id']),
+        ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: logo != null && logo.toString().isNotEmpty
-                  ? CachedNetworkImage(
-                      imageUrl: logo,
-                      width: 70,
-                      height: 70,
-                      fit: BoxFit.contain,
-                      errorWidget: (_, __, ___) => _logoPlaceholder())
-                  : _logoPlaceholder(),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(name,
-                      style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF094a25))),
-                  if (description.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      description.length > 100
-                          ? '${description.substring(0, 100)}...'
-                          : description,
-                      style:
-                          const TextStyle(fontSize: 12, color: Colors.black54),
-                    ),
-                  ],
-                  if (businessType.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      'Type: ${_typeLabels[businessType] ?? businessType}',
-                      style:
-                          const TextStyle(fontSize: 11, color: Colors.black45),
-                    ),
-                  ],
-                  if (location.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        const Icon(Icons.location_on_outlined,
-                            size: 12, color: Colors.black45),
-                        const SizedBox(width: 2),
-                        Text(location,
-                            style: const TextStyle(
-                                fontSize: 11, color: Colors.black45)),
-                      ],
-                    ),
-                  ],
-                  if (categories.isNotEmpty) ...[
-                    const SizedBox(height: 6),
-                    Wrap(
-                      spacing: 4,
-                      runSpacing: 4,
-                      children: categories.take(3).map((cat) {
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF094a25),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(cat['name'] ?? '',
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 10)),
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            const Icon(Icons.chevron_right, color: Colors.black26),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
           ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: logo != null && logo.toString().isNotEmpty
+                    ? CachedNetworkImage(
+                        imageUrl: logo,
+                        width: 70,
+                        height: 70,
+                        fit: BoxFit.contain,
+                        errorWidget: (_, __, ___) => _logoPlaceholder())
+                    : _logoPlaceholder(),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(name,
+                        style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF094a25))),
+                    if (description.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        description.length > 80
+                            ? '${description.substring(0, 80)}...'
+                            : description,
+                        style: const TextStyle(
+                            fontSize: 12, color: Colors.black54),
+                      ),
+                    ],
+                    if (categories.isNotEmpty) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        categories
+                            .map((c) => c['name']?.toString() ?? '')
+                            .join(', '),
+                        style: const TextStyle(
+                            fontSize: 11, color: Colors.black45),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: Colors.black26),
+            ],
+          ),
         ),
       ),
     );

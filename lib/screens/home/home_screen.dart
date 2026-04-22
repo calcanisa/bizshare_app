@@ -16,6 +16,13 @@ import '../projects/projects_screen.dart';
 import '../websites/websites_screen.dart';
 import '../account/account_screen.dart';
 import '../settings/settings_screen.dart';
+import '../people/people_screen.dart';
+import '../products/products_screen.dart';
+import '../services/services_screen.dart';
+import '../cart/cart_screen.dart';
+import '../bookmarks/bookmarks_screen.dart';
+import '../contacts/contacts_screen.dart';
+import '../../providers/cart_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -80,6 +87,12 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (_sections[_currentIndex]['title']) {
       case 'Account':
         return const AccountScreen();
+      case 'Bookmarks':
+        return const BookmarksScreen();
+      case 'Contacts':
+        return const ContactsScreen();
+      case 'Cart':
+        return const CartScreen();
       case 'Directory':
         return const DirectoryScreen();
       case 'Mail':
@@ -98,8 +111,14 @@ class _HomeScreenState extends State<HomeScreen> {
         return const LeadsScreen();
       case 'Opportunities':
         return const OpportunitiesScreen();
+      case 'People':
+        return const PeopleScreen();
+      case 'Products':
+        return const ProductsScreen();
       case 'Projects':
         return const ProjectsScreen();
+      case 'Services':
+        return const ServicesScreen();
       case 'Settings':
         return const SettingsScreen();
       case 'Websites':
@@ -125,12 +144,16 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar: AppBar(
           backgroundColor: const Color(0xFF094a25),
           iconTheme: const IconThemeData(color: Colors.white),
-          title: GestureDetector(
-            onTap: () => setState(() {
-              _history.add(_currentIndex);
-              _currentIndex = -1;
-            }),
-            child: Image.asset('assets/img/sesha.png', height: 35),
+          titleSpacing: 0,
+          title: Padding(
+            padding: const EdgeInsets.only(left: 4),
+            child: GestureDetector(
+              onTap: () => setState(() {
+                _history.add(_currentIndex);
+                _currentIndex = -1;
+              }),
+              child: Image.asset('assets/img/sesha.png', height: 40),
+            ),
           ),
           actions: [
             IconButton(
@@ -142,10 +165,38 @@ class _HomeScreenState extends State<HomeScreen> {
                   const Icon(Icons.notifications_outlined, color: Colors.white),
               onPressed: () => _navigateToNamed('Alerts'),
             ),
-            IconButton(
-              icon: const Icon(Icons.logout, color: Colors.white),
-              onPressed: () =>
-                  Provider.of<AuthProvider>(context, listen: false).logout(),
+            Consumer<CartProvider>(
+              builder: (context, cart, _) => Stack(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.shopping_cart_outlined,
+                        color: Colors.white),
+                    onPressed: () => _navigateToNamed('Cart'),
+                  ),
+                  if (cart.isNotEmpty)
+                    Positioned(
+                      top: 6,
+                      right: 6,
+                      child: Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFbc2023),
+                          shape: BoxShape.circle,
+                        ),
+                        constraints:
+                            const BoxConstraints(minWidth: 16, minHeight: 16),
+                        child: Text(
+                          '${cart.itemCount}',
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ],
         ),

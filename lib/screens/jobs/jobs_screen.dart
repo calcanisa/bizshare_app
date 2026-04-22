@@ -3,6 +3,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../../services/api_service.dart';
 import '../../widgets/filter_chip_bar.dart';
+import '../jobs/job_screen.dart';
+import '../jobs/add_job.dart';
 
 class JobsScreen extends StatefulWidget {
   const JobsScreen({super.key});
@@ -232,6 +234,40 @@ class _JobsScreenState extends State<JobsScreen> {
             .showSnackBar(const SnackBar(content: Text('Job deleted')));
       }
     } catch (_) {}
+  }
+
+  void _openAddJob() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AddJobModal(
+          action: 'add',
+          onSave: (data) {
+            Navigator.pop(context);
+            setState(() => _myJobs.insert(0, data));
+          },
+          onCancel: () => Navigator.pop(context),
+        ),
+      ),
+    );
+  }
+
+  void _openEditJob(Map<String, dynamic> job) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AddJobModal(
+          action: 'edit',
+          job: job,
+          onSave: (data) {
+            Navigator.pop(context);
+            final i = _myJobs.indexWhere((j) => j['id'] == data['id']);
+            if (i != -1) setState(() => _myJobs[i] = data);
+          },
+          onCancel: () => Navigator.pop(context),
+        ),
+      ),
+    );
   }
 
   Future<void> _removeApplication(int id) async {
@@ -600,9 +636,23 @@ class _JobsScreenState extends State<JobsScreen> {
     final expiredJobs = _myJobs.where((j) => _isExpired(j)).toList();
 
     if (_myJobs.isEmpty) {
-      return const Center(
-        child: Text('You have not added any jobs yet.',
-            style: TextStyle(color: Color(0xFF094a25))),
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('You have not added any jobs yet.',
+                style: TextStyle(color: Color(0xFF094a25))),
+            const SizedBox(height: 12),
+            ElevatedButton.icon(
+              onPressed: _openAddJob,
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF094a25)),
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text('Add A Job',
+                  style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
       );
     }
 
@@ -611,6 +661,18 @@ class _JobsScreenState extends State<JobsScreen> {
       color: const Color(0xFF094a25),
       child: ListView(
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+            child: ElevatedButton.icon(
+              onPressed: _openAddJob,
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF094a25),
+                  minimumSize: const Size(double.infinity, 44)),
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text('Add New Job',
+                  style: TextStyle(color: Colors.white)),
+            ),
+          ),
           if (currentJobs.isNotEmpty) ...[
             _listHeader('Current Jobs'),
             ...currentJobs.map((j) => _myJobCard(j)),
@@ -639,75 +701,83 @@ class _JobsScreenState extends State<JobsScreen> {
     final title = job['title'] ?? '';
     final image = job['image'];
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: expired ? Colors.grey.shade100 : Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
-        ],
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => JobDetailScreen(jobId: job['id']),
+        ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: image != null && image.toString().isNotEmpty
-                  ? CachedNetworkImage(
-                      imageUrl: image,
-                      width: 70,
-                      height: 70,
-                      fit: BoxFit.contain,
-                      errorWidget: (_, __, ___) => _imagePlaceholder())
-                  : _imagePlaceholder(),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title,
-                      style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF094a25))),
-                  if (!expired) ...[
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: () {},
-                            style: OutlinedButton.styleFrom(
-                                foregroundColor: const Color(0xFF094a25),
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 4)),
-                            child: const Text('Edit',
-                                style: TextStyle(fontSize: 12)),
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () => _deleteJob(job['id']),
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFbc2023),
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 4)),
-                            child: const Text('Delete',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 12)),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ],
-              ),
-            ),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: expired ? Colors.grey.shade100 : Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
           ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: image != null && image.toString().isNotEmpty
+                    ? CachedNetworkImage(
+                        imageUrl: image,
+                        width: 70,
+                        height: 70,
+                        fit: BoxFit.contain,
+                        errorWidget: (_, __, ___) => _imagePlaceholder())
+                    : _imagePlaceholder(),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title,
+                        style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF094a25))),
+                    if (!expired) ...[
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () => _openEditJob(job),
+                              style: OutlinedButton.styleFrom(
+                                  foregroundColor: const Color(0xFF094a25),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 4)),
+                              child: const Text('Edit',
+                                  style: TextStyle(fontSize: 12)),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () => _deleteJob(job['id']),
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFbc2023),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 4)),
+                              child: const Text('Delete',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 12)),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -973,7 +1043,6 @@ class _JobsScreenState extends State<JobsScreen> {
     final industry = job['industry']?['name'] ?? '';
     final function = job['function']?['name'] ?? '';
     final createdAt = job['created_at'];
-
     String location = '';
     if (job['area'] != null) {
       location = job['area']['city']?['name'] ?? '';
@@ -981,72 +1050,80 @@ class _JobsScreenState extends State<JobsScreen> {
       location = job['city']['name'] ?? '';
     }
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
-        ],
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => JobDetailScreen(jobId: job['id']),
+        ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: image != null && image.toString().isNotEmpty
-                  ? CachedNetworkImage(
-                      imageUrl: image,
-                      width: 70,
-                      height: 70,
-                      fit: BoxFit.contain,
-                      errorWidget: (_, __, ___) => _imagePlaceholder())
-                  : _imagePlaceholder(),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title,
-                      style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF094a25))),
-                  if (description.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      description.length > 100
-                          ? '${description.substring(0, 100)}...'
-                          : description,
-                      style:
-                          const TextStyle(fontSize: 12, color: Colors.black54),
-                    ),
-                  ],
-                  const SizedBox(height: 4),
-                  if (industry.isNotEmpty) _detail('Sector', industry),
-                  if (function.isNotEmpty) _detail('Function', function),
-                  if (location.isNotEmpty)
-                    Row(
-                      children: [
-                        const Icon(Icons.location_on_outlined,
-                            size: 12, color: Colors.black45),
-                        const SizedBox(width: 2),
-                        Text(location,
-                            style: const TextStyle(
-                                fontSize: 11, color: Colors.black45)),
-                      ],
-                    ),
-                  if (createdAt != null)
-                    _detail('Posted', _formatDate(createdAt)),
-                ],
-              ),
-            ),
-            const Icon(Icons.chevron_right, color: Colors.black26),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
           ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: image != null && image.toString().isNotEmpty
+                    ? CachedNetworkImage(
+                        imageUrl: image,
+                        width: 70,
+                        height: 70,
+                        fit: BoxFit.contain,
+                        errorWidget: (_, __, ___) => _imagePlaceholder())
+                    : _imagePlaceholder(),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title,
+                        style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF094a25))),
+                    if (description.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        description.length > 100
+                            ? '${description.substring(0, 100)}...'
+                            : description,
+                        style: const TextStyle(
+                            fontSize: 12, color: Colors.black54),
+                      ),
+                    ],
+                    const SizedBox(height: 4),
+                    if (industry.isNotEmpty) _detail('Sector', industry),
+                    if (function.isNotEmpty) _detail('Function', function),
+                    if (location.isNotEmpty)
+                      Row(
+                        children: [
+                          const Icon(Icons.location_on_outlined,
+                              size: 12, color: Colors.black45),
+                          const SizedBox(width: 2),
+                          Text(location,
+                              style: const TextStyle(
+                                  fontSize: 11, color: Colors.black45)),
+                        ],
+                      ),
+                    if (createdAt != null)
+                      _detail('Posted', _formatDate(createdAt)),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: Colors.black26),
+            ],
+          ),
         ),
       ),
     );

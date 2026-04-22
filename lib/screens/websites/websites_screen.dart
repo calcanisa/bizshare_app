@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../services/api_service.dart';
+import '../websites/website_screen.dart';
 
 class WebsitesScreen extends StatefulWidget {
   const WebsitesScreen({super.key});
@@ -483,88 +484,100 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
     final type = listing['type'] as Map<String, dynamic>?;
     final category = listing['category'] as Map<String, dynamic>?;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
-        ],
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => WebsiteDetailScreen(websiteId: listing['id']),
+        ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: imageUrl != null
-                  ? CachedNetworkImage(
-                      imageUrl: imageUrl,
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.contain,
-                      errorWidget: (_, __, ___) => _imagePlaceholder())
-                  : _imagePlaceholder(),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(name,
-                      style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF094a25))),
-                  const SizedBox(height: 4),
-                  if (type != null) _metaRow('Type', type['name'] ?? ''),
-                  if (category != null)
-                    _metaRow('Category', category['name'] ?? ''),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () {}, // TODO: edit listing
-                          style: OutlinedButton.styleFrom(
-                              foregroundColor: const Color(0xFF094a25),
-                              padding: const EdgeInsets.symmetric(vertical: 4)),
-                          child: const Text('Edit',
-                              style: TextStyle(fontSize: 12)),
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () {}, // TODO: feature listing
-                          style: OutlinedButton.styleFrom(
-                              foregroundColor: const Color(0xFFf8b324),
-                              side: const BorderSide(color: Color(0xFFf8b324)),
-                              padding: const EdgeInsets.symmetric(vertical: 4)),
-                          child: const Text('Feature',
-                              style: TextStyle(fontSize: 12)),
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () => _deleteListing(listing['id']),
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFbc2023),
-                              padding: const EdgeInsets.symmetric(vertical: 4)),
-                          child: const Text('Delete',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 12)),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
           ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: imageUrl != null
+                    ? CachedNetworkImage(
+                        imageUrl: imageUrl,
+                        width: 80,
+                        height: 80,
+                        fit: BoxFit.contain,
+                        errorWidget: (_, __, ___) => _imagePlaceholder())
+                    : _imagePlaceholder(),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(name,
+                        style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF094a25))),
+                    const SizedBox(height: 4),
+                    if (type != null) _metaRow('Type', type['name'] ?? ''),
+                    if (category != null)
+                      _metaRow('Category', category['name'] ?? ''),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () {}, // TODO: edit listing
+                            style: OutlinedButton.styleFrom(
+                                foregroundColor: const Color(0xFF094a25),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4)),
+                            child: const Text('Edit',
+                                style: TextStyle(fontSize: 12)),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () {}, // TODO: feature listing
+                            style: OutlinedButton.styleFrom(
+                                foregroundColor: const Color(0xFFf8b324),
+                                side:
+                                    const BorderSide(color: Color(0xFFf8b324)),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4)),
+                            child: const Text('Feature',
+                                style: TextStyle(fontSize: 12)),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () => _deleteListing(listing['id']),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFbc2023),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4)),
+                            child: const Text('Delete',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 12)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -747,117 +760,124 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
         listing['user'] is Map &&
         (listing['user'] as Map)['id'] == _accountId;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
-        ],
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => WebsiteDetailScreen(websiteId: listing['id']),
+        ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: imageUrl != null
-                      ? CachedNetworkImage(
-                          imageUrl: imageUrl,
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.contain,
-                          errorWidget: (_, __, ___) => _imagePlaceholder())
-                      : _imagePlaceholder(),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(name,
-                          style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF094a25))),
-                      const SizedBox(height: 5),
-                      Text(
-                          description.length > 100
-                              ? '${description.substring(0, 100)}...'
-                              : description,
-                          style: const TextStyle(
-                              fontSize: 12, color: Colors.black87)),
-                      const SizedBox(height: 6),
-                      if (type != null) _metaRow('Type', type['name'] ?? ''),
-                      if (category != null)
-                        _metaRow('Category', category['name'] ?? ''),
-                    ],
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: imageUrl != null
+                        ? CachedNetworkImage(
+                            imageUrl: imageUrl,
+                            width: 80,
+                            height: 80,
+                            fit: BoxFit.contain,
+                            errorWidget: (_, __, ___) => _imagePlaceholder())
+                        : _imagePlaceholder(),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                // See Website link
-                if (url != null && url.toString().isNotEmpty)
-                  GestureDetector(
-                    onTap: () => _openUrl(url.toString()),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.open_in_new,
-                            size: 14, color: Color(0xFF094a25)),
-                        const SizedBox(width: 4),
-                        Text('See Website',
-                            style: TextStyle(
-                                fontSize: 12,
-                                color: const Color(0xFF094a25),
-                                decoration: TextDecoration.underline,
-                                decorationColor: const Color(0xFF094a25))),
+                        Text(name,
+                            style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF094a25))),
+                        const SizedBox(height: 5),
+                        Text(
+                            description.length > 100
+                                ? '${description.substring(0, 100)}...'
+                                : description,
+                            style: const TextStyle(
+                                fontSize: 12, color: Colors.black87)),
+                        const SizedBox(height: 6),
+                        if (type != null) _metaRow('Type', type['name'] ?? ''),
+                        if (category != null)
+                          _metaRow('Category', category['name'] ?? ''),
                       ],
                     ),
                   ),
-                const Spacer(),
-                if (isOwner) ...[
-                  OutlinedButton(
-                    onPressed: () {}, // TODO: edit
-                    style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFF094a25),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4)),
-                    child: const Text('Edit', style: TextStyle(fontSize: 12)),
-                  ),
-                  const SizedBox(width: 6),
-                  OutlinedButton(
-                    onPressed: () {}, // TODO: feature
-                    style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFFf8b324),
-                        side: const BorderSide(color: Color(0xFFf8b324)),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4)),
-                    child:
-                        const Text('Feature', style: TextStyle(fontSize: 12)),
-                  ),
-                  const SizedBox(width: 6),
-                  ElevatedButton(
-                    onPressed: () => _deleteListing(listing['id']),
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFbc2023),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4)),
-                    child: const Text('Delete',
-                        style: TextStyle(color: Colors.white, fontSize: 12)),
-                  ),
                 ],
-              ],
-            ),
-          ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  if (url != null && url.toString().isNotEmpty)
+                    GestureDetector(
+                      onTap: () => _openUrl(url.toString()),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.open_in_new,
+                              size: 14, color: Color(0xFF094a25)),
+                          const SizedBox(width: 4),
+                          Text('See Website',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: const Color(0xFF094a25),
+                                  decoration: TextDecoration.underline,
+                                  decorationColor: const Color(0xFF094a25))),
+                        ],
+                      ),
+                    ),
+                  const Spacer(),
+                  if (isOwner) ...[
+                    OutlinedButton(
+                      onPressed: () {}, // TODO: edit
+                      style: OutlinedButton.styleFrom(
+                          foregroundColor: const Color(0xFF094a25),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 4)),
+                      child: const Text('Edit', style: TextStyle(fontSize: 12)),
+                    ),
+                    const SizedBox(width: 6),
+                    OutlinedButton(
+                      onPressed: () {}, // TODO: feature
+                      style: OutlinedButton.styleFrom(
+                          foregroundColor: const Color(0xFFf8b324),
+                          side: const BorderSide(color: Color(0xFFf8b324)),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 4)),
+                      child:
+                          const Text('Feature', style: TextStyle(fontSize: 12)),
+                    ),
+                    const SizedBox(width: 6),
+                    ElevatedButton(
+                      onPressed: () => _deleteListing(listing['id']),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFbc2023),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 4)),
+                      child: const Text('Delete',
+                          style: TextStyle(color: Colors.white, fontSize: 12)),
+                    ),
+                  ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -3,6 +3,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../../services/api_service.dart';
 import '../../widgets/filter_chip_bar.dart';
+import '../leads/lead_screen.dart';
+import '../leads/add_lead_modal.dart';
 
 class LeadsScreen extends StatefulWidget {
   const LeadsScreen({super.key});
@@ -14,11 +16,9 @@ class LeadsScreen extends StatefulWidget {
 class _LeadsScreenState extends State<LeadsScreen> {
   int _tab = 1;
 
-  // Tab 1 - Leads
   List<dynamic> _leads = [];
   bool _loadingLeads = false;
 
-  // Tab 2 - Providers
   List<dynamic> _providers = [];
   bool _loadingProviders = false;
   bool _hasMoreProviders = false;
@@ -26,11 +26,9 @@ class _LeadsScreenState extends State<LeadsScreen> {
   int _totalCountProviders = 0;
   final ScrollController _scrollController = ScrollController();
 
-  // Tab 3 - My Requests
   List<dynamic> _requests = [];
   bool _loadingRequests = false;
 
-  // Provider filters
   List<dynamic> _provinces = [];
   List<dynamic> _cities = [];
   List<dynamic> _areas = [];
@@ -69,7 +67,6 @@ class _LeadsScreenState extends State<LeadsScreen> {
       _filterBusinessType != null ||
       _filterBusinessSize != null;
 
-  // Group leads by business
   List<Map<String, dynamic>> get _groupedLeads {
     final groups = <int, Map<String, dynamic>>{};
     for (final lead in _leads) {
@@ -221,6 +218,46 @@ class _LeadsScreenState extends State<LeadsScreen> {
             .showSnackBar(const SnackBar(content: Text('Request deleted')));
       }
     } catch (_) {}
+  }
+
+  void _openAddRequest() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AddLeadModal(
+          action: 'add',
+          onSave: (data) {
+            Navigator.pop(context);
+            setState(() => _requests.insert(0, data));
+            ScaffoldMessenger.of(context)
+                .showSnackBar(const SnackBar(content: Text('Request created')));
+          },
+          onCancel: () => Navigator.pop(context),
+        ),
+      ),
+    );
+  }
+
+  void _openEditRequest(Map<String, dynamic> request) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AddLeadModal(
+          action: 'edit',
+          request: request,
+          onSave: (data) {
+            Navigator.pop(context);
+            setState(() {
+              final index = _requests.indexWhere((r) => r['id'] == data['id']);
+              if (index != -1) _requests[index] = data;
+            });
+            ScaffoldMessenger.of(context)
+                .showSnackBar(const SnackBar(content: Text('Request updated')));
+          },
+          onCancel: () => Navigator.pop(context),
+        ),
+      ),
+    );
   }
 
   void _openFilterSheet() async {
@@ -510,6 +547,8 @@ class _LeadsScreenState extends State<LeadsScreen> {
     );
   }
 
+  // ─── Tab 1 — Leads ───────────────────────────────────────────────────────
+
   Widget _leadsTab() {
     if (_loadingLeads) {
       return const Center(
@@ -565,57 +604,77 @@ class _LeadsScreenState extends State<LeadsScreen> {
     final hasPurchased = lead['has_purchased'] ?? false;
     final pricePerLead = lead['price_per_lead'];
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
-        ],
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => LeadDetailScreen(leadId: lead['id']),
+        ),
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              user != null
-                  ? '${user['first_name']} is looking for ${service?['name'] ?? 'a service'}'
-                  : 'Someone is looking for ${service?['name'] ?? 'a service'}',
-              style: const TextStyle(fontSize: 13, color: Colors.black87),
-            ),
-          ),
-          const SizedBox(width: 8),
-          if (!isLocked || hasPurchased)
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF094a25),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6)),
-              child: const Text('View',
-                  style: TextStyle(color: Colors.white, fontSize: 12)),
-            )
-          else
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFf8b324),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6)),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
               child: Text(
-                  pricePerLead != null ? 'Buy - R$pricePerLead' : 'Buy Lead',
-                  style: const TextStyle(color: Colors.black87, fontSize: 12)),
+                user != null
+                    ? '${user['first_name']} is looking for ${service?['name'] ?? 'a service'}'
+                    : 'Someone is looking for ${service?['name'] ?? 'a service'}',
+                style: const TextStyle(fontSize: 13, color: Colors.black87),
+              ),
             ),
-        ],
+            const SizedBox(width: 8),
+            if (!isLocked || hasPurchased)
+              ElevatedButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => LeadDetailScreen(leadId: lead['id']),
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF094a25),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 6)),
+                child: const Text('View',
+                    style: TextStyle(color: Colors.white, fontSize: 12)),
+              )
+            else
+              ElevatedButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => LeadDetailScreen(leadId: lead['id']),
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFf8b324),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 6)),
+                child: Text(
+                    pricePerLead != null ? 'Buy - R$pricePerLead' : 'Buy Lead',
+                    style:
+                        const TextStyle(color: Colors.black87, fontSize: 12)),
+              ),
+          ],
+        ),
       ),
     );
   }
 
+  // ─── Tab 2 — Providers ───────────────────────────────────────────────────
+
   Widget _providersTab() {
     return Column(
       children: [
-        // Filter bar
         Container(
           color: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -837,16 +896,12 @@ class _LeadsScreenState extends State<LeadsScreen> {
     );
   }
 
+  // ─── Tab 3 — Requests ────────────────────────────────────────────────────
+
   Widget _requestsTab() {
     if (_loadingRequests) {
       return const Center(
           child: CircularProgressIndicator(color: Color(0xFF094a25)));
-    }
-    if (_requests.isEmpty) {
-      return const Center(
-        child: Text('You have not submitted any requests.',
-            style: TextStyle(color: Color(0xFF094a25))),
-      );
     }
 
     final serviceRequests =
@@ -859,13 +914,36 @@ class _LeadsScreenState extends State<LeadsScreen> {
       color: const Color(0xFF094a25),
       child: ListView(
         children: [
-          if (serviceRequests.isNotEmpty) ...[
-            _listHeader('Service Requests'),
-            ...serviceRequests.map((r) => _requestCard(r)),
-          ],
-          if (productRequests.isNotEmpty) ...[
-            _listHeader('Product Requests'),
-            ...productRequests.map((r) => _requestCard(r)),
+          // Create new request button
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: ElevatedButton.icon(
+              onPressed: _openAddRequest,
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF094a25),
+                  padding: const EdgeInsets.symmetric(vertical: 12)),
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text('Create New Request',
+                  style: TextStyle(color: Colors.white)),
+            ),
+          ),
+          if (_requests.isEmpty)
+            const Padding(
+              padding: EdgeInsets.all(20),
+              child: Center(
+                child: Text('You have not submitted any requests.',
+                    style: TextStyle(color: Color(0xFF094a25))),
+              ),
+            )
+          else ...[
+            if (serviceRequests.isNotEmpty) ...[
+              _listHeader('Service Requests'),
+              ...serviceRequests.map((r) => _requestCard(r)),
+            ],
+            if (productRequests.isNotEmpty) ...[
+              _listHeader('Product Requests'),
+              ...productRequests.map((r) => _requestCard(r)),
+            ],
           ],
           const SizedBox(height: 20),
         ],
@@ -936,7 +1014,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () => _openEditRequest(request),
                     style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF094a25),
                         padding: const EdgeInsets.symmetric(vertical: 4)),
