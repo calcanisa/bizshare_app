@@ -882,8 +882,9 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                       child: ListView.builder(
                         itemCount: _allProjects.length + 1,
                         itemBuilder: (context, index) {
-                          if (index == _allProjects.length)
+                          if (index == _allProjects.length) {
                             return _paginationBar();
+                          }
                           return _allProjectCard(
                               _allProjects[index] as Map<String, dynamic>);
                         },
@@ -1040,7 +1041,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-                color: const Color(0xFF094a25).withOpacity(0.08),
+                color: const Color(0xFF094a25).withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(4)),
             child: Text('Page $_currentPage of $totalPages',
                 style: const TextStyle(
@@ -1088,9 +1089,10 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
         margin: const EdgeInsets.only(right: 6),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: const Color(0xFF094a25).withOpacity(0.1),
+          color: const Color(0xFF094a25).withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF094a25).withOpacity(0.3)),
+          border:
+              Border.all(color: const Color(0xFF094a25).withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -1109,7 +1111,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
   Widget _imagePlaceholder() => Container(
         width: 80,
         height: 80,
-        color: const Color(0xFF094a25).withOpacity(0.1),
+        color: const Color(0xFF094a25).withValues(alpha: 0.1),
         child: const Icon(Icons.rocket_launch_outlined,
             color: Color(0xFF094a25), size: 30),
       );

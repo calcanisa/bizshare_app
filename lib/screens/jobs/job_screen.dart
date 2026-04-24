@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../../services/api_service.dart';
+import 'job_application.dart';
+import '../report_screen.dart';
 
 class JobDetailScreen extends StatefulWidget {
   final int jobId;
@@ -90,9 +92,16 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
   }
 
   Future<void> _applyToJob() async {
-    if (_hasApplied) return;
-    // TODO: open job application modal
-    _showSnack('Application feature coming soon');
+    if (_hasApplied || _job == null) return;
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => JobApplicationScreen(job: _job!),
+      ),
+    );
+    if (result == true && mounted) {
+      setState(() => _appliedJobIds.add(widget.jobId));
+    }
   }
 
   String _formatDateTime(String? dateStr) {
@@ -124,8 +133,6 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
-
-  // ─── Build ────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -164,9 +171,17 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                   style: const TextStyle(color: Colors.white, fontSize: 12),
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 4),
               TextButton(
-                onPressed: () {}, // TODO: report
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ReportScreen(
+                      contentId: widget.jobId,
+                      type: 'jobs',
+                    ),
+                  ),
+                ),
                 child: const Text('Report',
                     style: TextStyle(color: Colors.white70, fontSize: 12)),
               ),
@@ -203,8 +218,6 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
     );
   }
 
-  // ─── Industry bar ─────────────────────────────────────────────────────────
-
   Widget _industryBar() {
     final industry = _job?['industry'] as Map?;
     final function = _job?['function'] as Map?;
@@ -222,8 +235,6 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
       ),
     );
   }
-
-  // ─── Image ────────────────────────────────────────────────────────────────
 
   Widget _imageSection() {
     final image = _job?['image'];
@@ -247,13 +258,11 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
 
   Widget _imagePlaceholder() => Container(
         height: 220,
-        color: const Color(0xFF094a25).withOpacity(0.1),
+        color: const Color(0xFF094a25).withValues(alpha: 0.1),
         child: const Center(
           child: Icon(Icons.work_outline, color: Color(0xFF094a25), size: 60),
         ),
       );
-
-  // ─── Basic details ────────────────────────────────────────────────────────
 
   Widget _basicDetailsSection() {
     final area = _job?['area'] as Map?;
@@ -339,8 +348,6 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
       ),
     );
   }
-
-  // ─── Required section ─────────────────────────────────────────────────────
 
   Widget _requiredSection() {
     final experience = _job?['experience_required'];
@@ -441,8 +448,6 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
     );
   }
 
-  // ─── Questions ────────────────────────────────────────────────────────────
-
   Widget _questionsSection() {
     final questions = _job?['questions'] as List? ?? [];
 
@@ -492,8 +497,6 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
     );
   }
 
-  // ─── Exams ────────────────────────────────────────────────────────────────
-
   Widget _examsSection() {
     final exams = _job?['exams'] as List? ?? [];
 
@@ -539,8 +542,6 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
       ),
     );
   }
-
-  // ─── Shared helpers ───────────────────────────────────────────────────────
 
   Widget _sectionHeader(String title) => Container(
         width: double.infinity,

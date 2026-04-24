@@ -187,7 +187,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Container(
       width: 80,
       height: 80,
-      color: const Color(0xFF094a25).withOpacity(0.1),
+      color: const Color(0xFF094a25).withValues(alpha: 0.1),
       child: const Icon(Icons.person, color: Color(0xFF094a25), size: 40),
     );
   }

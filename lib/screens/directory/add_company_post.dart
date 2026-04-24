@@ -30,9 +30,9 @@ class _AddPostModalState extends State<AddPostModal> {
   bool _saving = false;
   bool _accepted = false;
 
-  List<File> _newImages = [];
+  final List<File> _newImages = [];
   List<String> _existingImages = [];
-  List<int> _removedIds = [];
+  final List<int> _removedIds = [];
 
   static const int _maxMedia = 4;
 

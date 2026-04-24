@@ -5,8 +5,14 @@ import 'providers/cart_provider.dart';
 import 'services/api_service.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/home/home_screen.dart';
+import 'package:flutter/services.dart';
 
 void main() {
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.light,
+    statusBarBrightness: Brightness.dark,
+  ));
   runApp(const SeshaApp());
 }
 
@@ -25,7 +31,7 @@ class _SeshaAppState extends State<SeshaApp> {
   void initState() {
     super.initState();
     _apiService = ApiService();
-    _authProvider = AuthProvider();
+    _authProvider = AuthProvider(_apiService);
     _apiService.onUnauthorized = () => _authProvider.logout();
   }
 

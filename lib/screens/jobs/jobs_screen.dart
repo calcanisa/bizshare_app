@@ -187,10 +187,12 @@ class _JobsScreenState extends State<JobsScreen> {
       if (_filterArea != null) params['area'] = _filterArea;
       if (_filterSector != null) params['industry'] = _filterSector;
       if (_filterFunction != null) params['function'] = _filterFunction;
-      if (_filterContractType != null)
+      if (_filterContractType != null) {
         params['contract_type'] = _filterContractType;
-      if (_filterWorkEnvironment != null)
+      }
+      if (_filterWorkEnvironment != null) {
         params['job_setting'] = _filterWorkEnvironment;
+      }
 
       final response =
           await api.dio.get('/api/v1/jobs/', queryParameters: params);
@@ -1147,7 +1149,7 @@ class _JobsScreenState extends State<JobsScreen> {
   Widget _imagePlaceholder() => Container(
         width: 70,
         height: 70,
-        color: const Color(0xFF094a25).withOpacity(0.1),
+        color: const Color(0xFF094a25).withValues(alpha: 0.1),
         child:
             const Icon(Icons.work_outline, color: Color(0xFF094a25), size: 32),
       );

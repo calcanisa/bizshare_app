@@ -377,7 +377,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       child: SwitchListTile(
         value: value,
-        activeColor: const Color(0xFF094a25),
+        activeThumbColor: const Color(0xFF094a25),
         onChanged: isActive ? (v) => _toggle(key, v) : null,
         title: Text(
           label,

@@ -534,7 +534,7 @@ class _MailScreenState extends State<MailScreen> {
                         : Colors.black12),
                 borderRadius: BorderRadius.circular(6),
                 color: _dateFromReceived != null
-                    ? const Color(0xFF094a25).withOpacity(0.08)
+                    ? const Color(0xFF094a25).withValues(alpha: 0.08)
                     : null,
               ),
               child: Row(
@@ -593,7 +593,7 @@ class _MailScreenState extends State<MailScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
       decoration: BoxDecoration(
         color: isSelected
-            ? const Color(0xFF094a25).withOpacity(0.08)
+            ? const Color(0xFF094a25).withValues(alpha: 0.08)
             : isRead
                 ? Colors.white
                 : const Color(0xFF094a25).withOpacity(0.05),
@@ -609,10 +609,11 @@ class _MailScreenState extends State<MailScreen> {
         borderRadius: BorderRadius.circular(8),
         onTap: () => _openMessage(msg),
         onLongPress: () => setState(() {
-          if (isSelected)
+          if (isSelected) {
             _selectedReceived.remove(id);
-          else
+          } else {
             _selectedReceived.add(id);
+          }
         }),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -624,10 +625,11 @@ class _MailScreenState extends State<MailScreen> {
                   value: isSelected,
                   activeColor: const Color(0xFF094a25),
                   onChanged: (v) => setState(() {
-                    if (v == true)
+                    if (v == true) {
                       _selectedReceived.add(id);
-                    else
+                    } else {
                       _selectedReceived.remove(id);
+                    }
                   }),
                 )
               else
@@ -770,7 +772,7 @@ class _MailScreenState extends State<MailScreen> {
                         : Colors.black12),
                 borderRadius: BorderRadius.circular(6),
                 color: _dateFromSent != null
-                    ? const Color(0xFF094a25).withOpacity(0.08)
+                    ? const Color(0xFF094a25).withValues(alpha: 0.08)
                     : null,
               ),
               child: Row(
@@ -829,7 +831,7 @@ class _MailScreenState extends State<MailScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
       decoration: BoxDecoration(
         color: isSelected
-            ? const Color(0xFF094a25).withOpacity(0.08)
+            ? const Color(0xFF094a25).withValues(alpha: 0.08)
             : Colors.white,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
@@ -841,10 +843,11 @@ class _MailScreenState extends State<MailScreen> {
         borderRadius: BorderRadius.circular(8),
         onTap: () => _openMessage(msg, isSent: true),
         onLongPress: () => setState(() {
-          if (isSelected)
+          if (isSelected) {
             _selectedSent.remove(id);
-          else
+          } else {
             _selectedSent.add(id);
+          }
         }),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -855,10 +858,11 @@ class _MailScreenState extends State<MailScreen> {
                   value: isSelected,
                   activeColor: const Color(0xFF094a25),
                   onChanged: (v) => setState(() {
-                    if (v == true)
+                    if (v == true) {
                       _selectedSent.add(id);
-                    else
+                    } else {
                       _selectedSent.remove(id);
+                    }
                   }),
                 )
               else
@@ -976,7 +980,7 @@ class _MailScreenState extends State<MailScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
       decoration: BoxDecoration(
         color: isSelected
-            ? const Color(0xFF094a25).withOpacity(0.08)
+            ? const Color(0xFF094a25).withValues(alpha: 0.08)
             : Colors.grey.shade50,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
@@ -987,10 +991,11 @@ class _MailScreenState extends State<MailScreen> {
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
         onLongPress: () => setState(() {
-          if (isSelected)
+          if (isSelected) {
             _selectedTrash.remove(id);
-          else
+          } else {
             _selectedTrash.add(id);
+          }
         }),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -1001,10 +1006,11 @@ class _MailScreenState extends State<MailScreen> {
                   value: isSelected,
                   activeColor: const Color(0xFF094a25),
                   onChanged: (v) => setState(() {
-                    if (v == true)
+                    if (v == true) {
                       _selectedTrash.add(id);
-                    else
+                    } else {
                       _selectedTrash.remove(id);
+                    }
                   }),
                 )
               else
@@ -1066,7 +1072,7 @@ class _MailScreenState extends State<MailScreen> {
     final isTrash = mailType == 'trash';
 
     return Container(
-      color: const Color(0xFF094a25).withOpacity(0.08),
+      color: const Color(0xFF094a25).withValues(alpha: 0.08),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: Row(
         children: [
@@ -1130,7 +1136,7 @@ class _MailScreenState extends State<MailScreen> {
         decoration: BoxDecoration(
           color: color.withOpacity(0.12),
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
         child: Text(label,
             style: TextStyle(

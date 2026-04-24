@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../services/api_service.dart';
 import '../../providers/auth_provider.dart';
+import './sesha_passive.dart';
+import 'withdraw.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -45,7 +47,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   // Delete account
   String _reason = '';
-  String _otherReason = '';
+  final String _otherReason = '';
 
   // Orders
   List<dynamic> _orders = [];
@@ -130,8 +132,12 @@ class _AccountScreenState extends State<AccountScreen> {
     _confirmPassController.dispose();
     _fundController.dispose();
     _otherReasonController.dispose();
-    for (final c in _codeControllers) c.dispose();
-    for (final f in _codeFocusNodes) f.dispose();
+    for (final c in _codeControllers) {
+      c.dispose();
+    }
+    for (final f in _codeFocusNodes) {
+      f.dispose();
+    }
     super.dispose();
   }
 
@@ -397,7 +403,9 @@ class _AccountScreenState extends State<AccountScreen> {
       _newPassController.clear();
       _confirmPassController.clear();
       _fundController.clear();
-      for (final c in _codeControllers) c.clear();
+      for (final c in _codeControllers) {
+        c.clear();
+      }
     });
   }
 
@@ -413,7 +421,9 @@ class _AccountScreenState extends State<AccountScreen> {
       _confirmEmailController.clear();
       _newPassController.clear();
       _confirmPassController.clear();
-      for (final c in _codeControllers) c.clear();
+      for (final c in _codeControllers) {
+        c.clear();
+      }
     });
   }
 
@@ -685,18 +695,24 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   String _editInfoText() {
-    if (_chgEmail)
+    if (_chgEmail) {
       return 'If you change your email, a code will be sent to confirm the change. You will be logged out after.';
-    if (_chgPass)
+    }
+    if (_chgPass) {
       return 'A code will be sent to your email to confirm the password change.';
-    if (_upAcc)
+    }
+    if (_upAcc) {
       return 'Upgrading gives you more features and higher limits. You can\'t change tier again for 30 days.';
-    if (_delAcc)
+    }
+    if (_delAcc) {
       return 'Your account will be disabled for 30 days. After that all data is permanently deleted.';
-    if (_fundAcc)
+    }
+    if (_fundAcc) {
       return 'Fund your account to use for advertising, leads, or business verification.';
-    if (_joinPass)
+    }
+    if (_joinPass) {
       return 'Sesha Passive lets you earn passive income by referring members.';
+    }
     return 'Manage your account — change password or email, upgrade, join Sesha Passive, or delete your account.';
   }
 
@@ -1065,7 +1081,7 @@ class _AccountScreenState extends State<AccountScreen> {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFF094a25).withOpacity(0.08)
+              ? const Color(0xFF094a25).withValues(alpha: 0.08)
               : Colors.grey.shade50,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
@@ -1178,10 +1194,10 @@ class _AccountScreenState extends State<AccountScreen> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: const Color(0xFFbc2023).withOpacity(0.08),
+              color: const Color(0xFFbc2023).withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(8),
-              border:
-                  Border.all(color: const Color(0xFFbc2023).withOpacity(0.3)),
+              border: Border.all(
+                  color: const Color(0xFFbc2023).withValues(alpha: 0.3)),
             ),
             child: const Text(
                 'You will be logged out and your account disabled for 30 days. After that, all data is permanently deleted.',
@@ -1205,11 +1221,19 @@ class _AccountScreenState extends State<AccountScreen> {
               'Cancelling removes all benefits and your passive code immediately. This is irreversible.'),
           const SizedBox(height: 12),
           ElevatedButton(
-            onPressed: _submitting ? null : _cancelPassiveMembership,
+            onPressed: () async {
+              final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => SeshaPassiveScreen(
+                      profile: _account?['profile'] as Map<String, dynamic>?,
+                    ),
+                  ));
+              if (result == true && mounted) _loadAccount();
+            },
             style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFbc2023)),
-            child: const Text('Cancel Passive Membership',
-                style: TextStyle(color: Colors.white)),
+                backgroundColor: const Color(0xFF094a25)),
+            child: const Text('Apply', style: TextStyle(color: Colors.white)),
           ),
           const SizedBox(height: 16),
         ],
@@ -1412,7 +1436,13 @@ class _AccountScreenState extends State<AccountScreen> {
           ),
         ),
         ElevatedButton(
-          onPressed: () => _showSnack('Withdrawal request submitted'),
+          onPressed: () async {
+            final result = await WithdrawSheet.show(context);
+            if (result != null && mounted) {
+              _showSnack('Withdrawal request submitted.');
+              _loadAccount();
+            }
+          },
           style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF094a25)),
           child: const Text('Request Withdrawal',

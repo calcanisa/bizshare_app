@@ -39,8 +39,7 @@ class _AddExamModalState extends State<AddExamModal> {
   void initState() {
     super.initState();
     if (widget.action == 'edit' && widget.exam != null) {
-      _durationController.text =
-          widget.exam!['duration']?.toString() ?? '';
+      _durationController.text = widget.exam!['duration']?.toString() ?? '';
       _timeFormat = widget.exam!['time_format'] ?? '';
       _questions = (widget.exam!['questions'] as List? ?? [])
           .map((q) => Map<String, dynamic>.from(q as Map))
@@ -115,17 +114,14 @@ class _AddExamModalState extends State<AddExamModal> {
 
   void _showSnack(String msg) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(msg)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
   // ─── Build ────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
-    final title = widget.action == 'edit'
-        ? 'Edit An Exam'
-        : 'Add An Exam';
+    final title = widget.action == 'edit' ? 'Edit An Exam' : 'Add An Exam';
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -133,13 +129,12 @@ class _AddExamModalState extends State<AddExamModal> {
         backgroundColor: const Color(0xFF094a25),
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(title,
-            style:
-                const TextStyle(color: Colors.white, fontSize: 15)),
+            style: const TextStyle(color: Colors.white, fontSize: 15)),
         actions: [
           TextButton(
             onPressed: widget.onCancel,
-            child: const Text('Cancel',
-                style: TextStyle(color: Colors.white70)),
+            child:
+                const Text('Cancel', style: TextStyle(color: Colors.white70)),
           ),
         ],
       ),
@@ -149,8 +144,7 @@ class _AddExamModalState extends State<AddExamModal> {
           // Info
           const Text(
             'To make the selection process faster, you can add an exam to a job application. Set a time limit and every applicant will have to complete it. Once added, questions cannot be edited — delete and recreate if needed.',
-            style: TextStyle(
-                fontSize: 12, color: Colors.black54, height: 1.5),
+            style: TextStyle(fontSize: 12, color: Colors.black54, height: 1.5),
           ),
           const SizedBox(height: 20),
 
@@ -178,18 +172,14 @@ class _AddExamModalState extends State<AddExamModal> {
                     _fieldLabel('Time Format'),
                     const SizedBox(height: 6),
                     _dropdownWidget<String>(
-                      value:
-                          _timeFormat.isEmpty ? null : _timeFormat,
+                      value: _timeFormat.isEmpty ? null : _timeFormat,
                       hint: 'Choose',
                       items: const [
                         DropdownMenuItem(
-                            value: 'minutes',
-                            child: Text('Minutes')),
-                        DropdownMenuItem(
-                            value: 'hours', child: Text('Hours')),
+                            value: 'minutes', child: Text('Minutes')),
+                        DropdownMenuItem(value: 'hours', child: Text('Hours')),
                       ],
-                      onChanged: (v) =>
-                          setState(() => _timeFormat = v ?? ''),
+                      onChanged: (v) => setState(() => _timeFormat = v ?? ''),
                     ),
                   ],
                 ),
@@ -204,22 +194,21 @@ class _AddExamModalState extends State<AddExamModal> {
 
           // Added questions
           if (_questions.isNotEmpty) ...[
-            ..._questions.asMap().entries.map((e) =>
-                _questionCard(e.key, e.value)),
+            ..._questions
+                .asMap()
+                .entries
+                .map((e) => _questionCard(e.key, e.value)),
             const SizedBox(height: 12),
           ],
 
           // Add question button
           if (!_addingQuestion)
             OutlinedButton.icon(
-              onPressed: () =>
-                  setState(() => _addingQuestion = true),
+              onPressed: () => setState(() => _addingQuestion = true),
               style: OutlinedButton.styleFrom(
                 foregroundColor: const Color(0xFF094a25),
-                side: const BorderSide(
-                    color: Color(0xFF094a25)),
-                padding:
-                    const EdgeInsets.symmetric(vertical: 12),
+                side: const BorderSide(color: Color(0xFF094a25)),
+                padding: const EdgeInsets.symmetric(vertical: 12),
               ),
               icon: const Icon(Icons.add, size: 18),
               label: const Text('Add A Question'),
@@ -240,8 +229,7 @@ class _AddExamModalState extends State<AddExamModal> {
                 Checkbox(
                   value: _accepted,
                   activeColor: const Color(0xFF094a25),
-                  onChanged: (v) =>
-                      setState(() => _accepted = v ?? false),
+                  onChanged: (v) => setState(() => _accepted = v ?? false),
                 ),
                 const Text('I accept the '),
                 GestureDetector(
@@ -249,8 +237,7 @@ class _AddExamModalState extends State<AddExamModal> {
                   child: const Text('terms',
                       style: TextStyle(
                           color: Color(0xFF094a25),
-                          decoration:
-                              TextDecoration.underline)),
+                          decoration: TextDecoration.underline)),
                 ),
               ],
             ),
@@ -265,11 +252,9 @@ class _AddExamModalState extends State<AddExamModal> {
                   onPressed: _save,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF094a25),
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 14),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(8)),
+                        borderRadius: BorderRadius.circular(8)),
                   ),
                   child: const Text('Save',
                       style: TextStyle(
@@ -284,16 +269,12 @@ class _AddExamModalState extends State<AddExamModal> {
                   onPressed: widget.onCancel,
                   style: OutlinedButton.styleFrom(
                     foregroundColor: const Color(0xFFbc2023),
-                    side: const BorderSide(
-                        color: Color(0xFFbc2023)),
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 14),
+                    side: const BorderSide(color: Color(0xFFbc2023)),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(8)),
+                        borderRadius: BorderRadius.circular(8)),
                   ),
-                  child: const Text('Cancel',
-                      style: TextStyle(fontSize: 15)),
+                  child: const Text('Cancel', style: TextStyle(fontSize: 15)),
                 ),
               ),
             ],
@@ -332,18 +313,16 @@ class _AddExamModalState extends State<AddExamModal> {
                         color: Color(0xFF094a25))),
               ),
               GestureDetector(
-                onTap: () => setState(
-                    () => _questions.removeAt(index)),
-                child: const Icon(Icons.close,
-                    size: 18, color: Color(0xFFbc2023)),
+                onTap: () => setState(() => _questions.removeAt(index)),
+                child:
+                    const Icon(Icons.close, size: 18, color: Color(0xFFbc2023)),
               ),
             ],
           ),
           if (body.isNotEmpty) ...[
             const SizedBox(height: 4),
             Text(body,
-                style: const TextStyle(
-                    fontSize: 12, color: Colors.black54)),
+                style: const TextStyle(fontSize: 12, color: Colors.black54)),
           ],
           if (choices.isNotEmpty) ...[
             const SizedBox(height: 8),
@@ -357,13 +336,11 @@ class _AddExamModalState extends State<AddExamModal> {
                   padding: const EdgeInsets.only(bottom: 2),
                   child: Row(
                     children: [
-                      const Icon(Icons.circle,
-                          size: 6, color: Colors.black45),
+                      const Icon(Icons.circle, size: 6, color: Colors.black45),
                       const SizedBox(width: 6),
                       Text(c.toString(),
                           style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.black87)),
+                              fontSize: 12, color: Colors.black87)),
                     ],
                   ),
                 )),
@@ -381,7 +358,8 @@ class _AddExamModalState extends State<AddExamModal> {
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFF094a25).withOpacity(0.3)),
+        border:
+            Border.all(color: const Color(0xFF094a25).withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -389,22 +367,18 @@ class _AddExamModalState extends State<AddExamModal> {
           _fieldLabel('Question Type'),
           const SizedBox(height: 6),
           _dropdownWidget<String>(
-            value:
-                _questionType.isEmpty ? null : _questionType,
+            value: _questionType.isEmpty ? null : _questionType,
             hint: 'Select',
             items: const [
               DropdownMenuItem(
-                  value: 'single',
-                  child: Text('Single line Question')),
+                  value: 'single', child: Text('Single line Question')),
               DropdownMenuItem(
-                  value: 'multiline',
-                  child: Text('Multi line Question')),
+                  value: 'multiline', child: Text('Multi line Question')),
               DropdownMenuItem(
                   value: 'multichoice',
                   child: Text('Multiple Choice Question')),
             ],
-            onChanged: (v) =>
-                setState(() => _questionType = v ?? ''),
+            onChanged: (v) => setState(() => _questionType = v ?? ''),
           ),
           const SizedBox(height: 12),
 
@@ -415,8 +389,7 @@ class _AddExamModalState extends State<AddExamModal> {
             _fieldLabel('Question'),
             const SizedBox(height: 6),
             _textField(_questionTextController,
-                hint: 'Ask the question here',
-                maxLength: 100),
+                hint: 'Ask the question here', maxLength: 100),
             const SizedBox(height: 12),
           ],
 
@@ -445,31 +418,25 @@ class _AddExamModalState extends State<AddExamModal> {
                           : e.value,
                       style: const TextStyle(fontSize: 12),
                     ),
-                    deleteIcon: const Icon(Icons.close,
-                        size: 14),
-                    onDeleted: () => setState(
-                        () => _choices.removeAt(e.key)),
+                    deleteIcon: const Icon(Icons.close, size: 14),
+                    onDeleted: () => setState(() => _choices.removeAt(e.key)),
                     backgroundColor: Colors.grey.shade200,
-                    materialTapTargetSize:
-                        MaterialTapTargetSize.shrinkWrap,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   );
                 }).toList(),
               ),
               const SizedBox(height: 10),
             ],
-
             Row(
               children: [
                 if (!_addingChoice)
                   TextButton.icon(
-                    onPressed: () => setState(
-                        () => _addingChoice = true),
+                    onPressed: () => setState(() => _addingChoice = true),
                     icon: const Icon(Icons.add, size: 16),
                     label: const Text('Add Choice',
                         style: TextStyle(fontSize: 12)),
                     style: TextButton.styleFrom(
-                        foregroundColor:
-                            const Color(0xFF094a25)),
+                        foregroundColor: const Color(0xFF094a25)),
                   ),
                 if (_addingChoice)
                   TextButton(
@@ -478,13 +445,11 @@ class _AddExamModalState extends State<AddExamModal> {
                       _choiceController.clear();
                     }),
                     child: const Text('Done',
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFF094a25))),
+                        style:
+                            TextStyle(fontSize: 12, color: Color(0xFF094a25))),
                   ),
               ],
             ),
-
             if (_addingChoice) ...[
               const SizedBox(height: 8),
               Row(
@@ -497,14 +462,11 @@ class _AddExamModalState extends State<AddExamModal> {
                   ElevatedButton(
                     onPressed: _addOption,
                     style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            const Color(0xFF094a25),
+                        backgroundColor: const Color(0xFF094a25),
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 10)),
                     child: const Text('Add',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 13)),
+                        style: TextStyle(color: Colors.white, fontSize: 13)),
                   ),
                 ],
               ),
@@ -523,22 +485,18 @@ class _AddExamModalState extends State<AddExamModal> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 24, vertical: 8)),
                 child: const Text('Add',
-                    style: TextStyle(
-                        color: Colors.white, fontSize: 13)),
+                    style: TextStyle(color: Colors.white, fontSize: 13)),
               ),
               const SizedBox(width: 10),
               OutlinedButton(
-                onPressed: () =>
-                    setState(() => _resetQuestionForm()),
+                onPressed: () => setState(() => _resetQuestionForm()),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: const Color(0xFFbc2023),
-                  side: const BorderSide(
-                      color: Color(0xFFbc2023)),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 24, vertical: 8),
+                  side: const BorderSide(color: Color(0xFFbc2023)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                 ),
-                child: const Text('Cancel',
-                    style: TextStyle(fontSize: 13)),
+                child: const Text('Cancel', style: TextStyle(fontSize: 13)),
               ),
             ],
           ),
@@ -551,8 +509,7 @@ class _AddExamModalState extends State<AddExamModal> {
 
   Widget _sectionHeader(String title) => Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(
-            horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: const Color(0xFF094a25),
           borderRadius: BorderRadius.circular(6),
@@ -566,9 +523,7 @@ class _AddExamModalState extends State<AddExamModal> {
 
   Widget _fieldLabel(String label) => Text(label,
       style: const TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.bold,
-          color: Color(0xFF094a25)));
+          fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF094a25)));
 
   Widget _textField(
     TextEditingController controller, {
@@ -585,15 +540,13 @@ class _AddExamModalState extends State<AddExamModal> {
         style: const TextStyle(fontSize: 13),
         decoration: InputDecoration(
           hintText: hint,
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8)),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide:
-                const BorderSide(color: Color(0xFF094a25)),
+            borderSide: const BorderSide(color: Color(0xFF094a25)),
           ),
-          contentPadding: const EdgeInsets.symmetric(
-              horizontal: 12, vertical: 10),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           isDense: true,
         ),
       );
@@ -614,18 +567,15 @@ class _AddExamModalState extends State<AddExamModal> {
           child: DropdownButton<T>(
             value: value,
             hint: Text(hint,
-                style: const TextStyle(
-                    color: Colors.black45, fontSize: 13)),
+                style: const TextStyle(color: Colors.black45, fontSize: 13)),
             isExpanded: true,
-            style: const TextStyle(
-                fontSize: 13, color: Colors.black87),
+            style: const TextStyle(fontSize: 13, color: Colors.black87),
             items: [
               DropdownMenuItem<T>(
                   value: null,
                   child: Text(hint,
                       style: const TextStyle(
-                          color: Colors.black45,
-                          fontSize: 13))),
+                          color: Colors.black45, fontSize: 13))),
               ...items,
             ],
             onChanged: onChanged,

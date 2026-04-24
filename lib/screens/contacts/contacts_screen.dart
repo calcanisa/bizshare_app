@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../services/api_service.dart';
 import '../contacts/add_contact.dart';
 import '../contacts/add_group.dart';
+import 'import_contacts.dart';
 
 class ContactsScreen extends StatefulWidget {
   const ContactsScreen({super.key});
@@ -57,8 +58,9 @@ class _ContactsScreenState extends State<ContactsScreen> {
     try {
       final api = context.read<ApiService>();
       final params = <String, dynamic>{'page': page};
-      if (_searchController.text.trim().isNotEmpty)
+      if (_searchController.text.trim().isNotEmpty) {
         params['search'] = _searchController.text.trim();
+      }
       if (_contactSort.isNotEmpty) params['ordering'] = _contactSort;
 
       final res = await api.dio
@@ -146,10 +148,12 @@ class _ContactsScreenState extends State<ContactsScreen> {
     }
     if (_filterEmail) result = result.where((g) => g['email'] == true).toList();
     if (_filterSms) result = result.where((g) => g['sms'] == true).toList();
-    if (_filterWhatsapp)
+    if (_filterWhatsapp) {
       result = result.where((g) => g['whatsapp'] == true).toList();
-    if (_filterSocial)
+    }
+    if (_filterSocial) {
       result = result.where((g) => g['social'] == true).toList();
+    }
 
     if (_groupSort.isNotEmpty) {
       final desc = _groupSort.startsWith('-');
@@ -282,6 +286,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
     return Column(
       children: [
         // Search + Add bar
+// Search + Add bar
         Container(
           color: Colors.grey.shade50,
           padding: const EdgeInsets.all(10),
@@ -340,6 +345,24 @@ class _ContactsScreenState extends State<ContactsScreen> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 12, vertical: 10)),
                 child: const Text('Add', style: TextStyle(fontSize: 13)),
+              ),
+              const SizedBox(width: 6),
+              ElevatedButton(
+                onPressed: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const ImportContactsScreen(),
+                    ),
+                  );
+                  if (result != null && mounted) _loadContacts(page: 1);
+                },
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF094a25),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 10)),
+                child: const Text('Import', style: TextStyle(fontSize: 13)),
               ),
             ],
           ),
@@ -504,10 +527,11 @@ class _ContactsScreenState extends State<ContactsScreen> {
               value: isSelected,
               activeColor: const Color(0xFF094a25),
               onChanged: (_) => setState(() {
-                if (isSelected)
+                if (isSelected) {
                   _selectedContacts.remove(id);
-                else
+                } else {
                   _selectedContacts.add(id);
+                }
               }),
             ),
           ),
@@ -574,7 +598,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: const Color(0xFF094a25).withOpacity(0.08),
+              color: const Color(0xFF094a25).withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text('Page $_currentPage of $_totalPages',
@@ -690,11 +714,11 @@ class _ContactsScreenState extends State<ContactsScreen> {
                         });
                         _applyGroupFilters();
                       },
-                      child: Chip(
-                        label: const Text('Reset',
+                      child: const Chip(
+                        label: Text('Reset',
                             style:
                                 TextStyle(fontSize: 11, color: Colors.white)),
-                        backgroundColor: const Color(0xFFbc2023),
+                        backgroundColor: Color(0xFFbc2023),
                         padding: EdgeInsets.zero,
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
@@ -868,10 +892,11 @@ class _ContactsScreenState extends State<ContactsScreen> {
                     value: isSelected,
                     activeColor: const Color(0xFF094a25),
                     onChanged: (_) => setState(() {
-                      if (isSelected)
+                      if (isSelected) {
                         _selectedGroups.remove(id);
-                      else
+                      } else {
                         _selectedGroups.add(id);
+                      }
                     }),
                   ),
           ),

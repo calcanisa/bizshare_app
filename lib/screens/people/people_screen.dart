@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../../services/api_service.dart';
+import '../profile/user_profile.dart';
 
 class PeopleScreen extends StatefulWidget {
   const PeopleScreen({super.key});
@@ -13,7 +14,6 @@ class PeopleScreen extends StatefulWidget {
 class _PeopleScreenState extends State<PeopleScreen> {
   int? _accountId;
 
-  // Results
   List<dynamic> _profiles = [];
   bool _loading = false;
   int _currentPage = 1;
@@ -23,13 +23,11 @@ class _PeopleScreenState extends State<PeopleScreen> {
   int _selectedPageSize = 20;
   String _ordering = 'title-asc';
 
-  // Reference data
   List<dynamic> _skills = [];
   List<dynamic> _subcategories = [];
   List<dynamic> _provinces = [];
   List<dynamic> _cities = [];
 
-  // Applied filters
   String _filterSearch = '';
   int? _filterSkill;
   int? _filterSubcategory;
@@ -38,7 +36,6 @@ class _PeopleScreenState extends State<PeopleScreen> {
   int? _filterProvince;
   int? _filterCity;
 
-  // Temp filter state (in-sheet)
   final _searchController = TextEditingController();
   final _fieldOfStudyController = TextEditingController();
   int? _tempSkill;
@@ -132,16 +129,18 @@ class _PeopleScreenState extends State<PeopleScreen> {
       };
       if (page > 1) params['page'] = page;
       if (_filterSearch.isNotEmpty) params['search'] = _filterSearch;
-      if (_filterSubcategory != null)
+      if (_filterSubcategory != null) {
         params['subcategory'] = _filterSubcategory;
-      else if (_filterSkill != null) params['skill'] = _filterSkill;
-      if (_filterCity != null)
+      } else if (_filterSkill != null) params['skill'] = _filterSkill;
+      if (_filterCity != null) {
         params['city'] = _filterCity;
-      else if (_filterProvince != null) params['province'] = _filterProvince;
-      if (_filterQualification != null)
+      } else if (_filterProvince != null) params['province'] = _filterProvince;
+      if (_filterQualification != null) {
         params['qualification'] = _filterQualification;
-      if (_filterFieldOfStudy.isNotEmpty)
+      }
+      if (_filterFieldOfStudy.isNotEmpty) {
         params['field_of_study'] = _filterFieldOfStudy;
+      }
 
       final res =
           await api.dio.get('/api/v1/profiles/', queryParameters: params);
@@ -207,7 +206,6 @@ class _PeopleScreenState extends State<PeopleScreen> {
           builder: (context, scrollController) {
             return Column(
               children: [
-                // Header
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -243,13 +241,11 @@ class _PeopleScreenState extends State<PeopleScreen> {
                     ],
                   ),
                 ),
-                // Filters
                 Expanded(
                   child: ListView(
                     controller: scrollController,
                     padding: const EdgeInsets.all(16),
                     children: [
-                      // Name search
                       _filterLabel('Name'),
                       TextField(
                         controller: _searchController,
@@ -269,8 +265,6 @@ class _PeopleScreenState extends State<PeopleScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-
-                      // Skill
                       _filterLabel('Skill'),
                       _filterDropdown<int>(
                         value: _tempSkill,
@@ -287,7 +281,6 @@ class _PeopleScreenState extends State<PeopleScreen> {
                             _tempSubcategory = null;
                           });
                           if (v != null) {
-                            // Load subcategories for this skill
                             try {
                               final api = context.read<ApiService>();
                               final res = await api.dio.get(
@@ -317,8 +310,6 @@ class _PeopleScreenState extends State<PeopleScreen> {
                         ),
                       ],
                       const SizedBox(height: 16),
-
-                      // Qualification
                       _filterLabel('Qualification'),
                       _filterDropdown<String>(
                         value: _tempQualification,
@@ -333,8 +324,6 @@ class _PeopleScreenState extends State<PeopleScreen> {
                             setSheetState(() => _tempQualification = v),
                       ),
                       const SizedBox(height: 16),
-
-                      // Field of study
                       _filterLabel('Field of Study'),
                       TextField(
                         controller: _fieldOfStudyController,
@@ -352,8 +341,6 @@ class _PeopleScreenState extends State<PeopleScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-
-                      // Province
                       _filterLabel('Province'),
                       _filterDropdown<int>(
                         value: _tempProvince,
@@ -395,7 +382,6 @@ class _PeopleScreenState extends State<PeopleScreen> {
                     ],
                   ),
                 ),
-                // Apply
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: SizedBox(
@@ -474,19 +460,17 @@ class _PeopleScreenState extends State<PeopleScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
-  // ─── Build ───────────────────────────────────────────────────────────────
+  // ─── Build ────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Controls bar
         Container(
           color: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           child: Row(
             children: [
-              // Filter button
               Stack(
                 children: [
                   IconButton(
@@ -509,7 +493,6 @@ class _PeopleScreenState extends State<PeopleScreen> {
                 ],
               ),
               const Spacer(),
-              // Ordering
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 decoration: BoxDecoration(
@@ -543,8 +526,6 @@ class _PeopleScreenState extends State<PeopleScreen> {
             ],
           ),
         ),
-
-        // Active filter chips
         if (_hasActiveFilters)
           Container(
             height: 40,
@@ -624,8 +605,6 @@ class _PeopleScreenState extends State<PeopleScreen> {
               ],
             ),
           ),
-
-        // Count + page size
         if (_totalCount > 0)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -662,8 +641,6 @@ class _PeopleScreenState extends State<PeopleScreen> {
               ],
             ),
           ),
-
-        // Content
         Expanded(
           child: _loading
               ? const Center(
@@ -704,121 +681,131 @@ class _PeopleScreenState extends State<PeopleScreen> {
     final location = profile['location'];
     final profileSkills = profile['profile_skills'] as List? ?? [];
     final userId = profile['user'];
-    final isOwn = _accountId != null &&
-        (userId == _accountId || (userId is Map && userId['id'] == _accountId));
+    final userIdInt = userId is Map ? userId['id'] as int? : userId as int?;
+    final isOwn = _accountId != null && userIdInt == _accountId;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Avatar
-            ClipRRect(
-              borderRadius: BorderRadius.circular(40),
-              child: picture != null
-                  ? CachedNetworkImage(
-                      imageUrl: picture,
-                      width: 64,
-                      height: 64,
-                      fit: BoxFit.cover,
-                      errorWidget: (_, __, ___) => _avatarPlaceholder(fullName))
-                  : _avatarPlaceholder(fullName),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Name
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(fullName,
-                            style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF094a25))),
-                      ),
-                      if (!isOwn)
-                        const Icon(Icons.bookmark_border,
-                            size: 20, color: Color(0xFF094a25)),
-                    ],
-                  ),
-                  const SizedBox(height: 5),
-
-                  // Bio
-                  if (bio.isNotEmpty) ...[
-                    Text(bio.length > 150 ? '${bio.substring(0, 150)}...' : bio,
-                        style: const TextStyle(
-                            fontSize: 12, color: Colors.black54, height: 1.4)),
-                    const SizedBox(height: 8),
-                  ],
-
-                  // Meta info
-                  if (status != null)
-                    _metaRow('Status', _capitalize(status.toString())),
-                  if (status == 'employed') ...[
-                    if (position != null)
-                      _metaRow(
-                          'Position',
-                          company != null
-                              ? '$position at $company'
-                              : position.toString()),
-                  ],
-                  if (industry != null)
-                    _metaRow('Industry', industry['name'] ?? ''),
-                  if (location != null && location.toString().isNotEmpty)
-                    _metaRow('Location', location.toString()),
-
-                  // Skills
-                  if (profileSkills.isNotEmpty) ...[
-                    const SizedBox(height: 4),
+    return GestureDetector(
+      onTap: () {
+        if (userIdInt == null) return;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => UserProfileScreen(userId: userIdInt),
+          ),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(40),
+                child: picture != null
+                    ? CachedNetworkImage(
+                        imageUrl: picture,
+                        width: 64,
+                        height: 64,
+                        fit: BoxFit.cover,
+                        errorWidget: (_, __, ___) =>
+                            _avatarPlaceholder(fullName))
+                    : _avatarPlaceholder(fullName),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Skills: ',
-                            style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black54)),
                         Expanded(
-                          child: Wrap(
-                            spacing: 4,
-                            runSpacing: 4,
-                            children: profileSkills
-                                .map((s) => Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 6, vertical: 2),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFF094a25)
-                                            .withOpacity(0.08),
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: Text(s['name']?.toString() ?? '',
-                                          style: const TextStyle(
-                                              fontSize: 11,
-                                              color: Color(0xFF094a25))),
-                                    ))
-                                .toList(),
-                          ),
+                          child: Text(fullName,
+                              style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF094a25))),
                         ),
+                        if (!isOwn)
+                          const Icon(Icons.bookmark_border,
+                              size: 20, color: Color(0xFF094a25)),
                       ],
                     ),
-                  ] else
-                    _metaRow('Skills', '—'),
-                ],
+                    const SizedBox(height: 5),
+                    if (bio.isNotEmpty) ...[
+                      Text(
+                          bio.length > 150
+                              ? '${bio.substring(0, 150)}...'
+                              : bio,
+                          style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.black54,
+                              height: 1.4)),
+                      const SizedBox(height: 8),
+                    ],
+                    if (status != null)
+                      _metaRow('Status', _capitalize(status.toString())),
+                    if (status == 'employed') ...[
+                      if (position != null)
+                        _metaRow(
+                            'Position',
+                            company != null
+                                ? '$position at $company'
+                                : position.toString()),
+                    ],
+                    if (industry != null)
+                      _metaRow('Industry', industry['name'] ?? ''),
+                    if (location != null && location.toString().isNotEmpty)
+                      _metaRow('Location', location.toString()),
+                    if (profileSkills.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Skills: ',
+                              style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black54)),
+                          Expanded(
+                            child: Wrap(
+                              spacing: 4,
+                              runSpacing: 4,
+                              children: profileSkills
+                                  .map((s) => Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 6, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFF094a25)
+                                              .withValues(alpha: 0.08),
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                        child: Text(s['name']?.toString() ?? '',
+                                            style: const TextStyle(
+                                                fontSize: 11,
+                                                color: Color(0xFF094a25))),
+                                      ))
+                                  .toList(),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ] else
+                      _metaRow('Skills', '—'),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -842,7 +829,7 @@ class _PeopleScreenState extends State<PeopleScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: const Color(0xFF094a25).withOpacity(0.08),
+              color: const Color(0xFF094a25).withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text('Page $_currentPage of $totalPages',
@@ -896,9 +883,10 @@ class _PeopleScreenState extends State<PeopleScreen> {
         margin: const EdgeInsets.only(right: 6),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: const Color(0xFF094a25).withOpacity(0.1),
+          color: const Color(0xFF094a25).withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF094a25).withOpacity(0.3)),
+          border:
+              Border.all(color: const Color(0xFF094a25).withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

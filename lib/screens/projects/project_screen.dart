@@ -3,7 +3,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../../services/api_service.dart';
 
-import '../projects/add_interest.dart';
 
 class ProjectDetailScreen extends StatefulWidget {
   final int projectId;
@@ -169,7 +168,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
   Widget _imagePlaceholder() => Container(
         width: double.infinity,
         height: 260,
-        color: const Color(0xFF094a25).withOpacity(0.1),
+        color: const Color(0xFF094a25).withValues(alpha: 0.1),
         child: const Icon(Icons.lightbulb_outline,
             color: Color(0xFF094a25), size: 60),
       );

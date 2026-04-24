@@ -5,6 +5,16 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../services/api_service.dart';
 import 'dart:convert';
 import '../directory/add_company_post.dart';
+import '../../providers/auth_provider.dart';
+import '../directory/add_product.dart';
+import '../report_screen.dart';
+import '../add_social.dart';
+import 'package:dio/dio.dart';
+import 'add_business_service.dart';
+import 'add_business_review.dart';
+import '../gallery/add_video_gallery.dart';
+import '../gallery/add_picture_gallery.dart';
+import '../mail/send_message.dart';
 
 class BusinessDetailScreen extends StatefulWidget {
   final int businessId;
@@ -110,6 +120,29 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
       });
     } catch (_) {
       _showSnack('Could not update follow status.');
+    }
+  }
+
+  Future<void> _saveSocialProfile(
+      Map<String, dynamic> data, dynamic socialId) async {
+    final auth = context.read<AuthProvider>();
+    try {
+      if (socialId != null) {
+        await auth.apiService.dio.put(
+          '/api/v1/directory/business/social/$socialId/u/',
+          data: data,
+        );
+      } else {
+        await auth.apiService.dio.post(
+          '/api/v1/directory/business/${widget.businessId}/social/c/',
+          data: {...data, 'business': widget.businessId},
+        );
+      }
+      if (mounted) _loadBusiness();
+    } on DioException catch (e) {
+      _showSnack(e.response?.data?['error'] ?? 'Could not save. Try again.');
+    } catch (_) {
+      _showSnack('Something went wrong. Try again.');
     }
   }
 
@@ -238,13 +271,47 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
     final actions = <Widget>[];
     if (!_isOwner) {
       actions.add(TextButton(
-        onPressed: () {}, // TODO: contact modal
+        onPressed: () async {
+          final user = _business!['user'] as Map?;
+          final recipientId = user?['id'] as int?;
+          await SendMessageSheet.show(
+            context,
+            origin: 'business',
+            title: 'Message ${_business!['name'] ?? 'Business'}',
+            recipientId: recipientId,
+            recipientName: _business!['name']?.toString(),
+          );
+        },
         child: const Text('Contact',
-            style: TextStyle(color: Color(0xFFf8b324), fontSize: 12)),
+            style: TextStyle(color: Colors.white70, fontSize: 12)),
       ));
       actions.add(TextButton(
-        onPressed: () {}, // TODO: review modal
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ReviewScreen(
+                action: 'add',
+                businessId: widget.businessId,
+              ),
+            ),
+          );
+          if (result != null && mounted) _loadReviews();
+        },
         child: const Text('Review',
+            style: TextStyle(color: Colors.white70, fontSize: 12)),
+      ));
+      actions.add(TextButton(
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ReportScreen(
+              contentId: widget.businessId,
+              type: 'businesses',
+            ),
+          ),
+        ),
+        child: const Text('Report',
             style: TextStyle(color: Colors.white70, fontSize: 12)),
       ));
     } else {
@@ -481,7 +548,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
   Widget _logoPlaceholder() => Container(
         width: 72,
         height: 72,
-        color: const Color(0xFF094a25).withOpacity(0.1),
+        color: const Color(0xFF094a25).withValues(alpha: 0.1),
         child: const Icon(Icons.business, color: Color(0xFF094a25), size: 32),
       );
 
@@ -663,18 +730,60 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
 
   Widget _productsTab() {
     final products = _business?['products'] as List? ?? [];
-    if (products.isEmpty) {
-      return _emptyTab('No products to display');
-    }
-    return Padding(
-      padding: const EdgeInsets.all(12),
-      child: Wrap(
-        spacing: 10,
-        runSpacing: 10,
-        children: products
-            .map((p) => _productCard(p as Map<String, dynamic>))
-            .toList(),
-      ),
+    final productLimit = (_business?['product_limit'] as int?) ?? 5;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Owner: Add Product button
+        if (_isOwner)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+            child: ElevatedButton.icon(
+              onPressed: () async {
+                final result = await Navigator.push<dynamic>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AddProductScreen(
+                      action: 'add',
+                      businessId: widget.businessId,
+                      currentCount: products.length,
+                      productLimit: productLimit,
+                    ),
+                  ),
+                );
+                // Reload the business so the new products appear
+                if (result != null && mounted) {
+                  _loadBusiness();
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF094a25),
+                minimumSize: const Size(double.infinity, 44),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              ),
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text('Add Product',
+                  style: TextStyle(color: Colors.white)),
+            ),
+          ),
+
+        // Product grid
+        if (products.isEmpty)
+          _emptyTab('No products to display')
+        else
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: products
+                  .map((p) => _productCard(p as Map<String, dynamic>))
+                  .toList(),
+            ),
+          ),
+      ],
     );
   }
 
@@ -694,20 +803,57 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: product['image'] != null
-                  ? CachedNetworkImage(
-                      imageUrl: product['image'],
-                      height: 90,
-                      width: double.infinity,
-                      fit: BoxFit.contain)
-                  : Container(
-                      height: 90,
-                      color: Colors.grey.shade100,
-                      child: const Center(
-                          child: Icon(Icons.shopping_bag_outlined,
-                              color: Colors.black26))),
+            // Product image — tapping opens edit for owner
+            GestureDetector(
+              onTap: _isOwner
+                  ? () async {
+                      final result = await Navigator.push<dynamic>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AddProductScreen(
+                            action: 'edit',
+                            businessId: widget.businessId,
+                            product: product,
+                          ),
+                        ),
+                      );
+                      if (result != null && mounted) _loadBusiness();
+                    }
+                  : null,
+              child: Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: product['image'] != null
+                        ? CachedNetworkImage(
+                            imageUrl: product['image'],
+                            height: 90,
+                            width: double.infinity,
+                            fit: BoxFit.contain)
+                        : Container(
+                            height: 90,
+                            color: Colors.grey.shade100,
+                            child: const Center(
+                                child: Icon(Icons.shopping_bag_outlined,
+                                    color: Colors.black26))),
+                  ),
+                  if (_isOwner)
+                    Positioned(
+                      top: 4,
+                      right: 4,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color:
+                              const Color(0xFF094a25).withValues(alpha: 0.85),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Icon(Icons.edit,
+                            color: Colors.white, size: 12),
+                      ),
+                    ),
+                ],
+              ),
             ),
             const SizedBox(height: 8),
             Text(product['title'] ?? '',
@@ -757,16 +903,47 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
     final services = (_business?['services'] as List? ?? [])
         .where((s) => s['service'] != null)
         .toList();
-    if (services.isEmpty) {
-      return _emptyTab('No services to display');
-    }
-    return Padding(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        children: services
-            .map((s) => _serviceCard(s as Map<String, dynamic>))
-            .toList(),
-      ),
+
+    return Column(
+      children: [
+        if (_isOwner)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+            child: ElevatedButton.icon(
+              onPressed: () async {
+                final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AddServiceScreen(
+                        action: 'add',
+                        businessId: widget.businessId,
+                      ),
+                    ));
+                if (result != null && mounted) _loadBusiness();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF094a25),
+                minimumSize: const Size(double.infinity, 44),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              ),
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text('Add Service',
+                  style: TextStyle(color: Colors.white)),
+            ),
+          ),
+        if (services.isEmpty)
+          _emptyTab('No services to display')
+        else
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              children: services
+                  .map((s) => _serviceCard(s as Map<String, dynamic>))
+                  .toList(),
+            ),
+          ),
+      ],
     );
   }
 
@@ -840,26 +1017,51 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Branches
           _tabSectionHeader('Branches'),
           if (branches.isEmpty)
             _emptyInline('No branches listed')
           else
             ...branches.map((b) => _branchCard(b as Map<String, dynamic>)),
           const SizedBox(height: 16),
-
-          // Office hours
           if (officeHours) ...[
             _tabSectionHeader('Office Hours'),
             _officeHoursCard(),
             const SizedBox(height: 16),
           ],
-
-          // Social media
-          if (socials.isNotEmpty) ...[
-            _tabSectionHeader('Social Media'),
+          _tabSectionHeader('Social Media'),
+          if (_isOwner)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AddSocialScreen(
+                        action: 'add',
+                        existing: socials,
+                      ),
+                    ),
+                  );
+                  if (result != null && mounted) {
+                    await _saveSocialProfile(result, null);
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF094a25),
+                  minimumSize: const Size(double.infinity, 44),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                ),
+                icon: const Icon(Icons.add, color: Colors.white),
+                label: const Text('Add Social Profile',
+                    style: TextStyle(color: Colors.white)),
+              ),
+            ),
+          if (socials.isEmpty)
+            _emptyInline('No social profiles listed')
+          else
             ...socials.map((s) => _socialRow(s as Map<String, dynamic>)),
-          ],
         ],
       ),
     );
@@ -995,6 +1197,8 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
   Widget _socialRow(Map<String, dynamic> social) {
     final network = social['network'] ?? '';
     final url = social['url'] ?? '';
+    final socialId = social['id'];
+
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(10),
@@ -1023,6 +1227,28 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                   overflow: TextOverflow.ellipsis),
             ),
           ),
+          if (_isOwner)
+            GestureDetector(
+              onTap: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AddSocialScreen(
+                      action: 'edit',
+                      network: social,
+                    ),
+                  ),
+                );
+                if (result != null && mounted) {
+                  await _saveSocialProfile(result, socialId);
+                }
+              },
+              child: const Padding(
+                padding: EdgeInsets.only(left: 8),
+                child: Icon(Icons.edit_outlined,
+                    color: Color(0xFF094a25), size: 18),
+              ),
+            ),
         ],
       ),
     );
@@ -1047,25 +1273,74 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
     final picGalleries = _business?['picture_galleries'] as List? ?? [];
     final vidGalleries = _business?['video_galleries'] as List? ?? [];
 
-    if (picGalleries.isEmpty && vidGalleries.isEmpty) {
-      return _emptyTab('No media to display');
-    }
-
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (picGalleries.isNotEmpty) ...[
-            _tabSectionHeader('Picture Galleries'),
-            ...picGalleries
-                .map((g) => _pictureGallery(g as Map<String, dynamic>)),
+          if (_isOwner) ...[
+            ElevatedButton.icon(
+              onPressed: () async {
+                final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AddVideoGalleryScreen(
+                        action: 'add',
+                        target: 'business',
+                        targetId: widget.businessId,
+                      ),
+                    ));
+                if (result != null && mounted) _loadBusiness();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF094a25),
+                minimumSize: const Size(double.infinity, 44),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              ),
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text('Add Video Gallery',
+                  style: TextStyle(color: Colors.white)),
+            ),
+            const SizedBox(height: 8),
+            ElevatedButton.icon(
+              onPressed: () async {
+                final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => AddPictureGalleryScreen(
+                              action: 'add',
+                              title: 'Add Picture Gallery',
+                              businessId: widget.businessId,
+                            )));
+                if (result != null && mounted) _loadBusiness();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF094a25),
+                minimumSize: const Size(double.infinity, 44),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              ),
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text('Add Picture Gallery',
+                  style: TextStyle(color: Colors.white)),
+            ),
             const SizedBox(height: 16),
           ],
-          if (vidGalleries.isNotEmpty) ...[
-            _tabSectionHeader('Video Galleries'),
-            ...vidGalleries
-                .map((g) => _videoGallery(g as Map<String, dynamic>)),
+          if (picGalleries.isEmpty && vidGalleries.isEmpty && !_isOwner)
+            _emptyTab('No media to display')
+          else ...[
+            if (picGalleries.isNotEmpty) ...[
+              _tabSectionHeader('Picture Galleries'),
+              ...picGalleries
+                  .map((g) => _pictureGallery(g as Map<String, dynamic>)),
+              const SizedBox(height: 16),
+            ],
+            if (vidGalleries.isNotEmpty) ...[
+              _tabSectionHeader('Video Galleries'),
+              ...vidGalleries
+                  .map((g) => _videoGallery(g as Map<String, dynamic>)),
+            ],
           ],
         ],
       ),
@@ -1077,14 +1352,36 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: Text(gallery['title']?.toString() ?? '',
-              style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF094a25))),
+        Row(
+          children: [
+            Expanded(
+              child: Text(gallery['title']?.toString() ?? '',
+                  style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF094a25))),
+            ),
+            if (_isOwner)
+              GestureDetector(
+                onTap: () async {
+                  final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => AddPictureGalleryScreen(
+                          action: 'edit',
+                          title: 'Edit Picture Gallery',
+                          businessId: widget.businessId,
+                          gallery: gallery,
+                        ),
+                      ));
+                  if (result != null && mounted) _loadBusiness();
+                },
+                child: const Icon(Icons.edit_outlined,
+                    color: Color(0xFF094a25), size: 18),
+              ),
+          ],
         ),
+        const SizedBox(height: 8),
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -1117,14 +1414,36 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: Text(gallery['title']?.toString() ?? '',
-              style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF094a25))),
+        Row(
+          children: [
+            Expanded(
+              child: Text(gallery['title']?.toString() ?? '',
+                  style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF094a25))),
+            ),
+            if (_isOwner)
+              GestureDetector(
+                onTap: () async {
+                  final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => AddVideoGalleryScreen(
+                          action: 'edit',
+                          target: 'business',
+                          targetId: widget.businessId,
+                          gallery: gallery,
+                        ),
+                      ));
+                  if (result != null && mounted) _loadBusiness();
+                },
+                child: const Icon(Icons.edit_outlined,
+                    color: Color(0xFF094a25), size: 18),
+              ),
+          ],
         ),
+        const SizedBox(height: 8),
         ...videos.map((v) => Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Container(
@@ -1139,6 +1458,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                 ),
               ),
             )),
+        const SizedBox(height: 12),
       ],
     );
   }
@@ -1226,16 +1546,27 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
       return Column(
         children: [
           _emptyTab('No reviews to display'),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: ElevatedButton(
-              onPressed: () {}, // TODO: add review modal
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF094a25)),
-              child: const Text('Write a Review',
-                  style: TextStyle(color: Colors.white)),
+          if (!_isOwner)
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: ElevatedButton(
+                onPressed: () async {
+                  final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ReviewScreen(
+                          action: 'add',
+                          businessId: widget.businessId,
+                        ),
+                      ));
+                  if (result != null && mounted) _loadReviews();
+                },
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF094a25)),
+                child: const Text('Write a Review',
+                    style: TextStyle(color: Colors.white)),
+              ),
             ),
-          ),
         ],
       );
     }
@@ -1596,7 +1927,7 @@ class _LightboxDialogState extends State<_LightboxDialog> {
               child: Container(
                 width: 36,
                 height: 36,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.black54,
                   shape: BoxShape.circle,
                 ),
@@ -1615,7 +1946,7 @@ class _LightboxDialogState extends State<_LightboxDialog> {
                 child: Container(
                   width: 40,
                   height: 40,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Colors.black45,
                     shape: BoxShape.circle,
                   ),
@@ -1635,7 +1966,7 @@ class _LightboxDialogState extends State<_LightboxDialog> {
                 child: Container(
                   width: 40,
                   height: 40,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Colors.black45,
                     shape: BoxShape.circle,
                   ),
@@ -1665,6 +1996,6 @@ class _LightboxDialogState extends State<_LightboxDialog> {
 Widget _logoPlaceholder() => Container(
       width: 72,
       height: 72,
-      color: const Color(0xFF094a25).withOpacity(0.1),
+      color: const Color(0xFF094a25).withValues(alpha: 0.1),
       child: const Icon(Icons.business, color: Color(0xFF094a25), size: 32),
     );

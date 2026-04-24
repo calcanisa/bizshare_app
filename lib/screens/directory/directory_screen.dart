@@ -173,13 +173,15 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
         'page': _currentPage,
         'category': _selectedCategory,
       };
-      if (_filterSubcategory != null)
+      if (_filterSubcategory != null) {
         params['subcategory'] = _filterSubcategory;
+      }
       if (_filterProvince != null) params['province'] = _filterProvince;
       if (_filterCity != null) params['city'] = _filterCity;
       if (_filterArea != null) params['area'] = _filterArea;
-      if (_filterBusinessType != null)
+      if (_filterBusinessType != null) {
         params['business_type'] = _filterBusinessType;
+      }
       if (_filterBusinessSize != null) params['size'] = _filterBusinessSize;
 
       final response = await api.dio
@@ -1125,7 +1127,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
   Widget _logoPlaceholder() => Container(
         width: 70,
         height: 70,
-        color: const Color(0xFF094a25).withOpacity(0.1),
+        color: const Color(0xFF094a25).withValues(alpha: 0.1),
         child: const Icon(Icons.business, color: Color(0xFF094a25), size: 32),
       );
 }

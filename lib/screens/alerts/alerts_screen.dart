@@ -307,8 +307,9 @@ class _AlertsScreenState extends State<AlertsScreen> {
         color: dismissed ? Colors.grey.shade50 : Colors.white,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-            color:
-                dismissed ? Colors.grey.shade200 : typeColor.withOpacity(0.3)),
+            color: dismissed
+                ? Colors.grey.shade200
+                : typeColor.withValues(alpha: 0.3)),
         boxShadow: dismissed
             ? []
             : [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 4)],

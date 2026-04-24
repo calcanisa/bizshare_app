@@ -398,7 +398,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
       width: 70,
       height: 70,
       decoration: BoxDecoration(
-        color: const Color(0xFF094a25).withOpacity(0.08),
+        color: const Color(0xFF094a25).withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Icon(icon, color: const Color(0xFF094a25), size: 28),

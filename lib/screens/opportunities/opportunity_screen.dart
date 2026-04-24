@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../../services/api_service.dart';
+import 'opportunity_application.dart';
+import '../report_screen.dart';
 
 class OpportunityDetailScreen extends StatefulWidget {
   final int opportunityId;
@@ -16,9 +18,10 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
   Map<String, dynamic>? _opp;
   bool _loading = true;
   int? _accountId;
+  bool _isVerified = false;
+  Map<String, dynamic>? _profile;
   List<dynamic> _myApplications = [];
 
-  // Which application cards are expanded
   final Set<int> _openApplications = {};
 
   @override
@@ -34,6 +37,8 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
       final res = await api.dio.get('/api/v1/users/current/');
       setState(() {
         _accountId = res.data['id'];
+        _isVerified = res.data['verified'] == true;
+        _profile = res.data['profile'] as Map<String, dynamic>?;
         _myApplications = res.data['applications'] as List? ?? [];
       });
     } catch (_) {}
@@ -271,7 +276,7 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
         ));
       }
       actions.add(TextButton(
-        onPressed: () {}, // TODO: edit modal
+        onPressed: () {}, // TODO: edit opportunity
         child: const Text('Edit',
             style: TextStyle(color: Color(0xFFf8b324), fontSize: 12)),
       ));
@@ -285,7 +290,20 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
         actions.add(Padding(
           padding: const EdgeInsets.only(right: 8),
           child: ElevatedButton(
-            onPressed: _hasApplied ? null : () {}, // TODO: apply modal
+            onPressed: _hasApplied
+                ? null
+                : () async {
+                    final result = await OpportunityApplicationSheet.show(
+                      context,
+                      action: 'add',
+                      opportunity: _opp!,
+                      profile: _profile,
+                      isVerified: _isVerified,
+                    );
+                    if (result != null && mounted) {
+                      setState(() => _myApplications.add(result));
+                    }
+                  },
             style: ElevatedButton.styleFrom(
               backgroundColor:
                   _hasApplied ? Colors.grey.shade400 : const Color(0xFFf8b324),
@@ -302,7 +320,15 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
         ));
       }
       actions.add(TextButton(
-        onPressed: () {}, // TODO: report
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ReportScreen(
+              contentId: widget.opportunityId,
+              type: 'opportunities',
+            ),
+          ),
+        ),
         child: const Text('Report',
             style: TextStyle(color: Colors.white70, fontSize: 12)),
       ));
@@ -310,6 +336,7 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
 
     return actions;
   }
+
   // ─── Category bar ─────────────────────────────────────────────────────────
 
   Widget _categoryBar() {
@@ -341,7 +368,6 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Image
           if (image != null && image.toString().isNotEmpty)
             CachedNetworkImage(
                 imageUrl: image,
@@ -351,8 +377,6 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
                 errorWidget: (_, __, ___) => _imagePlaceholder())
           else
             _imagePlaceholder(),
-
-          // Details
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -407,7 +431,7 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
   Widget _imagePlaceholder() => Container(
         height: 220,
         width: double.infinity,
-        color: const Color(0xFF094a25).withOpacity(0.1),
+        color: const Color(0xFF094a25).withValues(alpha: 0.1),
         child:
             const Icon(Icons.trending_up, color: Color(0xFF094a25), size: 60),
       );
@@ -519,10 +543,11 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
             children: [
               ElevatedButton(
                 onPressed: () => setState(() {
-                  if (isOpen)
+                  if (isOpen) {
                     _openApplications.remove(id);
-                  else
+                  } else {
                     _openApplications.add(id);
+                  }
                 }),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF094a25),
@@ -589,7 +614,24 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
                 Row(
                   children: [
                     OutlinedButton(
-                      onPressed: () {}, // TODO: edit app modal
+                      onPressed: () async {
+                        final result = await OpportunityApplicationSheet.show(
+                          context,
+                          action: 'edit',
+                          opportunity: _opp!,
+                          application: myApp,
+                          profile: _profile,
+                        );
+                        if (result != null && mounted) {
+                          setState(() {
+                            final i = _myApplications
+                                .indexWhere((a) => a['id'] == result['id']);
+                            if (i != -1) {
+                              _myApplications[i] = result;
+                            }
+                          });
+                        }
+                      },
                       style: OutlinedButton.styleFrom(
                           foregroundColor: const Color(0xFF094a25),
                           padding: const EdgeInsets.symmetric(

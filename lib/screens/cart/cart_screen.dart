@@ -19,7 +19,7 @@ class _CartScreenState extends State<CartScreen> {
   bool _validatingCode = false;
   bool _showDiscount = false;
   bool _showCodeInfo = false;
-  double _discountPercentage = 2.0;
+  final double _discountPercentage = 2.0;
 
   final _refCodeController = TextEditingController();
 
@@ -488,8 +488,8 @@ class _CartScreenState extends State<CartScreen> {
                     child: Container(
                       width: 18,
                       height: 18,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF094a25),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF094a25),
                         shape: BoxShape.circle,
                       ),
                       child: const Center(
@@ -585,7 +585,7 @@ class _CartScreenState extends State<CartScreen> {
           width: double.infinity,
           child: ElevatedButton(
             onPressed:
-                _accepted && !cart.isEmpty && !_paying ? _makePayment : null,
+                _accepted && cart.isNotEmpty && !_paying ? _makePayment : null,
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF094a25),
               disabledBackgroundColor: Colors.grey.shade300,
@@ -608,7 +608,7 @@ class _CartScreenState extends State<CartScreen> {
                   ),
           ),
         ),
-        if (!_accepted && !cart.isEmpty)
+        if (!_accepted && cart.isNotEmpty)
           const Padding(
             padding: EdgeInsets.only(top: 6),
             child: Text('Please accept the terms before paying.',
@@ -644,7 +644,7 @@ class _CartScreenState extends State<CartScreen> {
         width: 44,
         height: 44,
         decoration: BoxDecoration(
-          color: const Color(0xFF094a25).withOpacity(0.1),
+          color: const Color(0xFF094a25).withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(4),
         ),
         child: const Icon(Icons.shopping_cart_outlined,

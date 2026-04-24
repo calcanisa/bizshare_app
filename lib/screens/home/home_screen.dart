@@ -23,6 +23,9 @@ import '../cart/cart_screen.dart';
 import '../bookmarks/bookmarks_screen.dart';
 import '../contacts/contacts_screen.dart';
 import '../../providers/cart_provider.dart';
+import '../give_feedback.dart';
+import '../help_screen.dart';
+import '../../widgets/sesh_agent.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -222,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       title: const Text('Dashboard'),
                       selected: _currentIndex == -1,
                       selectedTileColor:
-                          const Color(0xFF094a25).withOpacity(0.1),
+                          const Color(0xFF094a25).withValues(alpha: 0.1),
                       onTap: () {
                         setState(() {
                           _history.add(_currentIndex);
@@ -265,6 +268,31 @@ class _HomeScreenState extends State<HomeScreen> {
                     _navItem('Projects'),
                     _navItem('Services'),
                     _navItem('Websites'),
+
+                    const Divider(height: 1),
+
+// ── HELP ──────────────────────────────────────────
+                    _sectionHeader('Help'),
+                    ListTile(
+                      dense: true,
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 16),
+                      leading: const Icon(Icons.help_outline,
+                          size: 20, color: Color(0xFF094a25)),
+                      title: const Text('Help',
+                          style:
+                              TextStyle(fontSize: 14, color: Colors.black87)),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => HelpScreen(),
+                            ));
+                      },
+                    ),
+
+                    const Divider(height: 1),
 
                     const Divider(height: 1),
 
@@ -314,7 +342,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-        body: _currentScreen(),
+        body: Stack(
+          children: [
+            _currentScreen(),
+            SeshAgent(
+              enabled: true,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -375,7 +410,22 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _footerLink(String title) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        Navigator.pop(context);
+        if (title == 'Feedback') {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const FeedbackScreen(),
+              ));
+        } else if (title == 'Help') {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => HelpScreen(),
+              ));
+        }
+      },
       child: Text(title,
           style: const TextStyle(
               fontSize: 12,

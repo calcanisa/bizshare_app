@@ -86,8 +86,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
       };
       if (page > 1) params['page'] = page;
       if (_filterCategory != null) params['category'] = _filterCategory;
-      if (_filterSubcategory != null)
+      if (_filterSubcategory != null) {
         params['subcategory'] = _filterSubcategory;
+      }
       if (_filterMinPrice.isNotEmpty) params['min_price'] = _filterMinPrice;
       if (_filterMaxPrice.isNotEmpty) params['max_price'] = _filterMaxPrice;
 
@@ -675,18 +676,18 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     const SizedBox(height: 6),
                     GestureDetector(
                       onTap: () => _openUrl(url.toString()),
-                      child: Row(
+                      child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.open_in_new,
+                          Icon(Icons.open_in_new,
                               size: 13, color: Color(0xFF094a25)),
-                          const SizedBox(width: 4),
+                          SizedBox(width: 4),
                           Text('View on Website',
                               style: TextStyle(
                                   fontSize: 12,
-                                  color: const Color(0xFF094a25),
+                                  color: Color(0xFF094a25),
                                   decoration: TextDecoration.underline,
-                                  decorationColor: const Color(0xFF094a25))),
+                                  decorationColor: Color(0xFF094a25))),
                         ],
                       ),
                     ),
@@ -853,7 +854,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: const Color(0xFF094a25).withOpacity(0.08),
+              color: const Color(0xFF094a25).withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text('Page $_currentPage of $totalPages',
@@ -909,9 +910,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
         margin: const EdgeInsets.only(right: 6),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: const Color(0xFF094a25).withOpacity(0.1),
+          color: const Color(0xFF094a25).withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF094a25).withOpacity(0.3)),
+          border:
+              Border.all(color: const Color(0xFF094a25).withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -931,7 +933,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   Widget _imagePlaceholder() => Container(
         width: 90,
         height: 90,
-        color: const Color(0xFF094a25).withOpacity(0.1),
+        color: const Color(0xFF094a25).withValues(alpha: 0.1),
         child: const Icon(Icons.shopping_bag_outlined,
             color: Color(0xFF094a25), size: 32),
       );

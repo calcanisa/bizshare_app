@@ -135,9 +135,12 @@ class _AddLeadModalState extends State<AddLeadModal> {
     if (widget.action == 'add' && !_accepted) return false;
     if (_descriptionController.text.trim().isEmpty) return false;
     if (_type == 'services' &&
-        (_selectedService == null || _selectedService == 0)) return false;
-    if (_type == 'products' && _productNameController.text.trim().isEmpty)
+        (_selectedService == null || _selectedService == 0)) {
       return false;
+    }
+    if (_type == 'products' && _productNameController.text.trim().isEmpty) {
+      return false;
+    }
     return true;
   }
 

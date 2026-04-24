@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../../services/api_service.dart';
+import 'cv_generator.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -17,10 +18,16 @@ class _ProfileScreenState extends State<ProfileScreen>
   bool _loading = true;
   int _userId = 0;
 
+  // Stored separately from profile so null API fields don't block the button
+  bool _hasMembership = false;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 5, vsync: this);
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) setState(() {});
+    });
     _loadProfile();
   }
 
@@ -35,9 +42,18 @@ class _ProfileScreenState extends State<ProfileScreen>
     try {
       final api = context.read<ApiService>();
       final accountResponse = await api.dio.get('/api/v1/users/current/');
-      _userId = accountResponse.data['id'];
+      final accountData = accountResponse.data;
+      _userId = accountData['id'];
+
+      // Determine membership from account data
+      final membership = accountData['membership'];
+      final passiveMembership = accountData['passive_membership'];
+      _hasMembership = membership != null || passiveMembership != null;
+
       final response = await api.dio.get('/api/v1/user/$_userId/profile/');
-      setState(() => _profile = response.data);
+      setState(() {
+        _profile = response.data;
+      });
     } catch (_) {}
     setState(() => _loading = false);
   }
@@ -64,7 +80,6 @@ class _ProfileScreenState extends State<ProfileScreen>
         physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
           children: [
-            // Hero image
             SizedBox(
               height: 150,
               width: double.infinity,
@@ -76,7 +91,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                           Container(color: const Color(0xFF094a25)))
                   : Container(color: const Color(0xFF094a25)),
             ),
-            // Profile picture + name
             Container(
               color: Colors.white,
               padding: const EdgeInsets.all(16),
@@ -114,7 +128,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                 ],
               ),
             ),
-            // Tab buttons
             Container(
               color: const Color(0xFF094a25),
               child: SingleChildScrollView(
@@ -130,7 +143,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                 ),
               ),
             ),
-            // Tab content
             _currentTabContent(),
             const SizedBox(height: 40),
           ],
@@ -184,7 +196,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   Widget _picPlaceholder() => Container(
         width: 80,
         height: 80,
-        color: const Color(0xFF094a25).withOpacity(0.1),
+        color: const Color(0xFF094a25).withValues(alpha: 0.1),
         child: const Icon(Icons.person, color: Color(0xFF094a25), size: 40),
       );
 
@@ -307,108 +319,141 @@ class _ProfileScreenState extends State<ProfileScreen>
       'retired': 'Retired',
     };
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (employmentStatus.isNotEmpty)
-          _labelValue('Employment Status',
-              employmentLabels[employmentStatus] ?? employmentStatus),
-        if (industry.isNotEmpty) _labelValue('Industry', industry),
-        if (currentPosition.isNotEmpty)
-          _labelValue('Current Position', currentPosition),
-        if (currentCompany.isNotEmpty)
-          _labelValue('Current Company', currentCompany),
-        if (educations.isNotEmpty) ...[
-          const SizedBox(height: 8),
-          _sectionHeader('Education'),
-          ...educations.map((edu) => Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(edu['institution'] ?? '',
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF094a25))),
-                    if ((edu['qualification'] ?? '').isNotEmpty)
-                      Text('Qualification: ${edu['qualification']}',
-                          style: const TextStyle(fontSize: 13)),
-                    if ((edu['field_of_study'] ?? '').isNotEmpty)
-                      Text('Field: ${edu['field_of_study']}',
-                          style: const TextStyle(fontSize: 13)),
-                    if (edu['year_completed'] != null)
-                      Text('Year: ${edu['year_completed']}',
-                          style: const TextStyle(fontSize: 13)),
-                  ],
-                ),
-              )),
-        ],
-        if (skills.isNotEmpty) ...[
-          const SizedBox(height: 8),
-          _sectionHeader('Skills'),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: skills
-                  .map((skill) => Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF094a25),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(skill['name'] ?? skill['title'] ?? '',
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 12)),
-                      ))
-                  .toList(),
+    final List<Widget> children = [];
+
+    if (employmentStatus.isNotEmpty)
+      children.add(_labelValue('Employment Status',
+          employmentLabels[employmentStatus] ?? employmentStatus));
+    if (industry.isNotEmpty) children.add(_labelValue('Industry', industry));
+    if (currentPosition.isNotEmpty)
+      children.add(_labelValue('Current Position', currentPosition));
+    if (currentCompany.isNotEmpty)
+      children.add(_labelValue('Current Company', currentCompany));
+
+    if (educations.isNotEmpty) {
+      children.add(const SizedBox(height: 8));
+      children.add(_sectionHeader('Education'));
+      for (final edu in educations) {
+        children.add(Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade100,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(edu['institution'] ?? '',
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, color: Color(0xFF094a25))),
+              if ((edu['qualification'] ?? '').isNotEmpty)
+                Text('Qualification: ${edu['qualification']}',
+                    style: const TextStyle(fontSize: 13)),
+              if ((edu['field_of_study'] ?? '').isNotEmpty)
+                Text('Field: ${edu['field_of_study']}',
+                    style: const TextStyle(fontSize: 13)),
+              if (edu['year_completed'] != null)
+                Text('Year: ${edu['year_completed']}',
+                    style: const TextStyle(fontSize: 13)),
+            ],
+          ),
+        ));
+      }
+    }
+
+    if (skills.isNotEmpty) {
+      children.add(const SizedBox(height: 8));
+      children.add(_sectionHeader('Skills'));
+      children.add(Padding(
+        padding: const EdgeInsets.all(12),
+        child: Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: skills
+              .map((skill) => Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF094a25),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(skill['name'] ?? skill['title'] ?? '',
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 12)),
+                  ))
+              .toList(),
+        ),
+      ));
+    }
+
+    if (experiences.isNotEmpty) {
+      children.add(const SizedBox(height: 8));
+      children.add(_sectionHeader('Working Experience'));
+      for (final exp in experiences) {
+        children.add(Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade100,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(exp['position'] ?? '',
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, color: Color(0xFF094a25))),
+              if ((exp['company'] ?? '').isNotEmpty)
+                Text('Company: ${exp['company']}',
+                    style: const TextStyle(fontSize: 13)),
+              Text(
+                  exp['current'] == true
+                      ? 'Current position'
+                      : 'Ended: ${exp['ended'] ?? ''}',
+                  style: const TextStyle(fontSize: 12, color: Colors.black45)),
+              if ((exp['description'] ?? '').isNotEmpty) ...[
+                const SizedBox(height: 4),
+                Text(exp['description'],
+                    style:
+                        const TextStyle(fontSize: 13, color: Colors.black87)),
+              ],
+            ],
+          ),
+        ));
+      }
+    }
+
+    // CV button — shown when user has any membership.
+    // _hasMembership is set from the account API response in _loadProfile,
+    // independently of the profile data so null fields cannot block it.
+    if (_hasMembership) {
+      children.add(Padding(
+        padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+        child: ElevatedButton.icon(
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => CvGeneratorScreen(profile: _profile!),
             ),
           ),
-        ],
-        if (experiences.isNotEmpty) ...[
-          const SizedBox(height: 8),
-          _sectionHeader('Working Experience'),
-          ...experiences.map((exp) => Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(exp['position'] ?? '',
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF094a25))),
-                    if ((exp['company'] ?? '').isNotEmpty)
-                      Text('Company: ${exp['company']}',
-                          style: const TextStyle(fontSize: 13)),
-                    Text(
-                        exp['current'] == true
-                            ? 'Current position'
-                            : 'Ended: ${exp['ended'] ?? ''}',
-                        style: const TextStyle(
-                            fontSize: 12, color: Colors.black45)),
-                    if ((exp['description'] ?? '').isNotEmpty) ...[
-                      const SizedBox(height: 4),
-                      Text(exp['description'],
-                          style: const TextStyle(
-                              fontSize: 13, color: Colors.black87)),
-                    ],
-                  ],
-                ),
-              )),
-        ],
-      ],
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF094a25),
+            foregroundColor: Colors.white,
+            minimumSize: const Size(double.infinity, 48),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          ),
+          icon: const Icon(Icons.picture_as_pdf_outlined),
+          label: const Text('Generate CV',
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+        ),
+      ));
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: children,
     );
   }
 

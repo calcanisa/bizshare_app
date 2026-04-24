@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../services/api_service.dart';
 import '../websites/website_screen.dart';
+import 'add_website.dart';
 
 class WebsitesScreen extends StatefulWidget {
   const WebsitesScreen({super.key});
@@ -13,19 +14,15 @@ class WebsitesScreen extends StatefulWidget {
 }
 
 class _WebsitesScreenState extends State<WebsitesScreen> {
-  // Account info
   int? _accountId;
   String? _membershipType;
   bool _loadingAccount = true;
 
-  // Tab
   int _tab = 1;
 
-  // Tab 1 – Your Listings
   List<dynamic> _myListings = [];
   bool _loadingMine = false;
 
-  // Tab 2 – All Listings
   List<dynamic> _allListings = [];
   bool _loadingAll = false;
   int _currentPage = 1;
@@ -35,15 +32,11 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
   int _selectedPageSize = 20;
   String _selectedOrdering = 'title-asc';
 
-  // Filter data
   List<dynamic> _types = [];
   List<dynamic> _categories = [];
 
-  // Filter state (applied)
   int? _filterType;
   int? _filterCategory;
-
-  // Temp filter state (in-sheet)
   int? _tempType;
   int? _tempCategory;
 
@@ -174,6 +167,33 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
     }
   }
 
+  Future<void> _openAddWebsite() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AddWebsiteScreen(
+          action: 'add',
+          count: _myListings.length,
+          limit: _webLimit,
+        ),
+      ),
+    );
+    if (result != null && mounted) _loadMyListings();
+  }
+
+  Future<void> _openEditWebsite(Map<String, dynamic> listing) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AddWebsiteScreen(
+          action: 'edit',
+          listing: listing,
+        ),
+      ),
+    );
+    if (result != null && mounted) _loadMyListings();
+  }
+
   Future<void> _openUrl(String? url) async {
     if (url == null || url.isEmpty) return;
     final uri = Uri.tryParse(url);
@@ -194,7 +214,6 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
     await _loadFilterData();
     _tempType = _filterType;
     _tempCategory = _filterCategory;
-
     if (!mounted) return;
     showModalBottomSheet(
       context: context,
@@ -274,7 +293,6 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
                         onChanged: (v) =>
                             setSheetState(() => _tempCategory = v),
                       ),
-                      const SizedBox(height: 8),
                     ],
                   ),
                 ),
@@ -345,7 +363,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
         ),
       );
 
-  // ─── Build ───────────────────────────────────────────────────────────────
+  // ─── Build ────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -397,7 +415,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
     );
   }
 
-  // ─── Tab 1 — Your Listings ───────────────────────────────────────────────
+  // ─── Tab 1 — Your Listings ────────────────────────────────────────────────
 
   Widget _myListingsTab() {
     if (_loadingMine) {
@@ -409,7 +427,6 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
 
     return Column(
       children: [
-        // Add button bar
         Container(
           color: Colors.grey.shade50,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -419,8 +436,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
                   style: const TextStyle(fontSize: 12, color: Colors.black45)),
               const Spacer(),
               ElevatedButton.icon(
-                onPressed:
-                    atLimit ? null : () {}, // TODO: open add website modal
+                onPressed: atLimit ? null : _openAddWebsite,
                 icon: const Icon(Icons.add, size: 16),
                 label:
                     const Text('Add Website', style: TextStyle(fontSize: 13)),
@@ -454,7 +470,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
                           style: TextStyle(color: Color(0xFF094a25))),
                       const SizedBox(height: 12),
                       ElevatedButton(
-                        onPressed: () {}, // TODO: open add website modal
+                        onPressed: _openAddWebsite,
                         style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF094a25)),
                         child: const Text('Add One',
@@ -535,7 +551,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
                       children: [
                         Expanded(
                           child: OutlinedButton(
-                            onPressed: () {}, // TODO: edit listing
+                            onPressed: () => _openEditWebsite(listing),
                             style: OutlinedButton.styleFrom(
                                 foregroundColor: const Color(0xFF094a25),
                                 padding:
@@ -547,7 +563,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
                         const SizedBox(width: 6),
                         Expanded(
                           child: OutlinedButton(
-                            onPressed: () {}, // TODO: feature listing
+                            onPressed: () {}, // TODO: feature
                             style: OutlinedButton.styleFrom(
                                 foregroundColor: const Color(0xFFf8b324),
                                 side:
@@ -583,12 +599,11 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
     );
   }
 
-  // ─── Tab 2 — All Listings ────────────────────────────────────────────────
+  // ─── Tab 2 — All Listings ─────────────────────────────────────────────────
 
   Widget _allListingsTab() {
     return Column(
       children: [
-        // Controls bar
         Container(
           color: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -649,8 +664,6 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
             ],
           ),
         ),
-
-        // Active filter chips
         if (_hasActiveFilters)
           Container(
             height: 40,
@@ -682,8 +695,6 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
               ],
             ),
           ),
-
-        // Count + page size
         if (_totalCount > 0)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -720,8 +731,6 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
               ],
             ),
           ),
-
-        // Content
         Expanded(
           child: _loadingAll
               ? const Center(
@@ -827,25 +836,25 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
                   if (url != null && url.toString().isNotEmpty)
                     GestureDetector(
                       onTap: () => _openUrl(url.toString()),
-                      child: Row(
+                      child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.open_in_new,
+                          Icon(Icons.open_in_new,
                               size: 14, color: Color(0xFF094a25)),
-                          const SizedBox(width: 4),
+                          SizedBox(width: 4),
                           Text('See Website',
                               style: TextStyle(
                                   fontSize: 12,
-                                  color: const Color(0xFF094a25),
+                                  color: Color(0xFF094a25),
                                   decoration: TextDecoration.underline,
-                                  decorationColor: const Color(0xFF094a25))),
+                                  decorationColor: Color(0xFF094a25))),
                         ],
                       ),
                     ),
                   const Spacer(),
                   if (isOwner) ...[
                     OutlinedButton(
-                      onPressed: () {}, // TODO: edit
+                      onPressed: () => _openEditWebsite(listing),
                       style: OutlinedButton.styleFrom(
                           foregroundColor: const Color(0xFF094a25),
                           padding: const EdgeInsets.symmetric(
@@ -901,7 +910,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: const Color(0xFF094a25).withOpacity(0.08),
+              color: const Color(0xFF094a25).withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text('Page $_currentPage of $totalPages',
@@ -932,8 +941,6 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
         ),
       );
 
-  // ─── Shared helpers ──────────────────────────────────────────────────────
-
   Widget _metaRow(String label, String value) => Padding(
         padding: const EdgeInsets.only(bottom: 2),
         child: RichText(
@@ -957,9 +964,10 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
         margin: const EdgeInsets.only(right: 6),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: const Color(0xFF094a25).withOpacity(0.1),
+          color: const Color(0xFF094a25).withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF094a25).withOpacity(0.3)),
+          border:
+              Border.all(color: const Color(0xFF094a25).withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -979,7 +987,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
   Widget _imagePlaceholder() => Container(
         width: 80,
         height: 80,
-        color: const Color(0xFF094a25).withOpacity(0.1),
+        color: const Color(0xFF094a25).withValues(alpha: 0.1),
         child: const Icon(Icons.language, color: Color(0xFF094a25), size: 30),
       );
 }

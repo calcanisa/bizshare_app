@@ -9,12 +9,10 @@ class WebsiteDetailScreen extends StatefulWidget {
   const WebsiteDetailScreen({super.key, required this.websiteId});
 
   @override
-  State<WebsiteDetailScreen> createState() =>
-      _WebsiteDetailScreenState();
+  State<WebsiteDetailScreen> createState() => _WebsiteDetailScreenState();
 }
 
-class _WebsiteDetailScreenState
-    extends State<WebsiteDetailScreen> {
+class _WebsiteDetailScreenState extends State<WebsiteDetailScreen> {
   Map<String, dynamic>? _listing;
   bool _loading = true;
   int? _accountId;
@@ -38,8 +36,8 @@ class _WebsiteDetailScreenState
     setState(() => _loading = true);
     try {
       final api = context.read<ApiService>();
-      final res = await api.dio
-          .get('/api/v1/websites/listing/${widget.websiteId}/');
+      final res =
+          await api.dio.get('/api/v1/websites/listing/${widget.websiteId}/');
       setState(() => _listing = res.data);
     } catch (_) {
       _showSnack('Could not load listing. Try again.');
@@ -67,16 +65,14 @@ class _WebsiteDetailScreenState
               child: const Text('Cancel')),
           TextButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Delete',
-                  style: TextStyle(color: Colors.red))),
+              child: const Text('Delete', style: TextStyle(color: Colors.red))),
         ],
       ),
     );
     if (confirm != true) return;
     try {
       final api = context.read<ApiService>();
-      await api.dio
-          .delete('/api/v1/websites/d/${widget.websiteId}/');
+      await api.dio.delete('/api/v1/websites/d/${widget.websiteId}/');
       _showSnack('Listing deleted successfully');
       if (mounted) Navigator.pop(context);
     } catch (_) {
@@ -96,8 +92,7 @@ class _WebsiteDetailScreenState
 
   void _showSnack(String msg) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(msg)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
   // ─── Build ────────────────────────────────────────────────────────────────
@@ -116,18 +111,14 @@ class _WebsiteDetailScreenState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              name.length > 40
-                  ? '${name.substring(0, 40)}...'
-                  : name,
-              style: const TextStyle(
-                  color: Colors.white, fontSize: 15),
+              name.length > 40 ? '${name.substring(0, 40)}...' : name,
+              style: const TextStyle(color: Colors.white, fontSize: 15),
               overflow: TextOverflow.ellipsis,
             ),
             if (category != null)
               Text(
                 category['name']?.toString() ?? '',
-                style: const TextStyle(
-                    color: Color(0xFFf8b324), fontSize: 11),
+                style: const TextStyle(color: Color(0xFFf8b324), fontSize: 11),
               ),
           ],
         ),
@@ -135,45 +126,36 @@ class _WebsiteDetailScreenState
           if (_listing != null) ...[
             if (_isOwner) ...[
               TextButton(
-                onPressed: () {},  // TODO: edit modal
+                onPressed: () {}, // TODO: edit modal
                 child: const Text('Edit',
-                    style: TextStyle(
-                        color: Color(0xFFf8b324),
-                        fontSize: 12)),
+                    style: TextStyle(color: Color(0xFFf8b324), fontSize: 12)),
               ),
               TextButton(
                 onPressed: _deleteListing,
                 child: const Text('Delete',
-                    style: TextStyle(
-                        color: Color(0xFFbc2023),
-                        fontSize: 12)),
+                    style: TextStyle(color: Color(0xFFbc2023), fontSize: 12)),
               ),
             ] else
               TextButton(
-                onPressed: () {},  // TODO: report
+                onPressed: () {}, // TODO: report
                 child: const Text('Report',
-                    style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 12)),
+                    style: TextStyle(color: Colors.white70, fontSize: 12)),
               ),
           ],
         ],
       ),
       body: _loading
           ? const Center(
-              child: CircularProgressIndicator(
-                  color: Color(0xFF094a25)))
+              child: CircularProgressIndicator(color: Color(0xFF094a25)))
           : _listing == null
               ? const Center(child: Text('Listing not found'))
               : RefreshIndicator(
                   onRefresh: _loadListing,
                   color: const Color(0xFF094a25),
                   child: SingleChildScrollView(
-                    physics:
-                        const AlwaysScrollableScrollPhysics(),
+                    physics: const AlwaysScrollableScrollPhysics(),
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _typeBar(),
                         _imageSection(),
@@ -195,14 +177,11 @@ class _WebsiteDetailScreenState
     return Container(
       color: Colors.black87,
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(
-          horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Text(
         '$typeName Website',
         style: const TextStyle(
-            color: Colors.white,
-            fontSize: 13,
-            fontWeight: FontWeight.w500),
+            color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500),
       ),
     );
   }
@@ -223,8 +202,7 @@ class _WebsiteDetailScreenState
                 height: 220,
                 width: double.infinity,
                 fit: BoxFit.contain,
-                errorWidget: (_, __, ___) =>
-                    _imagePlaceholder())
+                errorWidget: (_, __, ___) => _imagePlaceholder())
             : _imagePlaceholder(),
       ),
     );
@@ -233,9 +211,8 @@ class _WebsiteDetailScreenState
   Widget _imagePlaceholder() => Container(
         height: 220,
         width: double.infinity,
-        color: const Color(0xFF094a25).withOpacity(0.1),
-        child: const Icon(Icons.language,
-            color: Color(0xFF094a25), size: 60),
+        color: const Color(0xFF094a25).withValues(alpha: 0.1),
+        child: const Icon(Icons.language, color: Color(0xFF094a25), size: 60),
       );
 
   // ─── Details ──────────────────────────────────────────────────────────────
@@ -252,8 +229,7 @@ class _WebsiteDetailScreenState
         children: [
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(
-                horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             color: const Color(0xFF094a25),
             child: const Text('Basic Info',
                 style: TextStyle(
@@ -274,24 +250,18 @@ class _WebsiteDetailScreenState
                 const SizedBox(height: 8),
                 Text(description,
                     style: const TextStyle(
-                        fontSize: 13,
-                        color: Colors.black87,
-                        height: 1.6)),
-                if (url != null &&
-                    url.toString().isNotEmpty) ...[
+                        fontSize: 13, color: Colors.black87, height: 1.6)),
+                if (url != null && url.toString().isNotEmpty) ...[
                   const SizedBox(height: 20),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: () => _openUrl(url),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            const Color(0xFF094a25),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 14),
+                        backgroundColor: const Color(0xFF094a25),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(8)),
+                            borderRadius: BorderRadius.circular(8)),
                       ),
                       icon: const Icon(Icons.open_in_new,
                           color: Colors.white, size: 18),

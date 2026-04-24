@@ -4,7 +4,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:dio/dio.dart';
 import '../../services/api_service.dart';
-import '../locations/add_location.dart';
 
 class AddEventModal extends StatefulWidget {
   final String action; // 'add' or 'edit'

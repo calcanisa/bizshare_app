@@ -88,9 +88,9 @@ class _AddClassifiedModalState extends State<AddClassifiedModal> {
   List<String> _propExtras = [];
 
   // Images
-  List<File> _newImages = [];
+  final List<File> _newImages = [];
   List<String> _existingImages = [];
-  List<int> _imagesToRemove = [];
+  final List<int> _imagesToRemove = [];
   int _defaultImageIndex = 0;
 
   List<String> _errors = [];
@@ -336,10 +336,13 @@ class _AddClassifiedModalState extends State<AddClassifiedModal> {
     if (_selectedSubCategoryId == null) errs.add('Category is required');
     if (_terms != 'free' &&
         _terms != 'swop' &&
-        _priceController.text.trim().isEmpty) errs.add('Price is required');
+        _priceController.text.trim().isEmpty) {
+      errs.add('Price is required');
+    }
     if (_city == null && _area == null) errs.add('City or Area is required');
-    if (_phoneController.text.trim().length != 10)
+    if (_phoneController.text.trim().length != 10) {
       errs.add('Phone must be 10 digits');
+    }
     if (_catName == 'Property') {
       if (_propertyType.isEmpty) errs.add('Property type is required');
       if (_bedrooms == null) errs.add('Bedrooms is required');
@@ -347,11 +350,13 @@ class _AddClassifiedModalState extends State<AddClassifiedModal> {
     }
     if (_catName == 'Vehicles') {
       if (_selectedModel == null) errs.add('Model is required');
-      if (_kilometersController.text.trim().isEmpty)
+      if (_kilometersController.text.trim().isEmpty) {
         errs.add('Kilometers is required');
+      }
     }
-    if (widget.action == 'add' && !_accepted)
+    if (widget.action == 'add' && !_accepted) {
       errs.add('You must accept the terms');
+    }
     return errs;
   }
 
@@ -485,9 +490,9 @@ class _AddClassifiedModalState extends State<AddClassifiedModal> {
                       color: const Color(0xFF094a25).withOpacity(0.06),
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    child: Text(
+                    child: const Text(
                       'All classifieds ads are valid for 30 days only, but can be extended once they expire.',
-                      style: const TextStyle(
+                      style: TextStyle(
                           fontSize: 12, color: Colors.black54, height: 1.5),
                     ),
                   ),
@@ -1329,7 +1334,7 @@ class _AddClassifiedModalState extends State<AddClassifiedModal> {
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<T>(
-          value: effectiveValue as T?,
+          value: effectiveValue,
           hint: Text(hint,
               style: const TextStyle(color: Colors.black45, fontSize: 13)),
           isExpanded: true,

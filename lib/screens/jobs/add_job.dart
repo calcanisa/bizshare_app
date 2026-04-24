@@ -582,7 +582,7 @@ class _AddJobModalState extends State<AddJobModal> {
                     })),
             if (_rateInterval.isNotEmpty && _currentRates.isNotEmpty) ...[
               _dropdownField(
-                  'Min Remuneration ${_rateLabel}',
+                  'Min Remuneration $_rateLabel',
                   _minRemuneration.isEmpty ? null : _minRemuneration,
                   _currentRates
                       .map((r) => DropdownMenuItem<String>(
@@ -592,7 +592,7 @@ class _AddJobModalState extends State<AddJobModal> {
                       .toList(),
                   (v) => setState(() => _minRemuneration = v ?? '')),
               _dropdownField(
-                  'Max Remuneration ${_rateLabel}',
+                  'Max Remuneration $_rateLabel',
                   _maxRemuneration.isEmpty ? null : _maxRemuneration,
                   _currentRates
                       .map((r) => DropdownMenuItem<String>(
@@ -1197,7 +1197,8 @@ class _AddJobModalState extends State<AddJobModal> {
         decoration: BoxDecoration(
           color: Colors.grey.shade50,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xFF094a25).withOpacity(0.3)),
+          border:
+              Border.all(color: const Color(0xFF094a25).withValues(alpha: 0.3)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1290,7 +1291,8 @@ class _AddJobModalState extends State<AddJobModal> {
         decoration: BoxDecoration(
           color: Colors.grey.shade50,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xFF094a25).withOpacity(0.3)),
+          border:
+              Border.all(color: const Color(0xFF094a25).withValues(alpha: 0.3)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1339,7 +1341,8 @@ class _AddJobModalState extends State<AddJobModal> {
         decoration: BoxDecoration(
           color: Colors.grey.shade50,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xFF094a25).withOpacity(0.3)),
+          border:
+              Border.all(color: const Color(0xFF094a25).withValues(alpha: 0.3)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

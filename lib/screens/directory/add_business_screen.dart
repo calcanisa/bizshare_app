@@ -272,7 +272,7 @@ class _AddBusinessModalState extends State<AddBusinessModal> {
         MapEntry('affiliate_url', _affiliateController.text.trim()),
         MapEntry('categories',
             '[${_selectedCategories.map((c) => c['id'].toString()).join(',')}]'),
-        MapEntry('social_profiles', '{}'),
+        const MapEntry('social_profiles', '{}'),
       ]);
 
       // Office hours
@@ -722,15 +722,13 @@ class _AddBusinessModalState extends State<AddBusinessModal> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _fieldLabel('Website'),
-          const SizedBox(height: 6),
-          Row(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _radioOption('Has Website', 'yes', _hasWeb,
                   (v) => setState(() => _hasWeb = v!)),
-              const SizedBox(width: 16),
               _radioOption('No Website', 'no', _hasWeb,
                   (v) => setState(() => _hasWeb = v!)),
-              const SizedBox(width: 16),
               _radioOption('Need Website', 'need', _hasWeb,
                   (v) => setState(() => _hasWeb = v!)),
             ],
@@ -1144,7 +1142,7 @@ class _AddBusinessModalState extends State<AddBusinessModal> {
   Widget _removeBtn() => Container(
         width: 24,
         height: 24,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.black54,
           shape: BoxShape.circle,
         ),

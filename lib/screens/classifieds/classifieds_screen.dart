@@ -144,8 +144,9 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
         'page': _currentPage,
         'category': _selectedCategory,
       };
-      if (_filterSubcategory != null)
+      if (_filterSubcategory != null) {
         params['subcategory'] = _filterSubcategory;
+      }
       if (_filterProvince != null) params['province'] = _filterProvince;
       if (_filterCity != null) params['city'] = _filterCity;
       if (_filterArea != null) params['area'] = _filterArea;
@@ -1113,7 +1114,7 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
   Widget _imagePlaceholder() => Container(
         width: 90,
         height: 90,
-        color: const Color(0xFF094a25).withOpacity(0.1),
+        color: const Color(0xFF094a25).withValues(alpha: 0.1),
         child:
             const Icon(Icons.sell_outlined, color: Color(0xFF094a25), size: 32),
       );

@@ -8,8 +8,7 @@ class EventDetailScreen extends StatefulWidget {
   const EventDetailScreen({super.key, required this.eventId});
 
   @override
-  State<EventDetailScreen> createState() =>
-      _EventDetailScreenState();
+  State<EventDetailScreen> createState() => _EventDetailScreenState();
 }
 
 class _EventDetailScreenState extends State<EventDetailScreen> {
@@ -36,8 +35,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     setState(() => _loading = true);
     try {
       final api = context.read<ApiService>();
-      final res = await api.dio
-          .get('/api/v1/events/event/${widget.eventId}/');
+      final res = await api.dio.get('/api/v1/events/event/${widget.eventId}/');
       setState(() => _event = res.data);
     } catch (_) {
       _showSnack('Could not load event. Try again.');
@@ -65,9 +63,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     final endDate = _event?['end_date'];
     if (startDate == null) return '';
     final start = DateTime.tryParse(startDate.toString());
-    final end = endDate != null
-        ? DateTime.tryParse(endDate.toString())
-        : null;
+    final end = endDate != null ? DateTime.tryParse(endDate.toString()) : null;
     if (start == null) return '';
     final now = DateTime.now();
     if (start.isAfter(now)) return 'Event starts';
@@ -81,9 +77,19 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     if (dt == null) return '';
     final local = dt.toLocal();
     const months = [
-      '', 'January', 'February', 'March', 'April', 'May',
-      'June', 'July', 'August', 'September', 'October',
-      'November', 'December'
+      '',
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
     ];
     return '${local.day} ${months[local.month]} ${local.year}';
   }
@@ -109,16 +115,14 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
               child: const Text('Cancel')),
           TextButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Delete',
-                  style: TextStyle(color: Colors.red))),
+              child: const Text('Delete', style: TextStyle(color: Colors.red))),
         ],
       ),
     );
     if (confirm != true) return;
     try {
       final api = context.read<ApiService>();
-      await api.dio.delete(
-          '/api/v1/events/event/${widget.eventId}/d/');
+      await api.dio.delete('/api/v1/events/event/${widget.eventId}/d/');
       if (mounted) Navigator.pop(context);
     } catch (_) {
       _showSnack('Could not delete event. Try again.');
@@ -127,8 +131,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 
   void _showSnack(String msg) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(msg)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
   // ─── Build ────────────────────────────────────────────────────────────────
@@ -149,29 +152,25 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
           if (_event != null && !_isExpired) ...[
             if (_isOwner) ...[
               TextButton(
-                onPressed: () {},  // TODO: edit event
+                onPressed: () {}, // TODO: edit event
                 child: const Text('Edit',
-                    style: TextStyle(
-                        color: Color(0xFFf8b324), fontSize: 12)),
+                    style: TextStyle(color: Color(0xFFf8b324), fontSize: 12)),
               ),
               TextButton(
                 onPressed: _deleteEvent,
                 child: const Text('Delete',
-                    style: TextStyle(
-                        color: Color(0xFFbc2023), fontSize: 12)),
+                    style: TextStyle(color: Color(0xFFbc2023), fontSize: 12)),
               ),
             ] else ...[
               TextButton(
-                onPressed: () {},  // TODO: contact
+                onPressed: () {}, // TODO: contact
                 child: const Text('Contact',
-                    style: TextStyle(
-                        color: Color(0xFFf8b324), fontSize: 12)),
+                    style: TextStyle(color: Color(0xFFf8b324), fontSize: 12)),
               ),
               TextButton(
-                onPressed: () {},  // TODO: report
+                onPressed: () {}, // TODO: report
                 child: const Text('Report',
-                    style: TextStyle(
-                        color: Colors.white70, fontSize: 12)),
+                    style: TextStyle(color: Colors.white70, fontSize: 12)),
               ),
             ],
           ],
@@ -179,19 +178,16 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
       ),
       body: _loading
           ? const Center(
-              child: CircularProgressIndicator(
-                  color: Color(0xFF094a25)))
+              child: CircularProgressIndicator(color: Color(0xFF094a25)))
           : _event == null
               ? const Center(child: Text('Event not found'))
               : RefreshIndicator(
                   onRefresh: _loadEvent,
                   color: const Color(0xFF094a25),
                   child: SingleChildScrollView(
-                    physics:
-                        const AlwaysScrollableScrollPhysics(),
+                    physics: const AlwaysScrollableScrollPhysics(),
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _typeBar(),
                         _flyerSection(),
@@ -216,13 +212,10 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     return Container(
       color: Colors.black87,
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(
-          horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Text(typeName,
           style: const TextStyle(
-              color: Colors.white,
-              fontSize: 13,
-              fontWeight: FontWeight.w500)),
+              color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500)),
     );
   }
 
@@ -240,8 +233,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                 imageUrl: flyer,
                 width: double.infinity,
                 fit: BoxFit.contain,
-                errorWidget: (_, __, ___) =>
-                    _flyerPlaceholder())
+                errorWidget: (_, __, ___) => _flyerPlaceholder())
             : _flyerPlaceholder(),
       ),
     );
@@ -250,7 +242,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
   Widget _flyerPlaceholder() => Container(
         width: double.infinity,
         height: 200,
-        color: const Color(0xFF094a25).withOpacity(0.1),
+        color: const Color(0xFF094a25).withValues(alpha: 0.1),
         child: const Icon(Icons.event_outlined,
             color: Color(0xFF094a25), size: 60),
       );
@@ -271,8 +263,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
         children: [
           if (status.isNotEmpty)
             Text(status,
-                style: const TextStyle(
-                    fontSize: 12, color: Color(0xFF094a25))),
+                style: const TextStyle(fontSize: 12, color: Color(0xFF094a25))),
           const SizedBox(height: 4),
           Text(_formatDate(startDate?.toString()),
               style: const TextStyle(
@@ -281,16 +272,13 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   color: Color(0xFF094a25))),
           if (createdAt != null) ...[
             const SizedBox(height: 6),
-            Text(
-                'Posted on: ${_formatDate(createdAt.toString())}',
-                style: const TextStyle(
-                    fontSize: 12, color: Colors.black45)),
+            Text('Posted on: ${_formatDate(createdAt.toString())}',
+                style: const TextStyle(fontSize: 12, color: Colors.black45)),
           ],
           if (_isExpired) ...[
             const SizedBox(height: 8),
             Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 10, vertical: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
                 color: const Color(0xFFbc2023),
                 borderRadius: BorderRadius.circular(4),
@@ -341,28 +329,18 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _detailRow(
-                    'Start Date',
-                    _formatDate(startDate?.toString())),
+                _detailRow('Start Date', _formatDate(startDate?.toString())),
                 const SizedBox(height: 8),
-                _detailRow(
-                    'Start Time',
-                    _formatTime(startDate?.toString())),
+                _detailRow('Start Time', _formatTime(startDate?.toString())),
                 const SizedBox(height: 8),
-                _detailRow(
-                    'End Date',
-                    _formatDate(endDate?.toString())),
+                _detailRow('End Date', _formatDate(endDate?.toString())),
                 const SizedBox(height: 8),
-                _detailRow(
-                    'End Time',
-                    _formatTime(endDate?.toString())),
+                _detailRow('End Time', _formatTime(endDate?.toString())),
                 const SizedBox(height: 8),
-                _detailRow(
-                    'Repeats', repeats ? 'Yes' : 'No'),
+                _detailRow('Repeats', repeats ? 'Yes' : 'No'),
                 if (repeats && endDate != null) ...[
                   const SizedBox(height: 8),
-                  _detailRow('Repeats Until',
-                      _formatDate(endDate.toString())),
+                  _detailRow('Repeats Until', _formatDate(endDate.toString())),
                 ],
                 if (repeatDays.isNotEmpty) ...[
                   const SizedBox(height: 12),
@@ -377,21 +355,16 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                     runSpacing: 6,
                     children: repeatDays
                         .map((d) => Container(
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 4),
                               decoration: BoxDecoration(
                                 color: const Color(0xFF094a25)
-                                    .withOpacity(0.08),
-                                borderRadius:
-                                    BorderRadius.circular(4),
+                                    .withValues(alpha: 0.08),
+                                borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(d,
                                   style: const TextStyle(
-                                      fontSize: 12,
-                                      color:
-                                          Color(0xFF094a25))),
+                                      fontSize: 12, color: Color(0xFF094a25))),
                             ))
                         .toList(),
                   ),
@@ -406,9 +379,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   const SizedBox(height: 6),
                   Text(description,
                       style: const TextStyle(
-                          fontSize: 13,
-                          color: Colors.black87,
-                          height: 1.5)),
+                          fontSize: 13, color: Colors.black87, height: 1.5)),
                 ],
               ],
             ),
@@ -438,9 +409,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
               children: [
                 _detailRow(
                   'Prices From',
-                  pricesFrom == null
-                      ? 'Free of charge'
-                      : 'R$pricesFrom',
+                  pricesFrom == null ? 'Free of charge' : 'R$pricesFrom',
                 ),
                 if (pricesTo != null) ...[
                   const SizedBox(height: 8),
@@ -465,18 +434,15 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _sectionHeader(
-              'Venue${venues.length > 1 ? 's' : ''}'),
+          _sectionHeader('Venue${venues.length > 1 ? 's' : ''}'),
           Padding(
             padding: const EdgeInsets.all(16),
             child: venues.isEmpty
                 ? const Text('No venue information',
-                    style: TextStyle(
-                        fontSize: 12, color: Colors.black45))
+                    style: TextStyle(fontSize: 12, color: Colors.black45))
                 : Column(
                     children: venues
-                        .map((v) => _venueCard(
-                            v as Map<String, dynamic>))
+                        .map((v) => _venueCard(v as Map<String, dynamic>))
                         .toList(),
                   ),
           ),
@@ -487,9 +453,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 
   Widget _venueCard(Map<String, dynamic> venue) {
     final area = venue['area'] as Map?;
-    final city = area != null
-        ? area['city'] as Map?
-        : venue['city'] as Map?;
+    final city = area != null ? area['city'] as Map? : venue['city'] as Map?;
     final province = city?['province'] as Map?;
     final areaName = area?['name'];
     final cityName = city?['name'];
@@ -513,8 +477,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   color: Color(0xFFbc2023))),
           const SizedBox(height: 8),
           if (venue['street'] != null)
-            _detailRow(
-                'Street', venue['street'].toString()),
+            _detailRow('Street', venue['street'].toString()),
           if (areaName != null) ...[
             const SizedBox(height: 4),
             _detailRow('Area', areaName.toString()),
@@ -540,10 +503,8 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     final email = _event?['organizer_email'];
     final website = _event?['event_website'];
 
-    final hasData = organizer != null ||
-        phone != null ||
-        email != null ||
-        website != null;
+    final hasData =
+        organizer != null || phone != null || email != null || website != null;
 
     if (!hasData) return const SizedBox.shrink();
 
@@ -571,10 +532,8 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   _detailRow('Email', email.toString()),
                   const SizedBox(height: 8),
                 ],
-                if (website != null &&
-                    website.toString().isNotEmpty)
-                  _detailRow(
-                      'Website', website.toString()),
+                if (website != null && website.toString().isNotEmpty)
+                  _detailRow('Website', website.toString()),
               ],
             ),
           ),
@@ -587,8 +546,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 
   Widget _sectionHeader(String title) => Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(
-            horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         color: const Color(0xFF094a25),
         child: Text(title,
             style: const TextStyle(
@@ -610,8 +568,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
           ),
           Expanded(
             child: Text(value,
-                style: const TextStyle(
-                    fontSize: 12, color: Colors.black87)),
+                style: const TextStyle(fontSize: 12, color: Colors.black87)),
           ),
         ],
       );

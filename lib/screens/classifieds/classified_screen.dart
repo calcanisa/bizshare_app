@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../../services/api_service.dart';
+import './make_offer.dart';
+import '../report_screen.dart';
+import 'add_classified.dart';
 
 class ClassifiedDetailScreen extends StatefulWidget {
   final int adId;
@@ -291,7 +294,22 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
           if (_ad != null) ...[
             if (_isOwner) ...[
               TextButton(
-                onPressed: () {}, // TODO: edit ad
+                onPressed: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AddClassifiedModal(
+                        action: 'edit',
+                        ad: _ad!,
+                        onSave: (data) {
+                          Navigator.pop(context);
+                          setState(() => _ad = data);
+                        },
+                        onCancel: () => Navigator.pop(context),
+                      ),
+                    ),
+                  );
+                },
                 child: const Text('Edit',
                     style: TextStyle(color: Color(0xFFf8b324), fontSize: 12)),
               ),
@@ -302,7 +320,14 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
               ),
             ] else
               TextButton(
-                onPressed: () {}, // TODO: report
+                onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ReportScreen(
+                        contentId: widget.adId,
+                        type: 'classifieds',
+                      ),
+                    )),
                 child: const Text('Report',
                     style: TextStyle(color: Colors.white70, fontSize: 12)),
               ),
@@ -380,7 +405,15 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
           if (terms == 'negotiable' && !_isOwner) ...[
             const SizedBox(width: 10),
             ElevatedButton(
-              onPressed: () {}, // TODO: make offer modal
+              onPressed: () async {
+                final price =
+                    double.tryParse(_ad?['price']?.toString() ?? '0') ?? 0;
+                final result =
+                    await MakeOfferSheet.show(context, widget.adId, price);
+                if (result != null && mounted) {
+                  _showSnack('Offer of R$result submitted successfully.');
+                }
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF094a25),
                 padding:
@@ -557,7 +590,8 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 5),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF094a25).withOpacity(0.08),
+                            color:
+                                const Color(0xFF094a25).withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(e.toString(),
@@ -620,7 +654,8 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 5),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF094a25).withOpacity(0.08),
+                            color:
+                                const Color(0xFF094a25).withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(e.toString(),
@@ -999,7 +1034,7 @@ class _LightboxDialogState extends State<_LightboxDialog> {
               child: Container(
                 width: 36,
                 height: 36,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     color: Colors.black54, shape: BoxShape.circle),
                 child: const Icon(Icons.close, color: Colors.white, size: 20),
               ),
@@ -1016,7 +1051,7 @@ class _LightboxDialogState extends State<_LightboxDialog> {
                   child: Container(
                     width: 40,
                     height: 40,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                         color: Colors.black45, shape: BoxShape.circle),
                     child: const Icon(Icons.chevron_left,
                         color: Colors.white, size: 28),
@@ -1035,7 +1070,7 @@ class _LightboxDialogState extends State<_LightboxDialog> {
                   child: Container(
                     width: 40,
                     height: 40,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                         color: Colors.black45, shape: BoxShape.circle),
                     child: const Icon(Icons.chevron_right,
                         color: Colors.white, size: 28),

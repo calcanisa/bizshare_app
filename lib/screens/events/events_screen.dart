@@ -964,7 +964,7 @@ class _EventsScreenState extends State<EventsScreen> {
   Widget _imagePlaceholder() => Container(
         width: 80,
         height: 80,
-        color: const Color(0xFF094a25).withOpacity(0.1),
+        color: const Color(0xFF094a25).withValues(alpha: 0.1),
         child: const Icon(Icons.event_outlined,
             color: Color(0xFF094a25), size: 32),
       );

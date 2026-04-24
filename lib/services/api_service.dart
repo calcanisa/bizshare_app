@@ -1,6 +1,6 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter/widgets.dart';
 
 class ApiService {
   static const String baseUrl = 'http://192.168.10.215:8000';
@@ -28,6 +28,7 @@ class ApiService {
       onError: (error, handler) async {
         final status = error.response?.statusCode;
 
+        // 401 — try token refresh first
         if (status == 401) {
           final refreshed = await _refreshToken();
           if (refreshed) {
@@ -36,13 +37,13 @@ class ApiService {
             final response = await _dio.fetch(error.requestOptions);
             return handler.resolve(response);
           } else {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              onUnauthorized?.call();
-            });
+            // Refresh failed — tokens are dead, log out
+            onUnauthorized?.call();
             return handler.next(error);
           }
         }
 
+        // 403 — permission denied, NOT a logout. Let the screen handle it.
         return handler.next(error);
       },
     ));
@@ -64,13 +65,11 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> login(
-      String email, String password, bool rememberMe) async {
+  Future<Map<String, dynamic>> login(String email, String password) async {
     try {
       final response = await _dio.post('/api/token/', data: {
         'email': email,
         'password': password,
-        'remember_me': rememberMe,
       });
       return response.data;
     } catch (e) {
@@ -78,12 +77,9 @@ class ApiService {
     }
   }
 
-  Future<void> saveTokens(String access, String refresh,
-      {bool rememberMe = false}) async {
+  Future<void> saveTokens(String access, String refresh) async {
     await _storage.write(key: 'access_token', value: access);
     await _storage.write(key: 'refresh_token', value: refresh);
-    await _storage.write(
-        key: 'remember_me', value: rememberMe ? 'true' : 'false');
   }
 
   Future<void> clearTokens() async {
@@ -96,4 +92,37 @@ class ApiService {
   }
 
   Dio get dio => _dio;
+
+  // ── Multipart POST ────────────────────────────────────────────────────────
+  // Used for endpoints that receive files alongside text fields.
+  // [fields] is a flat map of string values.
+  // [files]  is a map of field-name → File (can be empty).
+  Future<Map<String, dynamic>> postMultipart(
+    String path, {
+    required Map<String, String> fields,
+    Map<String, File> files = const {},
+  }) async {
+    final fileEntries = <String, MultipartFile>{};
+    for (final entry in files.entries) {
+      fileEntries[entry.key] = await MultipartFile.fromFile(entry.value.path);
+    }
+    final formData = FormData.fromMap({...fields, ...fileEntries});
+    final response = await _dio.post(path, data: formData);
+    return response.data as Map<String, dynamic>;
+  }
+
+  // ── Multipart PATCH ───────────────────────────────────────────────────────
+  Future<Map<String, dynamic>> patchMultipart(
+    String path, {
+    required Map<String, String> fields,
+    Map<String, File> files = const {},
+  }) async {
+    final fileEntries = <String, MultipartFile>{};
+    for (final entry in files.entries) {
+      fileEntries[entry.key] = await MultipartFile.fromFile(entry.value.path);
+    }
+    final formData = FormData.fromMap({...fields, ...fileEntries});
+    final response = await _dio.patch(path, data: formData);
+    return response.data as Map<String, dynamic>;
+  }
 }
