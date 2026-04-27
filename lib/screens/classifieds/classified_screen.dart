@@ -6,6 +6,7 @@ import '../../services/api_service.dart';
 import './make_offer.dart';
 import '../report_screen.dart';
 import 'add_classified.dart';
+import '../feature_content.dart';
 
 class ClassifiedDetailScreen extends StatefulWidget {
   final int adId;
@@ -285,17 +286,24 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF094a25),
         iconTheme: const IconThemeData(color: Colors.white),
-        title: Text(
-          _ad?['title'] ?? 'Ad',
-          style: const TextStyle(color: Colors.white, fontSize: 15),
-          overflow: TextOverflow.ellipsis,
+        titleSpacing: 0,
+        title: Padding(
+          padding: const EdgeInsets.only(left: 4),
+          child: GestureDetector(
+            onTap: () => Navigator.popUntil(context, (route) => route.isFirst),
+            child: Image.asset('assets/img/sesha.png', height: 40),
+          ),
         ),
         actions: [
           if (_ad != null) ...[
             if (_isOwner) ...[
               TextButton(
+                style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap),
                 onPressed: () async {
-                  final result = await Navigator.push(
+                  await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) => AddClassifiedModal(
@@ -314,12 +322,39 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
                     style: TextStyle(color: Color(0xFFf8b324), fontSize: 12)),
               ),
               TextButton(
+                style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => FeatureScreen(
+                        type: 'classified',
+                        item: _ad!,
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('Feature',
+                    style: TextStyle(color: Colors.white70, fontSize: 12)),
+              ),
+              TextButton(
+                style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap),
                 onPressed: _deleteAd,
                 child: const Text('Delete',
                     style: TextStyle(color: Color(0xFFbc2023), fontSize: 12)),
               ),
             ] else
               TextButton(
+                style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap),
                 onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -369,64 +404,82 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
     final price = _ad?['price'];
     final terms = _ad?['terms'] ?? '';
     final expired = _ad?['expired'] == true;
+    final title = _ad?['title'] ?? '';
 
-    return Container(
-      color: Colors.black87,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        children: [
-          if (price != null) ...[
-            Text('R$price',
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold)),
-            const SizedBox(width: 8),
-            Text('($terms)',
-                style: const TextStyle(color: Colors.white70, fontSize: 13)),
-          ],
-          const Spacer(),
-          if (expired)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: const Color(0xFFbc2023),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: const Text('Expired',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold)),
-            )
-          else if (_daysLeft > 0)
-            Text('${_daysLeft + 1} days left',
-                style: const TextStyle(color: Colors.white70, fontSize: 12)),
-          if (terms == 'negotiable' && !_isOwner) ...[
-            const SizedBox(width: 10),
-            ElevatedButton(
-              onPressed: () async {
-                final price =
-                    double.tryParse(_ad?['price']?.toString() ?? '0') ?? 0;
-                final result =
-                    await MakeOfferSheet.show(context, widget.adId, price);
-                if (result != null && mounted) {
-                  _showSnack('Offer of R$result submitted successfully.');
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF094a25),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              child: const Text('Make Offer',
-                  style: TextStyle(color: Colors.white, fontSize: 12)),
-            ),
-          ],
-        ],
-      ),
+    return Column(
+      children: [
+        Container(
+          color: const Color(0xFF0a5c2e),
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          child: Text(
+            title,
+            style: const TextStyle(
+                color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Container(
+          color: Colors.black87,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            children: [
+              if (price != null) ...[
+                Text('R$price',
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold)),
+                const SizedBox(width: 8),
+                Text('($terms)',
+                    style:
+                        const TextStyle(color: Colors.white70, fontSize: 13)),
+              ],
+              const Spacer(),
+              if (expired)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFbc2023),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: const Text('Expired',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold)),
+                )
+              else if (_daysLeft > 0)
+                Text('${_daysLeft + 1} days left',
+                    style:
+                        const TextStyle(color: Colors.white70, fontSize: 12)),
+              if (terms == 'negotiable' && !_isOwner) ...[
+                const SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: () async {
+                    final price =
+                        double.tryParse(_ad?['price']?.toString() ?? '0') ?? 0;
+                    final result =
+                        await MakeOfferSheet.show(context, widget.adId, price);
+                    if (result != null && mounted) {
+                      _showSnack('Offer of R$result submitted successfully.');
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF094a25),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: const Text('Make Offer',
+                      style: TextStyle(color: Colors.white, fontSize: 12)),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
     );
   }
 

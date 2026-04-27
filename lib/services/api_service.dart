@@ -1,13 +1,15 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiService {
   static const String baseUrl = 'http://192.168.10.215:8000';
   static const _storage = FlutterSecureStorage();
   late final Dio _dio;
+  DateTime? _tokenExpiry;
 
-  // Set this from outside to trigger logout
   void Function()? onUnauthorized;
 
   ApiService() {
@@ -21,14 +23,18 @@ class ApiService {
       onRequest: (options, handler) async {
         final token = await _storage.read(key: 'access_token');
         if (token != null) {
-          options.headers['Authorization'] = 'Bearer $token';
+          if (_tokenExpiry == null ||
+              _tokenExpiry!.difference(DateTime.now()).inMinutes < 5) {
+            await refreshIfNeeded();
+          }
+          final freshToken = await _storage.read(key: 'access_token');
+          options.headers['Authorization'] = 'Bearer $freshToken';
         }
         return handler.next(options);
       },
       onError: (error, handler) async {
         final status = error.response?.statusCode;
 
-        // 401 — try token refresh first
         if (status == 401) {
           final refreshed = await _refreshToken();
           if (refreshed) {
@@ -37,16 +43,39 @@ class ApiService {
             final response = await _dio.fetch(error.requestOptions);
             return handler.resolve(response);
           } else {
-            // Refresh failed — tokens are dead, log out
             onUnauthorized?.call();
             return handler.next(error);
           }
         }
 
-        // 403 — permission denied, NOT a logout. Let the screen handle it.
+        // 403 — permission denied, not a logout
         return handler.next(error);
       },
     ));
+  }
+
+  // ── Proactive refresh ─────────────────────────────────────────────────────
+  Future<void> refreshIfNeeded() async {
+    try {
+      final token = await _storage.read(key: 'access_token');
+      if (token == null) return;
+
+      final parts = token.split('.');
+      if (parts.length != 3) return;
+
+      final normalized = base64Url.normalize(parts[1]);
+      final decoded = utf8.decode(base64Url.decode(normalized));
+      final map = jsonDecode(decoded) as Map<String, dynamic>;
+      final exp = map['exp'] as int?;
+      if (exp == null) return;
+
+      _tokenExpiry = DateTime.fromMillisecondsSinceEpoch(exp * 1000);
+      if (_tokenExpiry!.difference(DateTime.now()).inMinutes < 5) {
+        await _refreshToken();
+      }
+    } catch (_) {
+      // Decode failed — leave token as-is
+    }
   }
 
   Future<bool> _refreshToken() async {
@@ -57,9 +86,28 @@ class ApiService {
         '$baseUrl/api/token/refresh/',
         data: {'refresh': refresh},
       );
-      await _storage.write(key: 'access_token', value: response.data['access']);
+      final newAccess = response.data['access'] as String;
+      await _storage.write(key: 'access_token', value: newAccess);
+
+      // Cache expiry from new token
+      final parts = newAccess.split('.');
+      if (parts.length == 3) {
+        final payload =
+            utf8.decode(base64Url.decode(base64Url.normalize(parts[1])));
+        final map = jsonDecode(payload) as Map<String, dynamic>;
+        final exp = map['exp'] as int?;
+        if (exp != null) {
+          _tokenExpiry = DateTime.fromMillisecondsSinceEpoch(exp * 1000);
+        }
+      }
+
+      if (response.data['refresh'] != null) {
+        await _storage.write(
+            key: 'refresh_token', value: response.data['refresh']);
+      }
       return true;
-    } catch (_) {
+    } catch (e) {
+      debugPrint('_refreshToken error: $e');
       await _storage.deleteAll();
       return false;
     }
@@ -94,9 +142,6 @@ class ApiService {
   Dio get dio => _dio;
 
   // ── Multipart POST ────────────────────────────────────────────────────────
-  // Used for endpoints that receive files alongside text fields.
-  // [fields] is a flat map of string values.
-  // [files]  is a map of field-name → File (can be empty).
   Future<Map<String, dynamic>> postMultipart(
     String path, {
     required Map<String, String> fields,

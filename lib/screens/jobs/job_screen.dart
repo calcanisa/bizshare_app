@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../../services/api_service.dart';
 import 'job_application.dart';
 import '../report_screen.dart';
+import '../feature_content.dart';
+import 'add_job.dart';
 
 class JobDetailScreen extends StatefulWidget {
   final int jobId;
@@ -63,11 +65,13 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
 
   Future<void> _loadJob() async {
     setState(() => _loading = true);
+    debugPrint('Loading job ID: ${widget.jobId}');
     try {
       final api = context.read<ApiService>();
       final res = await api.dio.get('/api/v1/jobs/job/${widget.jobId}/');
       setState(() => _job = res.data);
-    } catch (_) {
+    } catch (e) {
+      debugPrint('_loadJob error: $e');
       _showSnack('Could not load job. Try again.');
     }
     setState(() => _loading = false);
@@ -141,18 +145,59 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF094a25),
         iconTheme: const IconThemeData(color: Colors.white),
-        title: Text(
-          _job?['title'] ?? 'Job',
-          style: const TextStyle(color: Colors.white, fontSize: 15),
-          overflow: TextOverflow.ellipsis,
+        titleSpacing: 0,
+        title: Padding(
+          padding: const EdgeInsets.only(left: 4),
+          child: GestureDetector(
+            onTap: () => Navigator.popUntil(context, (route) => route.isFirst),
+            child: Image.asset('assets/img/sesha.png', height: 40),
+          ),
         ),
         actions: [
           if (_job != null) ...[
             if (_isOwner) ...[
               TextButton(
-                onPressed: () {}, // TODO: edit job
+                style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AddJobModal(
+                        action: 'edit',
+                        job: _job!,
+                        onSave: (data) {
+                          Navigator.pop(context);
+                          setState(() => _job = data);
+                        },
+                        onCancel: () => Navigator.pop(context),
+                      ),
+                    ),
+                  );
+                },
                 child: const Text('Edit',
                     style: TextStyle(color: Color(0xFFf8b324), fontSize: 12)),
+              ),
+              TextButton(
+                style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => FeatureScreen(
+                        type: 'job',
+                        item: _job!,
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('Feature',
+                    style: TextStyle(color: Colors.white70, fontSize: 12)),
               ),
             ] else ...[
               ElevatedButton(
@@ -173,6 +218,10 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
               ),
               const SizedBox(width: 4),
               TextButton(
+                style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap),
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -223,16 +272,35 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
     final function = _job?['function'] as Map?;
     final industryName = industry?['name'] ?? '';
     final functionName = function?['name'] ?? '';
+    final title = _job?['title'] ?? '';
 
-    return Container(
-      color: Colors.black87,
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      child: Text(
-        [industryName, functionName].where((s) => s.isNotEmpty).join(' | '),
-        style: const TextStyle(
-            color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500),
-      ),
+    return Column(
+      children: [
+        Container(
+          color: const Color(0xFF0a5c2e),
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold)),
+              if (industryName.isNotEmpty || functionName.isNotEmpty) ...[
+                const SizedBox(height: 2),
+                Text(
+                  [industryName, functionName]
+                      .where((s) => s.isNotEmpty)
+                      .join(' | '),
+                  style: const TextStyle(color: Colors.white70, fontSize: 12),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
     );
   }
 

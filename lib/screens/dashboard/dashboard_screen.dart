@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/dashboard_provider.dart';
 import '../../services/api_service.dart';
+import '../../utils/account_notifiers.dart';
 
 class DashboardScreen extends StatefulWidget {
   final VoidCallback? onProfileTap;
@@ -86,18 +87,37 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: provider.membershipColor,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Text(
-              '${provider.membershipLabel} Member',
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13),
+          GestureDetector(
+            onTap: () {
+              widget.onNavigate?.call('Account');
+              // slight delay to let the screen switch before opening edit mode
+              Future.delayed(const Duration(milliseconds: 300), () {
+                // AccountScreen reads this to open edit mode with upgrade selected
+                // We use a simple global flag via a ValueNotifier
+                accountEditUpgradeNotifier.value = true;
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: provider.membershipColor,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '${provider.membershipLabel} Member',
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13),
+                  ),
+                  const SizedBox(width: 6),
+                  const Icon(Icons.arrow_forward_ios,
+                      color: Colors.white70, size: 11),
+                ],
+              ),
             ),
           ),
         ],

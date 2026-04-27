@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../services/api_service.dart';
 import '../opportunities/opportunity_screen.dart';
 import '../opportunities/add_opportunity.dart';
+import '../feature_content.dart';
 
 class OpportunitiesScreen extends StatefulWidget {
   const OpportunitiesScreen({super.key});
@@ -794,11 +795,21 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                     ),
                     const SizedBox(width: 6),
                     Expanded(
-                      child: OutlinedButton(
-                        onPressed: () {}, // TODO: feature
-                        style: OutlinedButton.styleFrom(
-                            foregroundColor: const Color(0xFFf8b324),
-                            side: const BorderSide(color: Color(0xFFf8b324)),
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => FeatureScreen(
+                                type: 'opportunity',
+                                item: opp,
+                              ),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFf8b324),
+                            foregroundColor: Colors.black87,
                             padding: const EdgeInsets.symmetric(vertical: 4)),
                         child: const Text('Feature',
                             style: TextStyle(fontSize: 12)),

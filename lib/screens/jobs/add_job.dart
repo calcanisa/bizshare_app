@@ -214,9 +214,6 @@ class _AddJobModalState extends State<AddJobModal> {
   void initState() {
     super.initState();
     _loadInitialData();
-    if (widget.action == 'edit' && widget.job != null) {
-      _populateForm(widget.job!);
-    }
   }
 
   @override
@@ -231,24 +228,33 @@ class _AddJobModalState extends State<AddJobModal> {
   }
 
   Future<void> _loadInitialData() async {
+    debugPrint('_loadInitialData called, action: ${widget.action}');
     try {
       final api = context.read<ApiService>();
       final results = await Future.wait([
-        api.dio.get('/api/v1/jobs/industries/'),
+        api.dio.get('/api/v1/directory/business/categories/'),
         api.dio.get('/api/v1/jobs/functions/'),
         api.dio.get('/api/v1/locations/provinces/'),
         api.dio.get('/api/v1/directory/businesses/current/'),
       ]);
+      debugPrint('results loaded, industries: ${results[0].data}');
       setState(() {
+        debugPrint('setState called in _loadInitialData');
         final ind = results[0].data;
-        _industries = ind is List ? ind : (ind['results'] ?? []);
+        _industries = ind is List ? ind : ((ind['results'] ?? ind) as List);
         final fn = results[1].data;
         _functions = fn is List ? fn : (fn['results'] ?? []);
         final prov = results[2].data;
         _provinces = prov is List ? prov : (prov['results'] ?? []);
         _businesses = results[3].data ?? [];
       });
-    } catch (_) {}
+      // Populate form AFTER reference data is loaded
+      if (widget.action == 'edit' && widget.job != null) {
+        setState(() => _populateForm(widget.job!));
+      }
+    } catch (e) {
+      debugPrint('_loadInitialData error: $e');
+    }
   }
 
   Future<void> _loadSkills() async {
@@ -259,7 +265,9 @@ class _AddJobModalState extends State<AddJobModal> {
       final data = res.data;
       setState(
           () => _allSkills = data is List ? data : (data['results'] ?? []));
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('_loadInitialData error: $e');
+    }
   }
 
   Future<void> _loadCities(int provinceId) async {
@@ -287,35 +295,52 @@ class _AddJobModalState extends State<AddJobModal> {
   }
 
   void _populateForm(Map<String, dynamic> j) {
+    debugPrint('JOB DATA: $j');
     _titleController.text = j['title'] ?? '';
     _descController.text = j['description'] ?? '';
     _existingImage = j['image'];
     _published = j['published'] ?? true;
     _marketRelated = j['market_related'] ?? false;
     _rateInterval = j['rate_interval'] ?? '';
-    _minRemuneration = j['min_remuneration']?.toString() ?? '';
-    _maxRemuneration = j['max_remuneration']?.toString() ?? '';
+    _rateInterval = j['rate_interval'] ?? '';
+    final minVal = j['min_remuneration']?.toString() ?? '';
+    final maxVal = j['max_remuneration']?.toString() ?? '';
+    _minRemuneration = minVal;
+    _maxRemuneration = maxVal;
     _equality = j['equality'] ?? '';
     _contractType = j['contract_type'] ?? '';
     _workEnvironment = j['work_environment'] ?? '';
     _workSchedule = j['work_schedule'] ?? '';
     _experienceRequired = j['experience_required'] ?? '';
     _educationRequired = j['education_required'] ?? '';
-    _selectedIndustryId = (j['industry'] as Map?)?['id'];
-    _selectedFunctionId = (j['function'] as Map?)?['id'];
-    _companyPosting = j['company_posting'] is Map
+    final industryId = (j['industry'] as Map?)?['id'];
+    final functionId = (j['function'] as Map?)?['id'];
+    _selectedIndustryId = industryId is int
+        ? industryId
+        : int.tryParse(industryId?.toString() ?? '');
+    _selectedFunctionId = functionId is int
+        ? functionId
+        : int.tryParse(functionId?.toString() ?? '');
+    final cp = j['company_posting'] is Map
         ? (j['company_posting'] as Map)['id']
         : j['company_posting'];
+    _companyPosting = cp is int ? cp : int.tryParse(cp?.toString() ?? '');
 
     final area = j['area'] as Map?;
     if (area != null) {
-      _selectedArea = area['id'];
+      _selectedArea = area['id'] is int
+          ? area['id']
+          : int.tryParse(area['id']?.toString() ?? '');
       final city = area['city'] as Map?;
       if (city != null) {
-        _selectedCity = city['id'];
+        _selectedCity = city['id'] is int
+            ? city['id']
+            : int.tryParse(city['id']?.toString() ?? '');
         final province = city['province'] as Map?;
         if (province != null) {
-          _selectedProvince = province['id'];
+          _selectedProvince = province['id'] is int
+              ? province['id']
+              : int.tryParse(province['id']?.toString() ?? '');
           _loadCities(province['id']).then((_) {
             if (_selectedCity != null) _loadAreas(_selectedCity!);
           });
@@ -1481,17 +1506,18 @@ class _AddJobModalState extends State<AddJobModal> {
         ),
         child: DropdownButtonHideUnderline(
           child: DropdownButton<T>(
-            value: value,
+            value: items.any((i) => i.value == value) ? value : null,
             hint: Text(hint,
                 style: const TextStyle(color: Colors.black45, fontSize: 13)),
             isExpanded: true,
             style: const TextStyle(fontSize: 13, color: Colors.black87),
             items: [
-              DropdownMenuItem<T>(
-                  value: null,
-                  child: Text(hint,
-                      style: const TextStyle(
-                          color: Colors.black45, fontSize: 13))),
+              if (!items.any((i) => i.value == null))
+                DropdownMenuItem<T>(
+                    value: null,
+                    child: Text(hint,
+                        style: const TextStyle(
+                            color: Colors.black45, fontSize: 13))),
               ...items,
             ],
             onChanged: onChanged,

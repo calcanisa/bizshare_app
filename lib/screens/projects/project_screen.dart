@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../../services/api_service.dart';
-
+import '../feature_content.dart';
 
 class ProjectDetailScreen extends StatefulWidget {
   final int projectId;
@@ -79,20 +79,50 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF094a25),
         iconTheme: const IconThemeData(color: Colors.white),
-        title: Text(
-          _project?['title'] ?? 'Project',
-          style: const TextStyle(color: Colors.white, fontSize: 15),
-          overflow: TextOverflow.ellipsis,
+        titleSpacing: 0,
+        title: Padding(
+          padding: const EdgeInsets.only(left: 4),
+          child: GestureDetector(
+            onTap: () => Navigator.popUntil(context, (route) => route.isFirst),
+            child: Image.asset('assets/img/sesha.png', height: 40),
+          ),
         ),
         actions: [
           if (_project != null) ...[
             if (_isOwner) ...[
               TextButton(
-                onPressed: () {}, // TODO: edit modal
+                style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                onPressed: () {},
                 child: const Text('Edit',
                     style: TextStyle(color: Color(0xFFf8b324), fontSize: 12)),
               ),
               TextButton(
+                style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => FeatureScreen(
+                        type: 'project',
+                        item: _project!,
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('Feature',
+                    style: TextStyle(color: Colors.white70, fontSize: 12)),
+              ),
+              TextButton(
+                style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap),
                 onPressed: _deleteProject,
                 child: const Text('Delete',
                     style: TextStyle(color: Color(0xFFbc2023), fontSize: 12)),
@@ -100,7 +130,11 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
             ],
             if (!_isOwner)
               TextButton(
-                onPressed: () {}, // TODO: show interest modal
+                style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                onPressed: () {},
                 child: const Text('Interested',
                     style: TextStyle(color: Colors.white70, fontSize: 12)),
               ),
@@ -135,15 +169,32 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
 
   Widget _stageBar() {
     final stage = _project?['stage'] ?? '';
-    return Container(
-      color: Colors.black87,
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      child: Text(
-        stage,
-        style: const TextStyle(
-            color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500),
-      ),
+    final title = _project?['title'] ?? '';
+
+    return Column(
+      children: [
+        Container(
+          color: const Color(0xFF0a5c2e),
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold)),
+              if (stage.isNotEmpty) ...[
+                const SizedBox(height: 2),
+                Text(stage,
+                    style:
+                        const TextStyle(color: Colors.white70, fontSize: 12)),
+              ],
+            ],
+          ),
+        ),
+      ],
     );
   }
 

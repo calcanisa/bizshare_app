@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../services/api_service.dart';
 import 'opportunity_application.dart';
 import '../report_screen.dart';
+import '../feature_content.dart';
 
 class OpportunityDetailScreen extends StatefulWidget {
   final int opportunityId;
@@ -229,10 +230,13 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF094a25),
         iconTheme: const IconThemeData(color: Colors.white),
-        title: Text(
-          _opp?['title'] ?? 'Opportunity',
-          style: const TextStyle(color: Colors.white, fontSize: 15),
-          overflow: TextOverflow.ellipsis,
+        titleSpacing: 0,
+        title: Padding(
+          padding: const EdgeInsets.only(left: 4),
+          child: GestureDetector(
+            onTap: () => Navigator.popUntil(context, (route) => route.isFirst),
+            child: Image.asset('assets/img/sesha.png', height: 40),
+          ),
         ),
         actions: _buildActions(),
       ),
@@ -270,25 +274,57 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
     if (_isOwner) {
       if (!_isExpired) {
         actions.add(TextButton(
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
           onPressed: _extendOpportunity,
           child: const Text('Extend',
-              style: TextStyle(color: Color(0xFFf8b324), fontSize: 12)),
+              style: TextStyle(color: Color(0xFFf8b324), fontSize: 11)),
         ));
       }
       actions.add(TextButton(
-        onPressed: () {}, // TODO: edit opportunity
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+        onPressed: () {},
         child: const Text('Edit',
-            style: TextStyle(color: Color(0xFFf8b324), fontSize: 12)),
+            style: TextStyle(color: Color(0xFFf8b324), fontSize: 11)),
       ));
       actions.add(TextButton(
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+        onPressed: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => FeatureScreen(type: 'opportunity', item: _opp!),
+            ),
+          );
+        },
+        child: const Text('Feature',
+            style: TextStyle(color: Colors.white70, fontSize: 11)),
+      ));
+      actions.add(TextButton(
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
         onPressed: _deleteOpportunity,
         child: const Text('Delete',
-            style: TextStyle(color: Color(0xFFbc2023), fontSize: 12)),
+            style: TextStyle(color: Color(0xFFbc2023), fontSize: 11)),
       ));
     } else {
       if (!_isExpired) {
         actions.add(Padding(
-          padding: const EdgeInsets.only(right: 8),
+          padding: const EdgeInsets.only(right: 4),
           child: ElevatedButton(
             onPressed: _hasApplied
                 ? null
@@ -308,18 +344,20 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
               backgroundColor:
                   _hasApplied ? Colors.grey.shade400 : const Color(0xFFf8b324),
               foregroundColor: Colors.black87,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               minimumSize: Size.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
             child: Text(
               _hasApplied ? 'Applied' : 'Apply',
-              style: const TextStyle(fontSize: 12),
+              style: const TextStyle(fontSize: 11),
             ),
           ),
         ));
       }
       actions.add(TextButton(
+        style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 6)),
         onPressed: () => Navigator.push(
           context,
           MaterialPageRoute(
@@ -330,7 +368,7 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
           ),
         ),
         child: const Text('Report',
-            style: TextStyle(color: Colors.white70, fontSize: 12)),
+            style: TextStyle(color: Colors.white70, fontSize: 11)),
       ));
     }
 
@@ -341,13 +379,23 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
 
   Widget _categoryBar() {
     return Container(
-      color: Colors.black87,
+      color: const Color(0xFF0a5c2e),
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      child: Text(
-        _isOffline ? 'Offline Opportunity' : 'Online Opportunity',
-        style: const TextStyle(
-            color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            _opp?['title'] ?? '',
+            style: const TextStyle(
+                color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            _isOffline ? 'Offline Opportunity' : 'Online Opportunity',
+            style: const TextStyle(color: Colors.white70, fontSize: 12),
+          ),
+        ],
       ),
     );
   }

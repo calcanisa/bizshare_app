@@ -311,7 +311,12 @@ class _LeadsScreenState extends State<LeadsScreen> {
                       const Spacer(),
                       TextButton(
                         onPressed: () {
-                          setSheetState(() {
+                          setState(() {
+                            _filterProvince = null;
+                            _filterCity = null;
+                            _filterArea = null;
+                            _filterBusinessType = null;
+                            _filterBusinessSize = null;
                             _tempProvince = null;
                             _tempCity = null;
                             _tempArea = null;
@@ -320,6 +325,8 @@ class _LeadsScreenState extends State<LeadsScreen> {
                             _cities = [];
                             _areas = [];
                           });
+                          Navigator.pop(context);
+                          _loadProviders(refresh: true);
                         },
                         child: const Text('Reset',
                             style: TextStyle(color: Color(0xFFf8b324))),

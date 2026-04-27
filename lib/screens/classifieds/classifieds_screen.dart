@@ -5,6 +5,7 @@ import '../../services/api_service.dart';
 import '../../widgets/filter_chip_bar.dart';
 import '../classifieds/classified_screen.dart';
 import '../classifieds/add_classified.dart';
+import '../feature_content.dart';
 
 class ClassifiedsScreen extends StatefulWidget {
   const ClassifiedsScreen({super.key});
@@ -61,6 +62,7 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
     super.initState();
     _loadMyAds();
     _loadTopCategories();
+    _loadProvinces();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
           _scrollController.position.maxScrollExtent - 200) {
@@ -104,8 +106,9 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
     try {
       final api = context.read<ApiService>();
       final response = await api.dio.get('/api/v1/locations/provinces/');
+      final data = response.data;
       setState(
-          () => _provinces = response.data['results'] ?? response.data ?? []);
+          () => _provinces = data is List ? data : (data['results'] ?? []));
     } catch (_) {}
   }
 
@@ -330,16 +333,24 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
                       const Spacer(),
                       TextButton(
                         onPressed: () {
-                          setSheetState(() {
+                          setState(() {
+                            _filterSubcategory = null;
+                            _filterProvince = null;
+                            _filterCity = null;
+                            _filterArea = null;
+                            _filterMinPrice = null;
+                            _filterMaxPrice = null;
                             _tempSubcategory = null;
                             _tempProvince = null;
                             _tempCity = null;
                             _tempArea = null;
-                            _minPriceController.clear();
-                            _maxPriceController.clear();
                             _cities = [];
                             _areas = [];
+                            _minPriceController.clear();
+                            _maxPriceController.clear();
                           });
+                          Navigator.pop(context);
+                          _loadAds(refresh: true);
                         },
                         child: const Text('Reset',
                             style: TextStyle(color: Color(0xFFf8b324))),
@@ -751,12 +762,35 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
                         if (!expired) ...[
                           Expanded(
                             child: OutlinedButton(
-                              onPressed: () {},
+                              onPressed: () => _openEditAd(ad),
                               style: OutlinedButton.styleFrom(
                                   foregroundColor: const Color(0xFF094a25),
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 4)),
                               child: const Text('Edit',
+                                  style: TextStyle(fontSize: 12)),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => FeatureScreen(
+                                      type: 'classified',
+                                      item: ad,
+                                    ),
+                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFf8b324),
+                                  foregroundColor: Colors.black87,
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 4)),
+                              child: const Text('Feature',
                                   style: TextStyle(fontSize: 12)),
                             ),
                           ),

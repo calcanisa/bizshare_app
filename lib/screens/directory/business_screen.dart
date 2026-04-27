@@ -15,6 +15,7 @@ import 'add_business_review.dart';
 import '../gallery/add_video_gallery.dart';
 import '../gallery/add_picture_gallery.dart';
 import '../mail/send_message.dart';
+import '../feature_content.dart';
 
 class BusinessDetailScreen extends StatefulWidget {
   final int businessId;
@@ -319,6 +320,21 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
         onPressed: () {}, // TODO: edit
         child: const Text('Edit',
             style: TextStyle(color: Color(0xFFf8b324), fontSize: 12)),
+      ));
+      actions.add(TextButton(
+        onPressed: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => FeatureScreen(
+                type: 'business',
+                item: _business!,
+              ),
+            ),
+          );
+        },
+        child: const Text('Feature',
+            style: TextStyle(color: Colors.white70, fontSize: 12)),
       ));
     }
     return actions;
@@ -1578,7 +1594,18 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
             Align(
               alignment: Alignment.centerRight,
               child: ElevatedButton(
-                onPressed: () {}, // TODO: add review modal
+                onPressed: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ReviewScreen(
+                        action: 'add',
+                        businessId: widget.businessId,
+                      ),
+                    ),
+                  );
+                  if (result != null && mounted) _loadReviews();
+                },
                 style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF094a25)),
                 child: const Text('Write a Review',
@@ -1748,7 +1775,19 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
             Row(
               children: [
                 OutlinedButton(
-                  onPressed: () {}, // TODO: edit review
+                  onPressed: () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ReviewScreen(
+                          action: 'edit',
+                          businessId: widget.businessId,
+                          review: review,
+                        ),
+                      ),
+                    );
+                    if (result != null && mounted) _loadReviews();
+                  },
                   style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xFF094a25),
                       padding: const EdgeInsets.symmetric(
@@ -1757,7 +1796,32 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
-                  onPressed: () {}, // TODO: delete review
+                  onPressed: () async {
+                    final confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        content: const Text('Delete your review?'),
+                        actions: [
+                          TextButton(
+                              onPressed: () => Navigator.pop(ctx, false),
+                              child: const Text('Cancel')),
+                          TextButton(
+                              onPressed: () => Navigator.pop(ctx, true),
+                              child: const Text('Delete',
+                                  style: TextStyle(color: Color(0xFFbc2023)))),
+                        ],
+                      ),
+                    );
+                    if (confirm != true) return;
+                    try {
+                      final api = context.read<ApiService>();
+                      await api.dio.delete(
+                          '/api/v1/directory/business/review/${review['id']}/d/');
+                      if (mounted) _loadReviews();
+                    } catch (_) {
+                      _showSnack('Could not delete review. Try again.');
+                    }
+                  },
                   style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFbc2023),
                       padding: const EdgeInsets.symmetric(

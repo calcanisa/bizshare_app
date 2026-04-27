@@ -5,6 +5,7 @@ import '../../services/api_service.dart';
 import '../../widgets/filter_chip_bar.dart';
 import '../jobs/job_screen.dart';
 import '../jobs/add_job.dart';
+import '../feature_content.dart';
 
 class JobsScreen extends StatefulWidget {
   const JobsScreen({super.key});
@@ -383,7 +384,13 @@ class _JobsScreenState extends State<JobsScreen> {
                       const Spacer(),
                       TextButton(
                         onPressed: () {
-                          setSheetState(() {
+                          setState(() {
+                            _filterCity = null;
+                            _filterArea = null;
+                            _filterSector = null;
+                            _filterFunction = null;
+                            _filterContractType = null;
+                            _filterWorkEnvironment = null;
                             _tempCity = null;
                             _tempArea = null;
                             _tempSector = null;
@@ -393,6 +400,8 @@ class _JobsScreenState extends State<JobsScreen> {
                             _cities = [];
                             _areas = [];
                           });
+                          Navigator.pop(context);
+                          _loadJobs(refresh: true);
                         },
                         child: const Text('Reset',
                             style: TextStyle(color: Color(0xFFf8b324))),
@@ -756,6 +765,29 @@ class _JobsScreenState extends State<JobsScreen> {
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 4)),
                               child: const Text('Edit',
+                                  style: TextStyle(fontSize: 12)),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => FeatureScreen(
+                                      type: 'job',
+                                      item: job,
+                                    ),
+                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFf8b324),
+                                  foregroundColor: Colors.black87,
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 4)),
+                              child: const Text('Feature',
                                   style: TextStyle(fontSize: 12)),
                             ),
                           ),

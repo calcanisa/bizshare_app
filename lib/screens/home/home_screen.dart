@@ -26,6 +26,8 @@ import '../../providers/cart_provider.dart';
 import '../give_feedback.dart';
 import '../help_screen.dart';
 import '../../widgets/sesh_agent.dart';
+import '../../services/api_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -34,8 +36,9 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   int _currentIndex = -1;
+  Map<String, dynamic> _seshaSettings = {};
   final List<int> _history = [];
 
   final List<Map<String, dynamic>> _sections = [
@@ -60,6 +63,29 @@ class _HomeScreenState extends State<HomeScreen> {
     {'title': 'Websites', 'icon': Icons.language},
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AuthProvider>().apiService.refreshIfNeeded();
+    });
+    _loadSeshaSettings();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      context.read<AuthProvider>().apiService.refreshIfNeeded();
+    }
+  }
+
   void _navigateTo(int index) {
     setState(() {
       _history.add(_currentIndex);
@@ -78,6 +104,14 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       SystemNavigator.pop();
     }
+  }
+
+  Future<void> _loadSeshaSettings() async {
+    try {
+      final api = context.read<ApiService>();
+      final res = await api.dio.get('/api/v1/sesha/settings/');
+      setState(() => _seshaSettings = res.data as Map<String, dynamic>);
+    } catch (_) {}
   }
 
   Widget _currentScreen() {
@@ -210,15 +244,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: ListView(
                   padding: EdgeInsets.zero,
                   children: [
-                    // Header
                     DrawerHeader(
                       decoration: const BoxDecoration(color: Color(0xFF094a25)),
                       child: Center(
                         child: Image.asset('assets/img/sesha.png', height: 60),
                       ),
                     ),
-
-                    // Dashboard
                     ListTile(
                       leading: const Icon(Icons.dashboard_outlined,
                           color: Color(0xFF094a25)),
@@ -234,27 +265,18 @@ class _HomeScreenState extends State<HomeScreen> {
                         Navigator.pop(context);
                       },
                     ),
-
                     const Divider(height: 1),
-
-                    // ── USER ──────────────────────────────────────────
                     _sectionHeader('User'),
                     _navItem('Account'),
                     _navItem('Settings'),
                     _navItem('Profile'),
-
                     const Divider(height: 1),
-
-                    // ── ENGAGEMENT ────────────────────────────────────
                     _sectionHeader('Engagement'),
                     _navItem('Alerts'),
                     _navItem('Mail'),
                     _navItem('Cart'),
                     _navItem('Bookmarks'),
-
                     const Divider(height: 1),
-
-                    // ── APPLICATIONS ──────────────────────────────────
                     _sectionHeader('Applications'),
                     _navItem('Classifieds'),
                     _navItem('Contacts'),
@@ -268,10 +290,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     _navItem('Projects'),
                     _navItem('Services'),
                     _navItem('Websites'),
-
                     const Divider(height: 1),
-
-// ── HELP ──────────────────────────────────────────
                     _sectionHeader('Help'),
                     ListTile(
                       dense: true,
@@ -291,12 +310,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ));
                       },
                     ),
-
                     const Divider(height: 1),
-
-                    const Divider(height: 1),
-
-                    // Logout
                     ListTile(
                       leading:
                           const Icon(Icons.logout, color: Color(0xFFbc2023)),
@@ -311,8 +325,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-
-              // Footer
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -346,7 +358,8 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             _currentScreen(),
             SeshAgent(
-              enabled: true,
+              enabled: _seshaSettings['ai_agent'] == true &&
+                  _seshaSettings['ai_agent_maintenance'] != true,
             ),
           ],
         ),
@@ -375,7 +388,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final icon =
         index != -1 ? _sections[index]['icon'] as IconData : Icons.circle;
 
-    // Not yet wired to a screen — greyed out, not tappable
     if (index == -1) {
       return ListTile(
         dense: true,
@@ -412,18 +424,34 @@ class _HomeScreenState extends State<HomeScreen> {
     return GestureDetector(
       onTap: () {
         Navigator.pop(context);
-        if (title == 'Feedback') {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const FeedbackScreen(),
-              ));
-        } else if (title == 'Help') {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => HelpScreen(),
-              ));
+        switch (title) {
+          case 'Feedback':
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const FeedbackScreen(),
+                ));
+            break;
+          case 'Help':
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => HelpScreen(),
+                ));
+            break;
+          case 'About':
+          case 'Terms':
+          case 'Privacy':
+          case 'Cookies':
+            final slugs = {
+              'About': 'about',
+              'Terms': 'terms',
+              'Privacy': 'privacy',
+              'Cookies': 'cookies',
+            };
+            final url = Uri.parse('https://sesha.co.za/sesha-${slugs[title]}');
+            launchUrl(url, mode: LaunchMode.externalApplication);
+            break;
         }
       },
       child: Text(title,

@@ -5,6 +5,7 @@ import '../../services/api_service.dart';
 import '../../widgets/filter_chip_bar.dart';
 import '../directory/business_screen.dart';
 import '../directory/add_business_screen.dart';
+import '../feature_content.dart';
 
 class DirectoryScreen extends StatefulWidget {
   const DirectoryScreen({super.key});
@@ -703,7 +704,27 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                         child: const Text('Edit'),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => FeatureScreen(
+                                type: 'business',
+                                item: business,
+                              ),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFf8b324),
+                            foregroundColor: Colors.black87),
+                        child: const Text('Feature'),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
                   ],
                   Expanded(
                     child: ElevatedButton(

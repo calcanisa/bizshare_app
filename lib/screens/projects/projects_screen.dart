@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../../services/api_service.dart';
 import '../projects/project_screen.dart';
+import '../feature_content.dart';
 
 class ProjectsScreen extends StatefulWidget {
   const ProjectsScreen({super.key});
@@ -591,7 +592,30 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                                 style: TextStyle(fontSize: 12)),
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => FeatureScreen(
+                                    type: 'project',
+                                    item: project,
+                                  ),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFf8b324),
+                                foregroundColor: Colors.black87,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4)),
+                            child: const Text('Feature',
+                                style: TextStyle(fontSize: 12)),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () => _deleteProject(project['id']),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../../services/api_service.dart';
+import '../feature_content.dart';
 
 class EventDetailScreen extends StatefulWidget {
   final int eventId;
@@ -143,32 +144,70 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF094a25),
         iconTheme: const IconThemeData(color: Colors.white),
-        title: Text(
-          _event?['name'] ?? 'Event',
-          style: const TextStyle(color: Colors.white, fontSize: 15),
-          overflow: TextOverflow.ellipsis,
+        titleSpacing: 0,
+        title: Padding(
+          padding: const EdgeInsets.only(left: 4),
+          child: GestureDetector(
+            onTap: () => Navigator.popUntil(context, (route) => route.isFirst),
+            child: Image.asset('assets/img/sesha.png', height: 40),
+          ),
         ),
         actions: [
           if (_event != null && !_isExpired) ...[
             if (_isOwner) ...[
               TextButton(
-                onPressed: () {}, // TODO: edit event
+                style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                onPressed: () {},
                 child: const Text('Edit',
                     style: TextStyle(color: Color(0xFFf8b324), fontSize: 12)),
               ),
               TextButton(
+                style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => FeatureScreen(
+                        type: 'event',
+                        item: _event!,
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('Feature',
+                    style: TextStyle(color: Colors.white70, fontSize: 12)),
+              ),
+              TextButton(
+                style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap),
                 onPressed: _deleteEvent,
                 child: const Text('Delete',
                     style: TextStyle(color: Color(0xFFbc2023), fontSize: 12)),
               ),
             ] else ...[
               TextButton(
-                onPressed: () {}, // TODO: contact
+                style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                onPressed: () {},
                 child: const Text('Contact',
                     style: TextStyle(color: Color(0xFFf8b324), fontSize: 12)),
               ),
               TextButton(
-                onPressed: () {}, // TODO: report
+                style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                onPressed: () {},
                 child: const Text('Report',
                     style: TextStyle(color: Colors.white70, fontSize: 12)),
               ),
@@ -209,13 +248,32 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
   Widget _typeBar() {
     final eventType = _event?['event_type'] as Map?;
     final typeName = eventType?['name'] ?? '';
-    return Container(
-      color: Colors.black87,
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      child: Text(typeName,
-          style: const TextStyle(
-              color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500)),
+    final name = _event?['name'] ?? '';
+
+    return Column(
+      children: [
+        Container(
+          color: const Color(0xFF0a5c2e),
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(name,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold)),
+              if (typeName.isNotEmpty) ...[
+                const SizedBox(height: 2),
+                Text(typeName,
+                    style:
+                        const TextStyle(color: Colors.white70, fontSize: 12)),
+              ],
+            ],
+          ),
+        ),
+      ],
     );
   }
 

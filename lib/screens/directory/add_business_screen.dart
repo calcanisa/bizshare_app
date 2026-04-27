@@ -948,24 +948,25 @@ class _AddBusinessModalState extends State<AddBusinessModal> {
 
   Widget _termsAndSave() => Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Checkbox(
-                value: _accepted,
-                activeColor: const Color(0xFF094a25),
-                onChanged: (v) => setState(() => _accepted = v ?? false),
-              ),
-              const Text('I accept the '),
-              GestureDetector(
-                onTap: () {},
-                child: const Text('terms',
-                    style: TextStyle(
-                        color: Color(0xFF094a25),
-                        decoration: TextDecoration.underline)),
-              ),
-            ],
-          ),
+          if (widget.action == 'add')
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Checkbox(
+                  value: _accepted,
+                  activeColor: const Color(0xFF094a25),
+                  onChanged: (v) => setState(() => _accepted = v ?? false),
+                ),
+                const Text('I accept the '),
+                GestureDetector(
+                  onTap: () {},
+                  child: const Text('terms',
+                      style: TextStyle(
+                          color: Color(0xFF094a25),
+                          decoration: TextDecoration.underline)),
+                ),
+              ],
+            ),
           const SizedBox(height: 12),
           Row(
             children: [

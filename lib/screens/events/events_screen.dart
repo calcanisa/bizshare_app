@@ -5,6 +5,7 @@ import '../../services/api_service.dart';
 import '../../widgets/filter_chip_bar.dart';
 import '../events/event_screen.dart';
 import '../events/add_event.dart';
+import '../feature_content.dart';
 
 class EventsScreen extends StatefulWidget {
   const EventsScreen({super.key});
@@ -258,8 +259,8 @@ class _EventsScreenState extends State<EventsScreen> {
     return StatefulBuilder(
       builder: (context, setSheetState) {
         return DraggableScrollableSheet(
-          initialChildSize: 0.75,
-          maxChildSize: 0.95,
+          initialChildSize: 0.65,
+          maxChildSize: 0.85,
           minChildSize: 0.5,
           expand: false,
           builder: (context, scrollController) {
@@ -283,12 +284,18 @@ class _EventsScreenState extends State<EventsScreen> {
                       const Spacer(),
                       TextButton(
                         onPressed: () {
-                          setSheetState(() {
+                          setState(() {
+                            _filterCity = null;
+                            _filterEventType = null;
+                            _filterDateFrom = null;
+                            _filterDateTo = null;
                             _tempCity = null;
                             _tempEventType = null;
                             _dateFromController.clear();
                             _dateToController.clear();
                           });
+                          Navigator.pop(context);
+                          _loadEvents(refresh: true);
                         },
                         child: const Text('Reset',
                             style: TextStyle(color: Color(0xFFf8b324))),
@@ -303,16 +310,43 @@ class _EventsScreenState extends State<EventsScreen> {
                     children: [
                       if (_cities.isNotEmpty) ...[
                         _filterLabel('City'),
-                        _filterDropdown<int>(
-                          value: _tempCity,
-                          hint: 'All Cities',
-                          items: _cities
-                              .map((c) => DropdownMenuItem<int>(
-                                    value: c['id'],
-                                    child: Text(c['name'] ?? ''),
-                                  ))
-                              .toList(),
-                          onChanged: (v) => setSheetState(() => _tempCity = v),
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black26),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          constraints: const BoxConstraints(maxHeight: 160),
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: _cities.length + 1,
+                            itemBuilder: (context, i) {
+                              if (i == 0) {
+                                return ListTile(
+                                  dense: true,
+                                  title: const Text('All Cities',
+                                      style: TextStyle(
+                                          color: Colors.black45, fontSize: 13)),
+                                  selected: _tempCity == null,
+                                  selectedTileColor: const Color(0xFF094a25)
+                                      .withValues(alpha: 0.1),
+                                  onTap: () =>
+                                      setSheetState(() => _tempCity = null),
+                                );
+                              }
+                              final city = _cities[i - 1];
+                              return ListTile(
+                                dense: true,
+                                title: Text(city['name'] ?? '',
+                                    style: const TextStyle(fontSize: 13)),
+                                selected: _tempCity == city['id'],
+                                selectedColor: const Color(0xFF094a25),
+                                selectedTileColor: const Color(0xFF094a25)
+                                    .withValues(alpha: 0.1),
+                                onTap: () =>
+                                    setSheetState(() => _tempCity = city['id']),
+                              );
+                            },
+                          ),
                         ),
                         const SizedBox(height: 16),
                       ],
@@ -644,6 +678,29 @@ class _EventsScreenState extends State<EventsScreen> {
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 4)),
                             child: const Text('Edit',
+                                style: TextStyle(fontSize: 12)),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => FeatureScreen(
+                                    type: 'event',
+                                    item: event,
+                                  ),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFf8b324),
+                                foregroundColor: Colors.black87,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4)),
+                            child: const Text('Feature',
                                 style: TextStyle(fontSize: 12)),
                           ),
                         ),

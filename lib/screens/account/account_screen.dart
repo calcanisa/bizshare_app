@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../services/api_service.dart';
 import '../../providers/auth_provider.dart';
 import './sesha_passive.dart';
+import '../../utils/account_notifiers.dart';
 import 'withdraw.dart';
 
 class AccountScreen extends StatefulWidget {
@@ -121,6 +122,15 @@ class _AccountScreenState extends State<AccountScreen> {
   void initState() {
     super.initState();
     _loadAccount();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (accountEditUpgradeNotifier.value) {
+        accountEditUpgradeNotifier.value = false;
+        setState(() {
+          _editing = true;
+          _upAcc = true;
+        });
+      }
+    });
   }
 
   @override
