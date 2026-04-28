@@ -237,121 +237,127 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ),
           ],
         ),
-        drawer: Drawer(
-          child: Column(
-            children: [
-              Expanded(
-                child: ListView(
-                  padding: EdgeInsets.zero,
-                  children: [
-                    DrawerHeader(
-                      decoration: const BoxDecoration(color: Color(0xFF094a25)),
-                      child: Center(
-                        child: Image.asset('assets/img/sesha.png', height: 60),
+        drawer: Theme(
+          data: ThemeData.light(),
+          child: Drawer(
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView(
+                    padding: EdgeInsets.zero,
+                    children: [
+                      DrawerHeader(
+                        decoration:
+                            const BoxDecoration(color: Color(0xFF094a25)),
+                        child: Center(
+                          child:
+                              Image.asset('assets/img/sesha.png', height: 60),
+                        ),
                       ),
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.dashboard_outlined,
-                          color: Color(0xFF094a25)),
-                      title: const Text('Dashboard'),
-                      selected: _currentIndex == -1,
-                      selectedTileColor:
-                          const Color(0xFF094a25).withValues(alpha: 0.1),
-                      onTap: () {
-                        setState(() {
-                          _history.add(_currentIndex);
-                          _currentIndex = -1;
-                        });
-                        Navigator.pop(context);
-                      },
-                    ),
-                    const Divider(height: 1),
-                    _sectionHeader('User'),
-                    _navItem('Account'),
-                    _navItem('Settings'),
-                    _navItem('Profile'),
-                    const Divider(height: 1),
-                    _sectionHeader('Engagement'),
-                    _navItem('Alerts'),
-                    _navItem('Mail'),
-                    _navItem('Cart'),
-                    _navItem('Bookmarks'),
-                    const Divider(height: 1),
-                    _sectionHeader('Applications'),
-                    _navItem('Classifieds'),
-                    _navItem('Contacts'),
-                    _navItem('Directory'),
-                    _navItem('Events'),
-                    _navItem('Jobs'),
-                    _navItem('Leads'),
-                    _navItem('Opportunities'),
-                    _navItem('People'),
-                    _navItem('Products'),
-                    _navItem('Projects'),
-                    _navItem('Services'),
-                    _navItem('Websites'),
-                    const Divider(height: 1),
-                    _sectionHeader('Help'),
-                    ListTile(
-                      dense: true,
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 16),
-                      leading: const Icon(Icons.help_outline,
-                          size: 20, color: Color(0xFF094a25)),
-                      title: const Text('Help',
+                      ListTile(
+                        leading: const Icon(Icons.dashboard_outlined,
+                            color: Color(0xFF094a25)),
+                        title: const Text('Dashboard'),
+                        selected: _currentIndex == -1,
+                        selectedTileColor:
+                            const Color(0xFF094a25).withValues(alpha: 0.1),
+                        onTap: () {
+                          setState(() {
+                            _history.add(_currentIndex);
+                            _currentIndex = -1;
+                          });
+                          Navigator.pop(context);
+                        },
+                      ),
+                      const Divider(height: 1),
+                      _sectionHeader('User'),
+                      _navItem('Account'),
+                      _navItem('Settings'),
+                      _navItem('Profile'),
+                      const Divider(height: 1),
+                      _sectionHeader('Engagement'),
+                      _navItem('Alerts'),
+                      _navItem('Mail'),
+                      _navItem('Cart'),
+                      _navItem('Bookmarks'),
+                      const Divider(height: 1),
+                      _sectionHeader('Applications'),
+                      _navItem('Classifieds'),
+                      _navItem('Contacts'),
+                      _navItem('Directory'),
+                      _navItem('Events'),
+                      _navItem('Jobs'),
+                      _navItem('Leads'),
+                      _navItem('Opportunities'),
+                      _navItem('People'),
+                      _navItem('Products'),
+                      _navItem('Projects'),
+                      _navItem('Services'),
+                      _navItem('Websites'),
+                      const Divider(height: 1),
+                      _sectionHeader('Help'),
+                      ListTile(
+                        dense: true,
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 16),
+                        leading: const Icon(Icons.help_outline,
+                            size: 20, color: Color(0xFF094a25)),
+                        title: const Text('Help',
+                            style:
+                                TextStyle(fontSize: 14, color: Colors.black87)),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => HelpScreen(),
+                              ));
+                        },
+                      ),
+                      const Divider(height: 1),
+                      ListTile(
+                        leading:
+                            const Icon(Icons.logout, color: Color(0xFFbc2023)),
+                        title: const Text('Logout',
+                            style: TextStyle(color: Color(0xFFbc2023))),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Provider.of<AuthProvider>(context, listen: false)
+                              .logout();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: const BoxDecoration(
+                    border: Border(top: BorderSide(color: Colors.black12)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Wrap(
+                        spacing: 12,
+                        runSpacing: 4,
+                        children: [
+                          _footerLink('About'),
+                          _footerLink('Terms'),
+                          _footerLink('Privacy'),
+                          _footerLink('Cookies'),
+                          _footerLink('Feedback'),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      const Text('© 2026 Sesha. All rights reserved.',
                           style:
-                              TextStyle(fontSize: 14, color: Colors.black87)),
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => HelpScreen(),
-                            ));
-                      },
-                    ),
-                    const Divider(height: 1),
-                    ListTile(
-                      leading:
-                          const Icon(Icons.logout, color: Color(0xFFbc2023)),
-                      title: const Text('Logout',
-                          style: TextStyle(color: Color(0xFFbc2023))),
-                      onTap: () {
-                        Navigator.pop(context);
-                        Provider.of<AuthProvider>(context, listen: false)
-                            .logout();
-                      },
-                    ),
-                  ],
+                              TextStyle(fontSize: 11, color: Colors.black45)),
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: const BoxDecoration(
-                  border: Border(top: BorderSide(color: Colors.black12)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Wrap(
-                      spacing: 12,
-                      runSpacing: 4,
-                      children: [
-                        _footerLink('About'),
-                        _footerLink('Terms'),
-                        _footerLink('Privacy'),
-                        _footerLink('Cookies'),
-                        _footerLink('Feedback'),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    const Text('© 2026 Sesha. All rights reserved.',
-                        style: TextStyle(fontSize: 11, color: Colors.black45)),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         body: Stack(

@@ -7,6 +7,8 @@ import 'screens/auth/login_screen.dart';
 import 'screens/home/home_screen.dart';
 import 'package:flutter/services.dart';
 
+final appThemeNotifier = ValueNotifier<ThemeMode>(ThemeMode.light);
+
 void main() {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
@@ -37,59 +39,75 @@ class _SeshaAppState extends State<SeshaApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        Provider<ApiService>.value(value: _apiService),
-        ChangeNotifierProvider<AuthProvider>.value(value: _authProvider),
-        ChangeNotifierProvider(create: (_) => CartProvider()),
-      ],
-      child: MaterialApp(
-        title: 'Sesha',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF094a25)),
-          useMaterial3: true,
-          appBarTheme: const AppBarTheme(
-            systemOverlayStyle: SystemUiOverlayStyle(
-              statusBarColor: Colors.transparent,
-              statusBarIconBrightness: Brightness.light,
-              statusBarBrightness: Brightness.dark,
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: appThemeNotifier,
+      builder: (context, themeMode, _) => MultiProvider(
+        providers: [
+          Provider<ApiService>.value(value: _apiService),
+          ChangeNotifierProvider<AuthProvider>.value(value: _authProvider),
+          ChangeNotifierProvider(create: (_) => CartProvider()),
+        ],
+        child: MaterialApp(
+          title: 'Sesha',
+          debugShowCheckedModeBanner: false,
+          themeMode: ThemeMode.light,
+          darkTheme: ThemeData.dark().copyWith(
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: const Color(0xFF094a25),
+              brightness: Brightness.dark,
             ),
           ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              textStyle:
-                  const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            ).copyWith(
-              shape: WidgetStateProperty.all(
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+          theme: ThemeData(
+            colorScheme:
+                ColorScheme.fromSeed(seedColor: const Color(0xFF094a25)),
+            useMaterial3: true,
+            appBarTheme: const AppBarTheme(
+              systemOverlayStyle: SystemUiOverlayStyle(
+                statusBarColor: Colors.transparent,
+                statusBarIconBrightness: Brightness.light,
+                statusBarBrightness: Brightness.dark,
+              ),
+            ),
+            elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                textStyle:
+                    const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              ).copyWith(
+                shape: WidgetStateProperty.all(
+                  RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4)),
+                ),
+              ),
+            ),
+            outlinedButtonTheme: OutlinedButtonThemeData(
+              style: OutlinedButton.styleFrom(
+                textStyle:
+                    const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              ).copyWith(
+                shape: WidgetStateProperty.all(
+                  RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4)),
+                ),
+              ),
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                textStyle:
+                    const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+              ).copyWith(
+                shape: WidgetStateProperty.all(
+                  RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4)),
+                ),
               ),
             ),
           ),
-          outlinedButtonTheme: OutlinedButtonThemeData(
-            style: OutlinedButton.styleFrom(
-              textStyle:
-                  const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            ).copyWith(
-              shape: WidgetStateProperty.all(
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-              ),
-            ),
-          ),
-          textButtonTheme: TextButtonThemeData(
-            style: TextButton.styleFrom(
-              textStyle:
-                  const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-            ).copyWith(
-              shape: WidgetStateProperty.all(
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-              ),
-            ),
-          ),
+          home: const AuthWrapper(),
         ),
-        home: const AuthWrapper(),
       ),
     );
   }

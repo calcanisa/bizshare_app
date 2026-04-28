@@ -48,6 +48,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
   List<Map<String, dynamic>> _cities = [];
   List<Map<String, dynamic>> _areas = [];
   bool _loadingData = true;
+  bool _hasError = false;
 
   static const _stageOptions = [
     ('idea', 'Idea'),
@@ -88,13 +89,17 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
   }
 
   Future<void> _loadInitialData() async {
-    setState(() => _loadingData = true);
-    final api = context.read<ApiService>();
+    setState(() {
+      _loadingData = true;
+      _hasError = false;
+    });
     try {
+      final api = context.read<ApiService>();
       final results = await Future.wait([
         api.dio.get('/api/v1/directory/categories/'),
         api.dio.get('/api/v1/directory/provinces/'),
       ]);
+      if (!mounted) return;
       final cats = results[0].data;
       final provs = results[1].data;
       setState(() {
@@ -103,15 +108,19 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
         _provinces = List<Map<String, dynamic>>.from(
             provs is List ? provs : (provs['results'] ?? []));
       });
-    } catch (_) {
-      _showError('Could not load form data. Please try again.');
+      // Prefill AFTER categories/provinces are loaded so dropdowns have their items
+      if (widget.action == 'edit' && widget.project != null) {
+        _prefill(widget.project!);
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _hasError = true);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _showError('Could not load form data. Please try again.');
+      });
+    } finally {
+      if (mounted) setState(() => _loadingData = false);
     }
-
-    if (widget.action == 'edit' && widget.project != null) {
-      _prefill(widget.project!);
-    }
-
-    setState(() => _loadingData = false);
   }
 
   Future<void> _loadCities(int provinceId) async {

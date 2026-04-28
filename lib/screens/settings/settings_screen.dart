@@ -127,7 +127,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             children: [
               // Edit / Save / Cancel buttons
               Padding(
-                padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -223,12 +223,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _sectionHeader('Account Management'),
-        _settingTile(
-          'gotodash',
-          'Go to my dashboard upon log in',
-          'Automatically navigate to dashboard after logging in.',
-        ),
         _sectionHeader('Security'),
         _settingTile(
           'loginalert',
@@ -248,18 +242,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _sectionHeader('Mode'),
-        _settingTile(
-          'darkmode',
-          'Dark Mode',
-          'Switch the interface to dark mode.',
-        ),
-        _sectionHeader('Menu'),
-        _settingTile(
-          'smallmenu',
-          'Small Menu',
-          'Use a compact sidebar menu.',
-        ),
         _sectionHeader('Public Profile'),
         _settingTile(
           'hide_profile',

@@ -78,10 +78,21 @@ class ApiService {
     }
   }
 
+  bool _refreshing = false;
+
   Future<bool> _refreshToken() async {
+    if (_refreshing) {
+      // Wait for the in-progress refresh to complete
+      await Future.delayed(const Duration(milliseconds: 500));
+      return await _storage.read(key: 'access_token') != null;
+    }
+    _refreshing = true;
     try {
       final refresh = await _storage.read(key: 'refresh_token');
-      if (refresh == null) return false;
+      if (refresh == null) {
+        _refreshing = false;
+        return false;
+      }
       final response = await Dio().post(
         '$baseUrl/api/token/refresh/',
         data: {'refresh': refresh},
@@ -89,7 +100,6 @@ class ApiService {
       final newAccess = response.data['access'] as String;
       await _storage.write(key: 'access_token', value: newAccess);
 
-      // Cache expiry from new token
       final parts = newAccess.split('.');
       if (parts.length == 3) {
         final payload =
@@ -105,9 +115,11 @@ class ApiService {
         await _storage.write(
             key: 'refresh_token', value: response.data['refresh']);
       }
+      _refreshing = false;
       return true;
     } catch (e) {
       debugPrint('_refreshToken error: $e');
+      _refreshing = false;
       await _storage.deleteAll();
       return false;
     }

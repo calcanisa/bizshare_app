@@ -134,21 +134,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final views = provider.count('profiles.ProfileView');
     final clicks = provider.count('profiles.ProfileClick');
 
-    return GestureDetector(
-      onTap: widget.onProfileTap,
-      child: Container(
-        margin: const EdgeInsets.only(top: 12, bottom: 4),
-        color: Colors.white,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _sectionHeader('Profile'),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ClipRRect(
+    return Container(
+      margin: const EdgeInsets.only(top: 12, bottom: 4),
+      color: Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _sectionHeader('Profile'),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GestureDetector(
+                  onTap: widget.onProfileTap,
+                  child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: picture != null
                         ? Image.network(
@@ -160,45 +160,47 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           )
                         : _profilePlaceholder(),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      GestureDetector(
+                        onTap: widget.onProfileTap,
+                        child: Text(
                           '$firstName $lastName',
                           style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                               color: Color(0xFF094a25)),
                         ),
-                        if (about.isNotEmpty) ...[
-                          const SizedBox(height: 8),
-                          Text(
-                            about.length > 200
-                                ? '${about.substring(0, 200)}...'
-                                : about,
-                            style: const TextStyle(
-                                fontSize: 13, color: Colors.black54),
-                          ),
-                        ],
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            _statChip('Views', views),
-                            const SizedBox(width: 16),
-                            _statChip('Clicks', clicks),
-                          ],
+                      ),
+                      if (about.isNotEmpty) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          about.length > 200
+                              ? '${about.substring(0, 200)}...'
+                              : about,
+                          style: const TextStyle(
+                              fontSize: 13, color: Colors.black54),
                         ),
                       ],
-                    ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          _statChip('Views', views),
+                          const SizedBox(width: 16),
+                          _statChip('Clicks', clicks),
+                        ],
+                      ),
+                    ],
                   ),
-                  const Icon(Icons.chevron_right, color: Colors.black26),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -5,6 +5,7 @@ import '../../providers/auth_provider.dart';
 import './sesha_passive.dart';
 import '../../utils/account_notifiers.dart';
 import 'withdraw.dart';
+import '../../providers/cart_provider.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -17,6 +18,9 @@ class _AccountScreenState extends State<AccountScreen> {
   // Account data
   Map<String, dynamic>? _account;
   bool _loading = true;
+
+  // Sesha settings
+  Map<String, dynamic> _seshaSettings = {};
 
   // Tabs
   int _tab = 1;
@@ -73,6 +77,8 @@ class _AccountScreenState extends State<AccountScreen> {
   bool _showNewPass = false;
   bool _showConfirmPass = false;
 
+  bool get _passiveEnabled => _seshaSettings['passive'] == true;
+
   bool get _hasPassiveMembership =>
       _account?['passive_membership']?['is_active'] == true;
 
@@ -121,6 +127,7 @@ class _AccountScreenState extends State<AccountScreen> {
   @override
   void initState() {
     super.initState();
+    _loadSeshaSettings();
     _loadAccount();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (accountEditUpgradeNotifier.value) {
@@ -149,6 +156,16 @@ class _AccountScreenState extends State<AccountScreen> {
       f.dispose();
     }
     super.dispose();
+  }
+
+  Future<void> _loadSeshaSettings() async {
+    try {
+      final api = context.read<ApiService>();
+      final res = await api.dio.get('/api/v1/sesha/settings/');
+      if (mounted) {
+        setState(() => _seshaSettings = res.data as Map<String, dynamic>);
+      }
+    } catch (_) {}
   }
 
   Future<void> _loadAccount() async {
@@ -491,6 +508,9 @@ class _AccountScreenState extends State<AccountScreen> {
           child: CircularProgressIndicator(color: Color(0xFF094a25)));
     }
 
+    // Passive tab is only shown if the feature is enabled AND the user has it
+    final showPassiveTab = _passiveEnabled && _hasPassiveMembership;
+
     return Column(
       children: [
         // Tab bar
@@ -499,8 +519,8 @@ class _AccountScreenState extends State<AccountScreen> {
           child: Row(
             children: [
               _tabBtn(1, 'Account'),
-              if (_hasPassiveMembership) _tabBtn(2, 'Sesha Passive'),
-              _tabBtn(_hasPassiveMembership ? 3 : 2, 'Financials'),
+              if (showPassiveTab) _tabBtn(2, 'Sesha Passive'),
+              _tabBtn(showPassiveTab ? 3 : 2, 'Financials'),
             ],
           ),
         ),
@@ -513,7 +533,7 @@ class _AccountScreenState extends State<AccountScreen> {
               padding: const EdgeInsets.all(16),
               child: _tab == 1
                   ? _accountTab()
-                  : _tab == 2 && _hasPassiveMembership
+                  : _tab == 2 && showPassiveTab
                       ? _passiveTab()
                       : _financialsTab(),
             ),
@@ -529,7 +549,8 @@ class _AccountScreenState extends State<AccountScreen> {
       child: GestureDetector(
         onTap: () {
           setState(() => _tab = index);
-          if (index == 3 || (index == 2 && !_hasPassiveMembership)) {
+          final showPassiveTab = _passiveEnabled && _hasPassiveMembership;
+          if (index == 3 || (index == 2 && !showPassiveTab)) {
             _loadOrders();
           }
         },
@@ -583,12 +604,13 @@ class _AccountScreenState extends State<AccountScreen> {
           _detailRow('Joined', _formatDate(createdAt?.toString())),
           _detailRow('Last Update', _formatDate(updatedAt?.toString())),
           _detailRow('Membership', _membershipLabel),
-          _detailRow('Passive Member', _hasPassiveMembership ? 'Yes' : 'No'),
-          if (_hasPassiveMembership && referCode != null)
+          if (_passiveEnabled)
+            _detailRow('Passive Member', _hasPassiveMembership ? 'Yes' : 'No'),
+          if (_passiveEnabled && _hasPassiveMembership && referCode != null)
             _detailRow('Passive Code', referCode.toString()),
           _detailRow('Account Balance',
               'R${(balance is num ? balance.toStringAsFixed(2) : balance)}'),
-          if (_hasPassiveMembership)
+          if (_passiveEnabled && _hasPassiveMembership)
             _detailRow('Current Earnings', 'R$earnings'),
         ]),
       ],
@@ -769,7 +791,8 @@ class _AccountScreenState extends State<AccountScreen> {
               _resetActions();
               setState(() => _upAcc = v!);
             }),
-          if (!anyActive || _joinPass)
+          // Sesha Passive checkbox only shown if the feature is enabled
+          if (_passiveEnabled && (!anyActive || _joinPass))
             _actionCheckbox('Sesha Passive', _joinPass, (v) {
               _resetActions();
               setState(() => _joinPass = v!);
@@ -1367,8 +1390,22 @@ class _AccountScreenState extends State<AccountScreen> {
           ),
         if (showFund)
           ElevatedButton(
-            onPressed: () => _showSnack(
-                'R$_fundAmount added to cart. Go to cart to complete.'),
+            onPressed: () {
+              final amount = double.tryParse(_fundAmount) ?? 0;
+              if (amount <= 0) {
+                _showSnack('Enter a valid amount');
+                return;
+              }
+              context.read<CartProvider>().addItem(CartItem(
+                    id: 'fund_$_fundAmount',
+                    title: 'Account Funding — R$_fundAmount',
+                    price: amount,
+                    type: 'fund',
+                  ));
+              _showSnack(
+                  'R$_fundAmount added to cart. Go to cart to complete.');
+              _closeForm();
+            },
             style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF094a25)),
             child: const Text('Add to Cart',

@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../../services/api_service.dart';
 import '../projects/project_screen.dart';
+import '../projects/add_project.dart';
 import '../feature_content.dart';
 
 class ProjectsScreen extends StatefulWidget {
@@ -87,17 +88,14 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
       final response = await api.dio.get('/api/v1/users/current/');
       final data = response.data;
       final interests = data['interests'] as List? ?? [];
-      // Set account data but do NOT set _loadingAccount=false yet
       _accountId = data['id'];
       _interestProjectIds = interests.map<int>((i) {
         final proj = i['project'];
         return proj is int ? proj : int.tryParse(proj.toString()) ?? 0;
       }).toSet();
     } catch (_) {}
-    // Wait for my projects to load before showing UI
     await _loadMyProjects();
     _loadCategories();
-    // Now safe to show UI — both _accountId and _myProjects are ready
     setState(() => _loadingAccount = false);
   }
 
@@ -229,8 +227,6 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
   bool _hasShownInterest(int projectId) =>
       _interestProjectIds.contains(projectId);
 
-  // Check ownership using _myProjects list — guaranteed accurate
-  // since it's loaded before UI renders
   bool _isMyProject(Map<String, dynamic> project) {
     final projectId = project['id'];
     return _myProjects.any((p) => p['id'] == projectId);
@@ -244,6 +240,19 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
   void _showSnack(String msg) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  Future<void> _goToAddProject() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const AddProjectScreen(action: 'add'), // fixed
+      ),
+    );
+    if (result == true && mounted) {
+      await _loadMyProjects();
+      setState(() {});
+    }
   }
 
   void _openFilterSheet() async {
@@ -480,11 +489,14 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
     );
   }
 
+  // ─── Tab 1 — My Projects ─────────────────────────────────────────────────
+
   Widget _myProjectsTab() {
     if (_loadingMine) {
       return const Center(
           child: CircularProgressIndicator(color: Color(0xFF094a25)));
     }
+
     if (_myProjects.isEmpty) {
       return Center(
         child: Column(
@@ -494,27 +506,49 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                 style: TextStyle(color: Color(0xFF094a25))),
             const SizedBox(height: 12),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: _goToAddProject,
               style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF094a25)),
-              child: const Text('Create One',
+              child: const Text('Add Project',
                   style: TextStyle(color: Colors.white)),
             ),
           ],
         ),
       );
     }
+
     return RefreshIndicator(
       onRefresh: () async {
         await _loadMyProjects();
         setState(() {});
       },
       color: const Color(0xFF094a25),
-      child: ListView.builder(
-        padding: const EdgeInsets.all(12),
-        itemCount: _myProjects.length,
-        itemBuilder: (context, index) =>
-            _myProjectCard(_myProjects[index] as Map<String, dynamic>),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _goToAddProject,
+                icon: const Icon(Icons.add, size: 18, color: Colors.white),
+                label: const Text('Add Project',
+                    style: TextStyle(color: Colors.white)),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF094a25),
+                    padding: const EdgeInsets.symmetric(vertical: 12)),
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 80),
+              itemCount: _myProjects.length,
+              itemBuilder: (context, index) =>
+                  _myProjectCard(_myProjects[index] as Map<String, dynamic>),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -583,7 +617,21 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                       children: [
                         Expanded(
                           child: OutlinedButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => AddProjectScreen(
+                                    action: 'edit',
+                                    project: project,
+                                  ),
+                                ),
+                              );
+                              if (result == true && mounted) {
+                                await _loadMyProjects();
+                                setState(() {});
+                              }
+                            },
                             style: OutlinedButton.styleFrom(
                                 foregroundColor: const Color(0xFF094a25),
                                 padding:
@@ -639,6 +687,8 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
       ),
     );
   }
+
+  // ─── Tab 2 — My Interests ────────────────────────────────────────────────
 
   Widget _myInterestsTab() {
     if (_loadingInterests) {
@@ -743,6 +793,8 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                   style: const TextStyle(fontSize: 12, color: Colors.black87))),
         ],
       );
+
+  // ─── Tab 3 — All Projects ────────────────────────────────────────────────
 
   Widget _allProjectsTab() {
     return Column(
@@ -1006,7 +1058,21 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                   ),
                   if (isOwner) ...[
                     OutlinedButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => AddProjectScreen(
+                              action: 'edit',
+                              project: project,
+                            ),
+                          ),
+                        );
+                        if (result == true && mounted) {
+                          await _loadMyProjects();
+                          _fetchAllProjects(page: _currentPage);
+                        }
+                      },
                       style: OutlinedButton.styleFrom(
                           foregroundColor: const Color(0xFF094a25),
                           padding: const EdgeInsets.symmetric(
