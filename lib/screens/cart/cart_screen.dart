@@ -16,19 +16,23 @@ class _CartScreenState extends State<CartScreen> {
 
   bool _accepted = false;
   bool _paying = false;
+  bool _walletPaying = false;
   bool _validatingCode = false;
   bool _showDiscount = false;
   bool _showCodeInfo = false;
   final double _discountPercentage = 2.0;
 
-  final _refCodeController = TextEditingController();
+  double _walletBalance = 0.0;
+  bool _loadingWallet = false;
 
+  final _refCodeController = TextEditingController();
   int? _accountId;
 
   @override
   void initState() {
     super.initState();
     _loadAccount();
+    _loadWallet();
   }
 
   @override
@@ -45,6 +49,19 @@ class _CartScreenState extends State<CartScreen> {
     } catch (_) {}
   }
 
+  Future<void> _loadWallet() async {
+    setState(() => _loadingWallet = true);
+    try {
+      final api = context.read<ApiService>();
+      final res = await api.dio.get('/api/v1/wallet/');
+      if (res.data['has_wallet'] == true) {
+        setState(() => _walletBalance =
+            double.tryParse(res.data['balance'].toString()) ?? 0.0);
+      }
+    } catch (_) {}
+    setState(() => _loadingWallet = false);
+  }
+
   double _vatAmount(double price) => price * _vatRate;
 
   double get _discountAmount {
@@ -56,6 +73,11 @@ class _CartScreenState extends State<CartScreen> {
     final cart = context.read<CartProvider>();
     return _showDiscount ? cart.subtotal - _discountAmount : cart.subtotal;
   }
+
+  bool _isCardOnlyCart(CartProvider cart) => cart.items
+      .any((i) => ['wallet_topup', 'membership', 'sesha'].contains(i.type));
+
+  bool get _walletHasFunds => _walletBalance >= _cartTotal;
 
   Future<void> _validateCode(String code) async {
     if (code.trim().isEmpty) return;
@@ -83,6 +105,60 @@ class _CartScreenState extends State<CartScreen> {
     setState(() => _validatingCode = false);
   }
 
+  Future<void> _payWithWallet() async {
+    final cart = context.read<CartProvider>();
+    if (cart.isEmpty || !_accepted) return;
+    if (!_walletHasFunds) {
+      _showSnack('Insufficient wallet balance. Please fund your wallet.');
+      return;
+    }
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Pay with Wallet'),
+        content:
+            Text('Pay R${_cartTotal.toStringAsFixed(2)} from your wallet?'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Confirm')),
+        ],
+      ),
+    );
+    if (confirm != true) return;
+
+    setState(() => _walletPaying = true);
+    try {
+      final api = context.read<ApiService>();
+      final validTypes = ['feature', 'funding', 'lead', 'verification'];
+      final items = cart.items
+          .where((i) => validTypes.contains(i.type))
+          .map((i) => i.toJson())
+          .toList();
+
+      await api.dio.post('/api/v1/products/cart/wallet/', data: {
+        'refer_code': _refCodeController.text.trim(),
+        'total': _cartTotal,
+        'items': items,
+      });
+
+      cart.clear();
+      _showSnack('Payment successful! Your wallet has been debited.');
+      await _loadWallet();
+    } catch (e) {
+      final response = (e as dynamic)?.response;
+      if (response?.data?['error'] == 'insufficient_funds') {
+        _showSnack('Insufficient wallet balance. Please fund your wallet.');
+      } else {
+        _showSnack('Payment failed. Please try again or pay with card.');
+      }
+    }
+    setState(() => _walletPaying = false);
+  }
+
   Future<void> _makePayment() async {
     final cart = context.read<CartProvider>();
     if (cart.isEmpty || !_accepted) return;
@@ -108,20 +184,19 @@ class _CartScreenState extends State<CartScreen> {
     setState(() => _paying = true);
     try {
       final api = context.read<ApiService>();
-
       final validTypes = [
         'sesha',
         'membership',
         'feature',
         'funding',
         'lead',
-        'verification'
+        'verification',
+        'wallet_topup'
       ];
       final items = cart.items
           .where((i) => validTypes.contains(i.type))
           .map((i) => i.toJson())
           .toList();
-
       final total = _cartTotal;
 
       final response = await api.dio.post('/api/v1/products/cart/c/', data: {
@@ -132,9 +207,10 @@ class _CartScreenState extends State<CartScreen> {
 
       final cartId = response.data['cart_id'];
 
-      // Build PayFast params
-      final membership = cart.items.firstWhere((i) => i.type == 'membership',
-          orElse: () => CartItem(id: '', title: '', price: 0, type: ''));
+      final membership = cart.items.firstWhere(
+        (i) => i.type == 'membership',
+        orElse: () => CartItem(id: '', title: '', price: 0, type: ''),
+      );
 
       final params = <String, String>{
         'merchant_id': '10000100',
@@ -148,15 +224,12 @@ class _CartScreenState extends State<CartScreen> {
         'm_payment_id': cartId.toString(),
       };
 
-      // Add subscription data for membership
       if (membership.type == 'membership' && membership.memType != null) {
         int? frequency;
-        if (membership.memType == 'silverM' || membership.memType == 'goldM') {
+        if (membership.memType == 'silverM' || membership.memType == 'goldM')
           frequency = 3;
-        } else if (membership.memType == 'silverY' ||
-            membership.memType == 'goldY') {
-          frequency = 6;
-        }
+        else if (membership.memType == 'silverY' ||
+            membership.memType == 'goldY') frequency = 6;
         if (frequency != null) {
           final today = DateTime.now().toIso8601String().split('T')[0];
           params['subscription_type'] = '1';
@@ -167,7 +240,6 @@ class _CartScreenState extends State<CartScreen> {
         }
       }
 
-      // Build query string and open PayFast in browser
       final queryString = params.entries
           .map((e) =>
               '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
@@ -191,18 +263,16 @@ class _CartScreenState extends State<CartScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
-  // ─── Build ───────────────────────────────────────────────────────────────
-
   @override
   Widget build(BuildContext context) {
     return Consumer<CartProvider>(
       builder: (context, cart, _) {
+        final cardOnly = _isCardOnlyCart(cart);
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Info banner
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
@@ -218,16 +288,12 @@ class _CartScreenState extends State<CartScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-
-              // Cart header
               const Text('Shopping Cart',
                   style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF094a25))),
               const SizedBox(height: 12),
-
-              // Empty state
               if (cart.isEmpty)
                 Container(
                   padding: const EdgeInsets.all(20),
@@ -244,17 +310,13 @@ class _CartScreenState extends State<CartScreen> {
                         style: TextStyle(fontSize: 14, color: Colors.black54)),
                   ),
                 ),
-
-              // Cart items
               if (cart.isNotEmpty) ...[
-                // Column headers
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(6)),
                   child: const Row(
                     children: [
                       Expanded(
@@ -265,34 +327,27 @@ class _CartScreenState extends State<CartScreen> {
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black54))),
                       SizedBox(
-                        width: 70,
-                        child: Text('VAT (15%)',
-                            style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black54),
-                            textAlign: TextAlign.right),
-                      ),
+                          width: 70,
+                          child: Text('VAT (15%)',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black54),
+                              textAlign: TextAlign.right)),
                       SizedBox(
-                        width: 80,
-                        child: Text('Total',
-                            style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black54),
-                            textAlign: TextAlign.right),
-                      ),
+                          width: 80,
+                          child: Text('Total',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black54),
+                              textAlign: TextAlign.right)),
                     ],
                   ),
                 ),
                 const SizedBox(height: 4),
-
-                // Items
                 ...cart.items.map((item) => _cartItemRow(item, cart)),
-
                 const SizedBox(height: 20),
-
-                // Terms checkbox
                 Row(
                   children: [
                     Checkbox(
@@ -300,9 +355,8 @@ class _CartScreenState extends State<CartScreen> {
                       activeColor: const Color(0xFF094a25),
                       onChanged: (v) {
                         setState(() => _accepted = v ?? false);
-                        if (!(v ?? false)) {
+                        if (!(v ?? false))
                           setState(() => _showDiscount = false);
-                        }
                         if ((v ?? false) &&
                             _refCodeController.text.trim().isNotEmpty) {
                           _validateCode(_refCodeController.text);
@@ -313,10 +367,9 @@ class _CartScreenState extends State<CartScreen> {
                     GestureDetector(
                       onTap: () async {
                         final uri = Uri.parse('https://sesha.co.za/terms');
-                        if (await canLaunchUrl(uri)) {
+                        if (await canLaunchUrl(uri))
                           await launchUrl(uri,
                               mode: LaunchMode.externalApplication);
-                        }
                       },
                       child: const Text('terms',
                           style: TextStyle(
@@ -327,9 +380,7 @@ class _CartScreenState extends State<CartScreen> {
                   ],
                 ),
                 const SizedBox(height: 16),
-
-                // Summary + payment row
-                _summaryAndPayment(cart),
+                _summaryAndPayment(cart, cardOnly),
               ],
             ],
           ),
@@ -339,8 +390,7 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Widget _cartItemRow(CartItem item, CartProvider cart) {
-    final vat = _vatAmount(item.price);
-
+    final vat = item.type == 'wallet_topup' ? 0.0 : _vatAmount(item.price);
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
       padding: const EdgeInsets.all(12),
@@ -354,22 +404,17 @@ class _CartScreenState extends State<CartScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Image or placeholder
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
             child: item.image != null
-                ? Image.network(
-                    item.image!,
+                ? Image.network(item.image!,
                     width: 44,
                     height: 44,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => _itemPlaceholder(),
-                  )
+                    errorBuilder: (_, __, ___) => _itemPlaceholder())
                 : _itemPlaceholder(),
           ),
           const SizedBox(width: 10),
-
-          // Title
           Expanded(
             flex: 5,
             child: Text(
@@ -382,18 +427,14 @@ class _CartScreenState extends State<CartScreen> {
                   color: Color(0xFF094a25)),
             ),
           ),
-
-          // VAT
           SizedBox(
             width: 70,
             child: Text(
-              'R${vat.toStringAsFixed(2)}',
+              item.type == 'wallet_topup' ? '—' : 'R${vat.toStringAsFixed(2)}',
               style: const TextStyle(fontSize: 12, color: Colors.black45),
               textAlign: TextAlign.right,
             ),
           ),
-
-          // Price
           SizedBox(
             width: 70,
             child: Text(
@@ -405,8 +446,6 @@ class _CartScreenState extends State<CartScreen> {
               textAlign: TextAlign.right,
             ),
           ),
-
-          // Remove button
           const SizedBox(width: 8),
           GestureDetector(
             onTap: () => cart.removeItem(item.id),
@@ -414,16 +453,14 @@ class _CartScreenState extends State<CartScreen> {
               width: 24,
               height: 24,
               decoration: BoxDecoration(
-                color: const Color(0xFFbc2023),
-                borderRadius: BorderRadius.circular(4),
-              ),
+                  color: const Color(0xFFbc2023),
+                  borderRadius: BorderRadius.circular(4)),
               child: const Center(
-                child: Text('×',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold)),
-              ),
+                  child: Text('×',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold))),
             ),
           ),
         ],
@@ -431,13 +468,10 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
-  Widget _summaryAndPayment(CartProvider cart) {
-    final isOnlyVerification = cart.onlyVerification;
-
+  Widget _summaryAndPayment(CartProvider cart, bool cardOnly) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Totals
         Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
@@ -468,10 +502,7 @@ class _CartScreenState extends State<CartScreen> {
           ),
         ),
         const SizedBox(height: 16),
-
-        // Referral code + Pay button
-        if (!isOnlyVerification) ...[
-          // Referral code field
+        if (!cardOnly) ...[
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -489,16 +520,13 @@ class _CartScreenState extends State<CartScreen> {
                       width: 18,
                       height: 18,
                       decoration: const BoxDecoration(
-                        color: Color(0xFF094a25),
-                        shape: BoxShape.circle,
-                      ),
+                          color: Color(0xFF094a25), shape: BoxShape.circle),
                       child: const Center(
-                        child: Text('?',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold)),
-                      ),
+                          child: Text('?',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold))),
                     ),
                   ),
                 ],
@@ -508,9 +536,8 @@ class _CartScreenState extends State<CartScreen> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.black87,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                      color: Colors.black87,
+                      borderRadius: BorderRadius.circular(8)),
                   child: const Text(
                     'This is part of the Sesha Passive affiliate program where members earn a commission and you get a discount. This does not apply to Sesha Passive itself.',
                     style: TextStyle(
@@ -541,9 +568,8 @@ class _CartScreenState extends State<CartScreen> {
                             : null,
                       ),
                       onChanged: (v) {
-                        if (v.trim().isEmpty) {
+                        if (v.trim().isEmpty)
                           setState(() => _showDiscount = false);
-                        }
                       },
                       onSubmitted: (v) {
                         if (_accepted) _validateCode(v);
@@ -553,11 +579,10 @@ class _CartScreenState extends State<CartScreen> {
                   if (_validatingCode) ...[
                     const SizedBox(width: 10),
                     const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                          strokeWidth: 2, color: Color(0xFF094a25)),
-                    ),
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Color(0xFF094a25))),
                   ] else if (_refCodeController.text.isNotEmpty &&
                       !_showDiscount) ...[
                     const SizedBox(width: 8),
@@ -578,36 +603,132 @@ class _CartScreenState extends State<CartScreen> {
             ],
           ),
           const SizedBox(height: 16),
-        ],
-
-        // Pay button
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed:
-                _accepted && cart.isNotEmpty && !_paying ? _makePayment : null,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF094a25),
-              disabledBackgroundColor: Colors.grey.shade300,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.grey.shade200),
             ),
-            child: _paying
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                        color: Colors.white, strokeWidth: 2))
-                : Text(
-                    'Pay R${_cartTotal.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold),
-                  ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Wallet Balance',
+                        style: TextStyle(fontSize: 12, color: Colors.black54)),
+                    const SizedBox(height: 2),
+                    _loadingWallet
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2, color: Color(0xFF094a25)))
+                        : Text('R${_walletBalance.toStringAsFixed(2)}',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: _walletHasFunds
+                                  ? const Color(0xFF094a25)
+                                  : const Color(0xFFbc2023),
+                            )),
+                  ],
+                ),
+                if (!_walletHasFunds)
+                  const Text('Insufficient',
+                      style: TextStyle(fontSize: 12, color: Color(0xFFbc2023))),
+              ],
+            ),
           ),
-        ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: _accepted &&
+                          cart.isNotEmpty &&
+                          _walletHasFunds &&
+                          !_walletPaying
+                      ? _payWithWallet
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFf8b324),
+                    foregroundColor: Colors.black87,
+                    disabledBackgroundColor: Colors.grey.shade300,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                  ),
+                  child: _walletPaying
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                              color: Colors.black54, strokeWidth: 2))
+                      : const Text('Pay with Wallet',
+                          style: TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.bold)),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: _accepted && cart.isNotEmpty && !_paying
+                      ? _makePayment
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF094a25),
+                    disabledBackgroundColor: Colors.grey.shade300,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                  ),
+                  child: _paying
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                              color: Colors.white, strokeWidth: 2))
+                      : const Text('Pay with Card',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ],
+          ),
+        ],
+        if (cardOnly) ...[
+          const SizedBox(height: 8),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _accepted && cart.isNotEmpty && !_paying
+                  ? _makePayment
+                  : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF094a25),
+                disabledBackgroundColor: Colors.grey.shade300,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+              ),
+              child: _paying
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                          color: Colors.white, strokeWidth: 2))
+                  : Text('Pay R${_cartTotal.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold)),
+            ),
+          ),
+        ],
         if (!_accepted && cart.isNotEmpty)
           const Padding(
             padding: EdgeInsets.only(top: 6),
@@ -644,7 +765,7 @@ class _CartScreenState extends State<CartScreen> {
         width: 44,
         height: 44,
         decoration: BoxDecoration(
-          color: const Color(0xFF094a25).withValues(alpha: 0.1),
+          color: const Color(0xFF094a25).withOpacity(0.1),
           borderRadius: BorderRadius.circular(4),
         ),
         child: const Icon(Icons.shopping_cart_outlined,

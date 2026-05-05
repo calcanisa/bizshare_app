@@ -972,7 +972,9 @@ class _AddBusinessModalState extends State<AddBusinessModal> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  onPressed: _accepted && !_saving ? _save : null,
+                  onPressed: (widget.action == 'edit' || _accepted) && !_saving
+                      ? _save
+                      : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF094a25),
                     disabledBackgroundColor: Colors.grey.shade300,

@@ -15,70 +15,65 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-  // Account data
   Map<String, dynamic>? _account;
   bool _loading = true;
-
-  // Sesha settings
   Map<String, dynamic> _seshaSettings = {};
 
-  // Tabs
   int _tab = 1;
-
-  // Edit mode
   bool _editing = false;
 
-  // Mutually exclusive action flags
   bool _chgPass = false;
   bool _chgEmail = false;
   bool _upAcc = false;
-  bool _fundAcc = false;
   bool _delAcc = false;
   bool _joinPass = false;
   bool _forgot = false;
 
-  // Flow state
   bool _correct = false;
   bool _mailSent = false;
   bool _codeAccepted = false;
   bool _submitting = false;
 
-  // Membership upgrade
-  int _memTab = 1; // 1=monthly 2=yearly
+  int _memTab = 1;
   String _memType = '';
-
-  // Fund account
-  String _fundAmount = '';
-
-  // Delete account
   String _reason = '';
-  final String _otherReason = '';
 
-  // Orders
   List<dynamic> _orders = [];
   bool _loadingOrders = false;
 
-  // Controllers
+  // Wallet state
+  double _walletBalance = 0.0;
+  bool _loadingWallet = false;
+  List<dynamic> _transactions = [];
+  bool _loadingTx = false;
+  String? _txNextPage;
+  String _txType = '';
+  String _txDirection = '';
+
+  // Fund wallet
+  String _fundAmount = '';
+  final _fundController = TextEditingController();
+  bool _showFundBreakdown = false;
+
   final _passwordController = TextEditingController();
   final _newEmailController = TextEditingController();
   final _confirmEmailController = TextEditingController();
   final _newPassController = TextEditingController();
   final _confirmPassController = TextEditingController();
-  final _fundController = TextEditingController();
   final _otherReasonController = TextEditingController();
 
-  // 6-digit code
   final List<TextEditingController> _codeControllers =
       List.generate(6, (_) => TextEditingController());
   final List<FocusNode> _codeFocusNodes = List.generate(6, (_) => FocusNode());
 
-  // Password visibility
   bool _showPass = false;
   bool _showNewPass = false;
   bool _showConfirmPass = false;
 
-  bool get _passiveEnabled => _seshaSettings['passive'] == true;
+  static const double _minDeposit = 50.0;
+  static const double _feeRate = 0.04;
 
+  bool get _passiveEnabled => _seshaSettings['passive'] == true;
   bool get _hasPassiveMembership =>
       _account?['passive_membership']?['is_active'] == true;
 
@@ -124,6 +119,17 @@ class _AccountScreenState extends State<AccountScreen> {
     return Colors.green;
   }
 
+  Map<String, double>? get _breakdown {
+    final val = double.tryParse(_fundAmount);
+    if (val == null || val < _minDeposit) return null;
+    final fee = (val * _feeRate);
+    return {
+      'gross': val,
+      'fee': double.parse(fee.toStringAsFixed(2)),
+      'net': double.parse((val - fee).toStringAsFixed(2)),
+    };
+  }
+
   @override
   void initState() {
     super.initState();
@@ -149,12 +155,8 @@ class _AccountScreenState extends State<AccountScreen> {
     _confirmPassController.dispose();
     _fundController.dispose();
     _otherReasonController.dispose();
-    for (final c in _codeControllers) {
-      c.dispose();
-    }
-    for (final f in _codeFocusNodes) {
-      f.dispose();
-    }
+    for (final c in _codeControllers) c.dispose();
+    for (final f in _codeFocusNodes) f.dispose();
     super.dispose();
   }
 
@@ -162,9 +164,8 @@ class _AccountScreenState extends State<AccountScreen> {
     try {
       final api = context.read<ApiService>();
       final res = await api.dio.get('/api/v1/sesha/settings/');
-      if (mounted) {
+      if (mounted)
         setState(() => _seshaSettings = res.data as Map<String, dynamic>);
-      }
     } catch (_) {}
   }
 
@@ -178,6 +179,67 @@ class _AccountScreenState extends State<AccountScreen> {
       _showSnack('Could not load account. Try again.');
     }
     setState(() => _loading = false);
+  }
+
+  Future<void> _loadWallet() async {
+    if (_loadingWallet) return;
+    setState(() => _loadingWallet = true);
+    try {
+      final api = context.read<ApiService>();
+      final res = await api.dio.get('/api/v1/wallet/');
+      final balance = res.data['balance'];
+      setState(
+          () => _walletBalance = double.tryParse(balance.toString()) ?? 0.0);
+    } catch (_) {
+      _showSnack('Could not load wallet. Try again.');
+    }
+    setState(() => _loadingWallet = false);
+  }
+
+  Future<void> _loadTransactions({bool reset = false}) async {
+    if (_loadingTx) return;
+    if (reset) {
+      setState(() {
+        _transactions = [];
+        _txNextPage = null;
+      });
+    }
+    setState(() => _loadingTx = true);
+    try {
+      final api = context.read<ApiService>();
+      final params = <String, dynamic>{};
+      if (_txType.isNotEmpty) params['transaction_type'] = _txType;
+      if (_txDirection.isNotEmpty) params['direction'] = _txDirection;
+      final res = await api.dio
+          .get('/api/v1/wallet/transactions/', queryParameters: params);
+      final data = res.data;
+      final results = data is List ? data : (data['results'] as List? ?? []);
+      setState(() {
+        _transactions = reset ? results : [..._transactions, ...results];
+        _txNextPage = data is Map ? data['next'] : null;
+      });
+    } catch (_) {
+      _showSnack('Could not load transactions. Try again.');
+    }
+    setState(() => _loadingTx = false);
+  }
+
+  Future<void> _loadMoreTransactions() async {
+    if (_txNextPage == null || _loadingTx) return;
+    setState(() => _loadingTx = true);
+    try {
+      final api = context.read<ApiService>();
+      final res = await api.dio.get(_txNextPage!);
+      final data = res.data;
+      final results = data is List ? data : (data['results'] as List? ?? []);
+      setState(() {
+        _transactions = [..._transactions, ...results];
+        _txNextPage = data is Map ? data['next'] : null;
+      });
+    } catch (_) {
+      _showSnack('Could not load more transactions. Try again.');
+    }
+    setState(() => _loadingTx = false);
   }
 
   Future<void> _loadOrders() async {
@@ -205,7 +267,7 @@ class _AccountScreenState extends State<AccountScreen> {
       await api.dio.post('/api/v1/users/c/p/',
           data: {'password': _passwordController.text});
       setState(() => _correct = true);
-    } catch (e) {
+    } catch (_) {
       _showSnack('Incorrect password. Try again.');
     }
     setState(() => _submitting = false);
@@ -286,9 +348,7 @@ class _AccountScreenState extends State<AccountScreen> {
       });
       _showSnack('Password changed. You will be logged out.');
       await Future.delayed(const Duration(seconds: 2));
-      if (mounted) {
-        Provider.of<AuthProvider>(context, listen: false).logout();
-      }
+      if (mounted) Provider.of<AuthProvider>(context, listen: false).logout();
     } catch (_) {
       _showSnack('Could not change password. Try again.');
     }
@@ -306,9 +366,7 @@ class _AccountScreenState extends State<AccountScreen> {
       });
       _showSnack('Email changed. You will be logged out.');
       await Future.delayed(const Duration(seconds: 2));
-      if (mounted) {
-        Provider.of<AuthProvider>(context, listen: false).logout();
-      }
+      if (mounted) Provider.of<AuthProvider>(context, listen: false).logout();
     } catch (_) {
       _showSnack('Could not change email. Try again.');
     }
@@ -322,15 +380,12 @@ class _AccountScreenState extends State<AccountScreen> {
     }
     final confirm = await _confirm('$_buttonLabel membership?');
     if (!confirm) return;
-
     setState(() => _submitting = true);
     try {
       final api = context.read<ApiService>();
       if (_memType == 'bronze') {
         await api.dio.delete('/api/v1/products/membership/d/');
-        setState(() {
-          _account?['membership'] = null;
-        });
+        setState(() => _account?['membership'] = null);
         _showSnack('Membership downgraded to Bronze');
         _closeForm();
       } else if (_buttonLabel == 'Downgrade' || _buttonLabel == 'Change') {
@@ -339,7 +394,6 @@ class _AccountScreenState extends State<AccountScreen> {
         _showSnack('Membership updated');
         _closeForm();
       } else {
-        // Upgrade — add to cart
         _showSnack(
             'Membership upgrade added to cart. Go to cart to complete payment.');
         _closeForm();
@@ -362,9 +416,7 @@ class _AccountScreenState extends State<AccountScreen> {
     try {
       final api = context.read<ApiService>();
       await api.dio.post('/api/v1/users/s/');
-      if (mounted) {
-        Provider.of<AuthProvider>(context, listen: false).logout();
-      }
+      if (mounted) Provider.of<AuthProvider>(context, listen: false).logout();
     } catch (_) {
       _showSnack('Could not delete account. Try again.');
     }
@@ -415,7 +467,6 @@ class _AccountScreenState extends State<AccountScreen> {
       _chgPass = false;
       _chgEmail = false;
       _upAcc = false;
-      _fundAcc = false;
       _delAcc = false;
       _joinPass = false;
       _forgot = false;
@@ -429,10 +480,7 @@ class _AccountScreenState extends State<AccountScreen> {
       _confirmEmailController.clear();
       _newPassController.clear();
       _confirmPassController.clear();
-      _fundController.clear();
-      for (final c in _codeControllers) {
-        c.clear();
-      }
+      for (final c in _codeControllers) c.clear();
     });
   }
 
@@ -448,9 +496,7 @@ class _AccountScreenState extends State<AccountScreen> {
       _confirmEmailController.clear();
       _newPassController.clear();
       _confirmPassController.clear();
-      for (final c in _codeControllers) {
-        c.clear();
-      }
+      for (final c in _codeControllers) c.clear();
     });
   }
 
@@ -499,7 +545,7 @@ class _AccountScreenState extends State<AccountScreen> {
     return '${dt.day} ${months[dt.month]} ${dt.year}';
   }
 
-  // ─── Build ───────────────────────────────────────────────────────────────
+  // ─── Build ────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -508,25 +554,27 @@ class _AccountScreenState extends State<AccountScreen> {
           child: CircularProgressIndicator(color: Color(0xFF094a25)));
     }
 
-    // Passive tab is only shown if the feature is enabled AND the user has it
     final showPassiveTab = _passiveEnabled && _hasPassiveMembership;
 
     return Column(
       children: [
-        // Tab bar
         Container(
           color: const Color(0xFF094a25),
           child: Row(
             children: [
               _tabBtn(1, 'Account'),
               if (showPassiveTab) _tabBtn(2, 'Sesha Passive'),
-              _tabBtn(showPassiveTab ? 3 : 2, 'Financials'),
+              _tabBtn(3, 'Wallet'),
+              _tabBtn(4, 'Financials'),
             ],
           ),
         ),
         Expanded(
           child: RefreshIndicator(
-            onRefresh: _loadAccount,
+            onRefresh: _tab == 3
+                ? () =>
+                    Future.wait([_loadWallet(), _loadTransactions(reset: true)])
+                : _loadAccount,
             color: const Color(0xFF094a25),
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
@@ -535,7 +583,9 @@ class _AccountScreenState extends State<AccountScreen> {
                   ? _accountTab()
                   : _tab == 2 && showPassiveTab
                       ? _passiveTab()
-                      : _financialsTab(),
+                      : _tab == 3
+                          ? _walletTab()
+                          : _financialsTab(),
             ),
           ),
         ),
@@ -549,10 +599,11 @@ class _AccountScreenState extends State<AccountScreen> {
       child: GestureDetector(
         onTap: () {
           setState(() => _tab = index);
-          final showPassiveTab = _passiveEnabled && _hasPassiveMembership;
-          if (index == 3 || (index == 2 && !showPassiveTab)) {
-            _loadOrders();
+          if (index == 3) {
+            if (_walletBalance == 0.0) _loadWallet();
+            if (_transactions.isEmpty) _loadTransactions(reset: true);
           }
+          if (index == 4) _loadOrders();
         },
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
@@ -561,7 +612,7 @@ class _AccountScreenState extends State<AccountScreen> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: active ? const Color(0xFF094a25) : Colors.white60,
-                fontSize: 12,
+                fontSize: 11,
                 fontWeight: active ? FontWeight.bold : FontWeight.normal,
               )),
         ),
@@ -571,22 +622,18 @@ class _AccountScreenState extends State<AccountScreen> {
 
   // ─── Tab 1 — Account ─────────────────────────────────────────────────────
 
-  Widget _accountTab() {
-    return _editing ? _editView() : _viewMode();
-  }
+  Widget _accountTab() => _editing ? _editView() : _viewMode();
 
   Widget _viewMode() {
     final email = _account?['email'] ?? '—';
     final createdAt = _account?['created_at'];
     final updatedAt = _account?['updated_at'];
-    final balance = _account?['account_balance'] ?? 0.0;
     final earnings = _account?['total_earnings'] ?? 0;
     final referCode = _account?['refer_code'];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Edit button
         Align(
           alignment: Alignment.centerRight,
           child: ElevatedButton(
@@ -608,8 +655,7 @@ class _AccountScreenState extends State<AccountScreen> {
             _detailRow('Passive Member', _hasPassiveMembership ? 'Yes' : 'No'),
           if (_passiveEnabled && _hasPassiveMembership && referCode != null)
             _detailRow('Passive Code', referCode.toString()),
-          _detailRow('Account Balance',
-              'R${(balance is num ? balance.toStringAsFixed(2) : balance)}'),
+          _detailRow('Wallet Balance', 'R${_walletBalance.toStringAsFixed(2)}'),
           if (_passiveEnabled && _hasPassiveMembership)
             _detailRow('Current Earnings', 'R$earnings'),
         ]),
@@ -644,24 +690,21 @@ class _AccountScreenState extends State<AccountScreen> {
                     color: Color(0xFF094a25))),
           ),
           Expanded(
-            child: Text(value,
-                style: const TextStyle(fontSize: 13, color: Colors.black87)),
-          ),
+              child: Text(value,
+                  style: const TextStyle(fontSize: 13, color: Colors.black87))),
         ],
       ),
     );
   }
 
-  // ─── Edit View ───────────────────────────────────────────────────────────
+  // ─── Edit View ────────────────────────────────────────────────────────────
 
   Widget _editView() {
-    final anyActive =
-        _chgPass || _chgEmail || _upAcc || _fundAcc || _delAcc || _joinPass;
+    final anyActive = _chgPass || _chgEmail || _upAcc || _delAcc || _joinPass;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Cancel button
         Align(
           alignment: Alignment.centerRight,
           child: TextButton.icon(
@@ -673,49 +716,27 @@ class _AccountScreenState extends State<AccountScreen> {
           ),
         ),
         const SizedBox(height: 8),
-
-        // Info text
         if (!anyActive || _forgot) _infoBox(_editInfoText()),
-
         const SizedBox(height: 12),
-
-        // Action checkboxes
         if (!_forgot) _actionCheckboxes(),
-
         const SizedBox(height: 16),
-
-        // Action content
         if (anyActive && !_forgot) ...[
-          // Step 1: Verify password
           if (!_correct) _passwordStep(),
-
-          // Step 2: Action-specific fields
           if (_correct && !_mailSent) ...[
             if (_chgPass)
               _sendCodePrompt('Click below to send a code to your email.'),
             if (_chgEmail) _changeEmailFields(),
             if (_upAcc) _membershipSelector(),
-            if (_fundAcc) _fundAccountFields(),
             if (_delAcc) _deleteAccountFields(),
             if (_joinPass) _passiveFields(),
           ],
-
-          // Step 3: Code entry
           if (_mailSent && !_codeAccepted) _codeEntry(),
-
-          // Step 4: New password fields
           if (_codeAccepted && (_chgPass || _forgot)) _newPasswordFields(),
-
-          // Step 4b: Email confirmed
           if (_codeAccepted && _chgEmail)
             _infoBox(
                 'Code accepted. Your email will be updated when you tap Save.'),
-
-          // Save / action buttons
           _editActionButtons(),
         ],
-
-        // Forgot password flow
         if (_forgot) ...[
           if (!_mailSent) _forgotPasswordStep(),
           if (_mailSent && !_codeAccepted) _codeEntry(),
@@ -727,24 +748,16 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   String _editInfoText() {
-    if (_chgEmail) {
+    if (_chgEmail)
       return 'If you change your email, a code will be sent to confirm the change. You will be logged out after.';
-    }
-    if (_chgPass) {
+    if (_chgPass)
       return 'A code will be sent to your email to confirm the password change.';
-    }
-    if (_upAcc) {
+    if (_upAcc)
       return 'Upgrading gives you more features and higher limits. You can\'t change tier again for 30 days.';
-    }
-    if (_delAcc) {
+    if (_delAcc)
       return 'Your account will be disabled for 30 days. After that all data is permanently deleted.';
-    }
-    if (_fundAcc) {
-      return 'Fund your account to use for advertising, leads, or business verification.';
-    }
-    if (_joinPass) {
+    if (_joinPass)
       return 'Sesha Passive lets you earn passive income by referring members.';
-    }
     return 'Manage your account — change password or email, upgrade, join Sesha Passive, or delete your account.';
   }
 
@@ -763,15 +776,12 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Widget _actionCheckboxes() {
-    final anyActive =
-        _chgPass || _chgEmail || _upAcc || _fundAcc || _delAcc || _joinPass;
+    final anyActive = _chgPass || _chgEmail || _upAcc || _delAcc || _joinPass;
 
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(8),
-      ),
+          color: Colors.grey.shade100, borderRadius: BorderRadius.circular(8)),
       child: Wrap(
         spacing: 20,
         runSpacing: 12,
@@ -791,16 +801,10 @@ class _AccountScreenState extends State<AccountScreen> {
               _resetActions();
               setState(() => _upAcc = v!);
             }),
-          // Sesha Passive checkbox only shown if the feature is enabled
           if (_passiveEnabled && (!anyActive || _joinPass))
             _actionCheckbox('Sesha Passive', _joinPass, (v) {
               _resetActions();
               setState(() => _joinPass = v!);
-            }),
-          if (!anyActive || _fundAcc)
-            _actionCheckbox('Fund Account', _fundAcc, (v) {
-              _resetActions();
-              setState(() => _fundAcc = v!);
             }),
           if (!anyActive || _delAcc)
             _actionCheckbox('Delete Account', _delAcc, (v) {
@@ -818,10 +822,9 @@ class _AccountScreenState extends State<AccountScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Checkbox(
-          value: value,
-          activeColor: const Color(0xFF094a25),
-          onChanged: onChanged,
-        ),
+            value: value,
+            activeColor: const Color(0xFF094a25),
+            onChanged: onChanged),
         GestureDetector(
           onTap: () => onChanged(!value),
           child: Text(label,
@@ -868,7 +871,6 @@ class _AccountScreenState extends State<AccountScreen> {
             _chgPass = false;
             _chgEmail = false;
             _upAcc = false;
-            _fundAcc = false;
             _delAcc = false;
           }),
           child: const Text('Forgot Password?',
@@ -982,9 +984,8 @@ class _AccountScreenState extends State<AccountScreen> {
                   ),
                 ),
                 onChanged: (v) {
-                  if (v.isNotEmpty && i < 5) {
+                  if (v.isNotEmpty && i < 5)
                     _codeFocusNodes[i + 1].requestFocus();
-                  }
                 },
               ),
             );
@@ -1052,7 +1053,6 @@ class _AccountScreenState extends State<AccountScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Monthly / Yearly tabs
         Row(
           children: [
             _miniTab(1, 'Monthly'),
@@ -1114,7 +1114,7 @@ class _AccountScreenState extends State<AccountScreen> {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFF094a25).withValues(alpha: 0.08)
+              ? const Color(0xFF094a25).withOpacity(0.08)
               : Colors.grey.shade50,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
@@ -1140,64 +1140,14 @@ class _AccountScreenState extends State<AccountScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF094a25),
-                  borderRadius: BorderRadius.circular(4),
-                ),
+                    color: const Color(0xFF094a25),
+                    borderRadius: BorderRadius.circular(4)),
                 child: const Text('Current',
                     style: TextStyle(fontSize: 11, color: Colors.white)),
               ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _fundAccountFields() {
-    const amounts = ['1000', '2500', '5000', '10000', '20000', '50000'];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _sectionLabel('Select Fixed Amount'),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: amounts.map((a) {
-            final isSelected = _fundAmount == a;
-            return GestureDetector(
-              onTap: () {
-                setState(() {
-                  _fundAmount = a;
-                  _fundController.text = a;
-                });
-              },
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? const Color(0xFF094a25)
-                      : Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(
-                      color: isSelected
-                          ? const Color(0xFF094a25)
-                          : Colors.grey.shade300),
-                ),
-                child: Text('R$a',
-                    style: TextStyle(
-                        fontSize: 13,
-                        color: isSelected ? Colors.white : Colors.black87)),
-              ),
-            );
-          }).toList(),
-        ),
-        const SizedBox(height: 12),
-        _sectionLabel('Or enter any amount'),
-        _inputField(_fundController, 'Amount (R)',
-            keyboardType: TextInputType.number,
-            onChanged: (v) => setState(() => _fundAmount = v)),
-        const SizedBox(height: 16),
-      ],
     );
   }
 
@@ -1227,10 +1177,10 @@ class _AccountScreenState extends State<AccountScreen> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: const Color(0xFFbc2023).withValues(alpha: 0.08),
+              color: const Color(0xFFbc2023).withOpacity(0.08),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                  color: const Color(0xFFbc2023).withValues(alpha: 0.3)),
+              border:
+                  Border.all(color: const Color(0xFFbc2023).withOpacity(0.3)),
             ),
             child: const Text(
                 'You will be logged out and your account disabled for 30 days. After that, all data is permanently deleted.',
@@ -1254,19 +1204,11 @@ class _AccountScreenState extends State<AccountScreen> {
               'Cancelling removes all benefits and your passive code immediately. This is irreversible.'),
           const SizedBox(height: 12),
           ElevatedButton(
-            onPressed: () async {
-              final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => SeshaPassiveScreen(
-                      profile: _account?['profile'] as Map<String, dynamic>?,
-                    ),
-                  ));
-              if (result == true && mounted) _loadAccount();
-            },
+            onPressed: _submitting ? null : _cancelPassiveMembership,
             style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF094a25)),
-            child: const Text('Apply', style: TextStyle(color: Colors.white)),
+                backgroundColor: const Color(0xFFbc2023)),
+            child: const Text('Cancel Passive Membership',
+                style: TextStyle(color: Colors.white)),
           ),
           const SizedBox(height: 16),
         ],
@@ -1321,7 +1263,6 @@ class _AccountScreenState extends State<AccountScreen> {
       );
     }
 
-    // Not yet applied
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1329,7 +1270,15 @@ class _AccountScreenState extends State<AccountScreen> {
             'Join Sesha Passive to earn passive income by referring members. Applications take up to 30 days to process.'),
         const SizedBox(height: 12),
         ElevatedButton(
-          onPressed: () => _showSnack('Passive application coming soon'),
+          onPressed: () async {
+            final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => SeshaPassiveScreen(
+                        profile:
+                            _account?['profile'] as Map<String, dynamic>?)));
+            if (result == true && mounted) _loadAccount();
+          },
           style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF094a25)),
           child: const Text('Apply', style: TextStyle(color: Colors.white)),
@@ -1344,13 +1293,8 @@ class _AccountScreenState extends State<AccountScreen> {
     final showSaveEmail = _chgEmail && _codeAccepted;
     final showUpgrade = _upAcc && _correct && _memType.isNotEmpty;
     final showDelete = _delAcc && _correct && _reason.isNotEmpty;
-    final showFund = _fundAcc && _correct && _fundAmount.isNotEmpty;
 
-    if (!showSavePass &&
-        !showSaveEmail &&
-        !showUpgrade &&
-        !showDelete &&
-        !showFund) {
+    if (!showSavePass && !showSaveEmail && !showUpgrade && !showDelete) {
       return const SizedBox.shrink();
     }
 
@@ -1388,29 +1332,6 @@ class _AccountScreenState extends State<AccountScreen> {
             child: const Text('Delete Account',
                 style: TextStyle(color: Colors.white)),
           ),
-        if (showFund)
-          ElevatedButton(
-            onPressed: () {
-              final amount = double.tryParse(_fundAmount) ?? 0;
-              if (amount <= 0) {
-                _showSnack('Enter a valid amount');
-                return;
-              }
-              context.read<CartProvider>().addItem(CartItem(
-                    id: 'fund_$_fundAmount',
-                    title: 'Account Funding — R$_fundAmount',
-                    price: amount,
-                    type: 'fund',
-                  ));
-              _showSnack(
-                  'R$_fundAmount added to cart. Go to cart to complete.');
-              _closeForm();
-            },
-            style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF094a25)),
-            child: const Text('Add to Cart',
-                style: TextStyle(color: Colors.white)),
-          ),
         const SizedBox(width: 10),
         TextButton(
           onPressed: _closeForm,
@@ -1421,7 +1342,7 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  // ─── Tab 2 — Sesha Passive ───────────────────────────────────────────────
+  // ─── Tab 2 — Sesha Passive ────────────────────────────────────────────────
 
   Widget _passiveTab() {
     final isActive = _hasPassiveMembership;
@@ -1500,73 +1421,344 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  Widget _infoTile(String label, String value, Color valueColor) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
-        ],
-      ),
-      child: Row(
-        children: [
-          Text('$label: ',
-              style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black54)),
-          Text(value,
-              style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: valueColor)),
-        ],
-      ),
-    );
-  }
+  // ─── Tab 3 — Wallet ───────────────────────────────────────────────────────
 
-  Widget _referralGroup(String title, List<Widget> items) {
+  Widget _walletTab() {
+    const fixedAmounts = ['1000', '2500', '5000', '10000', '20000', '50000'];
+    final bd = _breakdown;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Text(title,
-              style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF094a25),
-                  letterSpacing: 0.5)),
+        // Balance
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
+            ],
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Available Balance',
+                        style: TextStyle(fontSize: 12, color: Colors.black54)),
+                    const SizedBox(height: 4),
+                    _loadingWallet
+                        ? const SizedBox(
+                            height: 24,
+                            width: 24,
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2, color: Color(0xFF094a25)))
+                        : Text('R${_walletBalance.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF094a25))),
+                  ],
+                ),
+              ),
+              const Text('Used for leads, ads & features',
+                  style: TextStyle(fontSize: 11, color: Colors.black45)),
+            ],
+          ),
         ),
-        ...items,
-        const SizedBox(height: 8),
+
+        const SizedBox(height: 24),
+        _sectionHeader('Fund Wallet'),
+        _infoBox(
+            'A 4% service fee applies to all deposits — deposit R500 and receive R480 in your wallet. Funding your account clears the cart, so pay for any cart items first.'),
+        const SizedBox(height: 16),
+
+        // Fixed amounts
+        _sectionLabel('Fixed amount'),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: fixedAmounts.map((a) {
+            final isSelected = _fundAmount == a;
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  _fundAmount = a;
+                  _fundController.text = a;
+                  _showFundBreakdown = true;
+                });
+              },
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? const Color(0xFF094a25)
+                      : Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(
+                      color: isSelected
+                          ? const Color(0xFF094a25)
+                          : Colors.grey.shade300),
+                ),
+                child: Text('R$a',
+                    style: TextStyle(
+                        fontSize: 13,
+                        color: isSelected ? Colors.white : Colors.black87)),
+              ),
+            );
+          }).toList(),
+        ),
+
+        const SizedBox(height: 16),
+        _sectionLabel('Custom amount'),
+        _inputField(
+          _fundController,
+          'Minimum R${_minDeposit.toInt()}',
+          keyboardType: TextInputType.number,
+          onChanged: (v) => setState(() {
+            _fundAmount = v;
+            _showFundBreakdown = v.isNotEmpty;
+          }),
+        ),
+
+        // Fee breakdown
+        if (_showFundBreakdown && bd != null) ...[
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.grey.shade200),
+            ),
+            child: Column(
+              children: [
+                _breakdownRow('Deposit amount',
+                    'R${bd['gross']!.toStringAsFixed(2)}', Colors.black87),
+                const SizedBox(height: 8),
+                _breakdownRow(
+                    'Service fee (4%)',
+                    '- R${bd['fee']!.toStringAsFixed(2)}',
+                    const Color(0xFFbc2023)),
+                const Divider(height: 16),
+                _breakdownRow(
+                    'You receive',
+                    'R${bd['net']!.toStringAsFixed(2)}',
+                    const Color(0xFF094a25),
+                    bold: true),
+              ],
+            ),
+          ),
+        ],
+
+        if (_showFundBreakdown && bd == null && _fundAmount.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text('Minimum deposit is R${_minDeposit.toInt()}.',
+                style: const TextStyle(fontSize: 12, color: Color(0xFFbc2023))),
+          ),
+
+        const SizedBox(height: 16),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: bd == null
+                ? null
+                : () {
+                    final amount = double.tryParse(_fundAmount) ?? 0;
+                    context.read<CartProvider>().addItem(CartItem(
+                          id: 'wallet_topup',
+                          title: 'Wallet Top-up — R$_fundAmount',
+                          price: amount,
+                          type: 'wallet_topup',
+                        ));
+                    _showSnack(
+                        'Added to cart. Complete your top-up in the cart.');
+                    // Navigate to cart — adjust to your routing approach
+                    Navigator.pushNamed(context, '/cart');
+                  },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF094a25),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              disabledBackgroundColor: Colors.grey.shade300,
+            ),
+            child: const Text('Fund Wallet',
+                style: TextStyle(color: Colors.white, fontSize: 15)),
+          ),
+        ),
+
+        const SizedBox(height: 32),
+        _sectionHeader('Transaction History'),
+
+        // Filters
+        Row(
+          children: [
+            Expanded(
+              child: DropdownButtonFormField<String>(
+                value: _txType.isEmpty ? null : _txType,
+                hint: const Text('All Types', style: TextStyle(fontSize: 13)),
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                ),
+                items: const [
+                  DropdownMenuItem(value: '', child: Text('All Types')),
+                  DropdownMenuItem(value: 'deposit', child: Text('Deposits')),
+                  DropdownMenuItem(value: 'lead', child: Text('Leads')),
+                  DropdownMenuItem(value: 'featured', child: Text('Featured')),
+                  DropdownMenuItem(value: 'boost', child: Text('Boosts')),
+                  DropdownMenuItem(
+                      value: 'advertising', child: Text('Advertising')),
+                  DropdownMenuItem(value: 'refund', child: Text('Refunds')),
+                  DropdownMenuItem(
+                      value: 'adjustment', child: Text('Adjustments')),
+                ],
+                onChanged: (v) {
+                  setState(() => _txType = v ?? '');
+                  _loadTransactions(reset: true);
+                },
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: DropdownButtonFormField<String>(
+                value: _txDirection.isEmpty ? null : _txDirection,
+                hint: const Text('All', style: TextStyle(fontSize: 13)),
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                ),
+                items: const [
+                  DropdownMenuItem(value: '', child: Text('All')),
+                  DropdownMenuItem(value: 'credit', child: Text('Money In')),
+                  DropdownMenuItem(value: 'debit', child: Text('Money Out')),
+                ],
+                onChanged: (v) {
+                  setState(() => _txDirection = v ?? '');
+                  _loadTransactions(reset: true);
+                },
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 16),
+
+        if (_loadingTx && _transactions.isEmpty)
+          const Center(
+              child: CircularProgressIndicator(color: Color(0xFF094a25)))
+        else if (_transactions.isEmpty)
+          const Text('No transactions yet.',
+              style: TextStyle(color: Color(0xFF094a25)))
+        else ...[
+          ..._transactions.map((tx) => _txRow(tx as Map<String, dynamic>)),
+          if (_txNextPage != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Center(
+                child: TextButton(
+                  onPressed: _loadingTx ? null : _loadMoreTransactions,
+                  child: Text(_loadingTx ? 'Loading...' : 'Load More',
+                      style: const TextStyle(color: Color(0xFF094a25))),
+                ),
+              ),
+            ),
+        ],
+
+        const SizedBox(height: 24),
       ],
     );
   }
 
-  Widget _referralStat(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
+  Widget _breakdownRow(String label, String value, Color valueColor,
+      {bool bold = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label,
+            style: const TextStyle(fontSize: 13, color: Colors.black54)),
+        Text(value,
+            style: TextStyle(
+                fontSize: 13,
+                fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+                color: valueColor)),
+      ],
+    );
+  }
+
+  Widget _txRow(Map<String, dynamic> tx) {
+    final isCredit = tx['direction'] == 'credit';
+    final typeLabels = {
+      'deposit': 'Wallet Top-up',
+      'lead': 'Lead Purchase',
+      'featured': 'Featured Listing',
+      'boost': 'Boost',
+      'advertising': 'Advertising',
+      'refund': 'Refund',
+      'adjustment': 'Adjustment',
+      'purchase': 'Cart Payment',
+      'commission': 'Commission',
+    };
+    final label =
+        typeLabels[tx['transaction_type']] ?? tx['transaction_type'] ?? '—';
+    final amount = double.tryParse(tx['amount'].toString()) ?? 0.0;
+    final fee = tx['service_fee'];
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      decoration: const BoxDecoration(
+          border: Border(bottom: BorderSide(color: Color(0xFFeeeeee)))),
       child: Row(
         children: [
-          SizedBox(
-            width: 140,
-            child: Text(label,
-                style: const TextStyle(fontSize: 13, color: Colors.black54)),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label,
+                    style: const TextStyle(
+                        fontSize: 13, fontWeight: FontWeight.w600)),
+                if (tx['description'] != null &&
+                    tx['description'].toString().isNotEmpty)
+                  Text(tx['description'].toString(),
+                      style:
+                          const TextStyle(fontSize: 12, color: Colors.black45)),
+                Text(_formatDate(tx['created_at']?.toString()),
+                    style:
+                        const TextStyle(fontSize: 11, color: Colors.black38)),
+              ],
+            ),
           ),
-          Text(value,
-              style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87)),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '${isCredit ? '+' : '-'}R${amount.toStringAsFixed(2)}',
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: isCredit
+                        ? const Color(0xFF094a25)
+                        : const Color(0xFFbc2023)),
+              ),
+              if (fee != null)
+                Text('fee R$fee',
+                    style:
+                        const TextStyle(fontSize: 11, color: Colors.black38)),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  // ─── Tab 3 — Financials ──────────────────────────────────────────────────
+  // ─── Tab 4 — Financials ───────────────────────────────────────────────────
 
   Widget _financialsTab() {
     return Column(
@@ -1617,7 +1809,6 @@ class _AccountScreenState extends State<AccountScreen> {
       ),
       child: Column(
         children: [
-          // Items
           ...items.map((item) => Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -1656,7 +1847,6 @@ class _AccountScreenState extends State<AccountScreen> {
               ),
             ),
           const Divider(height: 1),
-          // Footer
           Padding(
             padding: const EdgeInsets.all(12),
             child: Row(
@@ -1683,9 +1873,8 @@ class _AccountScreenState extends State<AccountScreen> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFf8b324),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
+                        color: const Color(0xFFf8b324),
+                        borderRadius: BorderRadius.circular(4)),
                     child: const Text('Invoice',
                         style: TextStyle(fontSize: 12, color: Colors.black87)),
                   ),
@@ -1749,7 +1938,72 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  // ─── Shared helpers ──────────────────────────────────────────────────────
+  // ─── Shared helpers ───────────────────────────────────────────────────────
+
+  Widget _infoTile(String label, String value, Color valueColor) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
+        ],
+      ),
+      child: Row(
+        children: [
+          Text('$label: ',
+              style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54)),
+          Text(value,
+              style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: valueColor)),
+        ],
+      ),
+    );
+  }
+
+  Widget _referralGroup(String title, List<Widget> items) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Text(title,
+              style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF094a25),
+                  letterSpacing: 0.5)),
+        ),
+        ...items,
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  Widget _referralStat(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        children: [
+          SizedBox(
+              width: 140,
+              child: Text(label,
+                  style: const TextStyle(fontSize: 13, color: Colors.black54))),
+          Text(value,
+              style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87)),
+        ],
+      ),
+    );
+  }
 
   Widget _sectionHeader(String title) => Padding(
         padding: const EdgeInsets.only(bottom: 12),

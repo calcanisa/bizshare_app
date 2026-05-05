@@ -10,6 +10,7 @@ class CartItem {
   final int? contentId;
   final String? memType;
   final bool? feature;
+  final List<String>? featureTypes;
 
   CartItem({
     required this.id,
@@ -21,6 +22,7 @@ class CartItem {
     this.contentId,
     this.memType,
     this.feature,
+    this.featureTypes,
   });
 
   Map<String, dynamic> toJson() => {
@@ -32,6 +34,7 @@ class CartItem {
         'mem_type': memType,
         'quantity': 1,
         'feature': feature,
+        'feature_types': featureTypes,
       };
 }
 
@@ -39,19 +42,14 @@ class CartProvider extends ChangeNotifier {
   final List<CartItem> _items = [];
 
   List<CartItem> get items => List.unmodifiable(_items);
-
   int get itemCount => _items.length;
-
   double get subtotal => _items.fold(0, (sum, item) => sum + item.price);
-
   bool get isEmpty => _items.isEmpty;
   bool get isNotEmpty => _items.isNotEmpty;
-
   bool get onlyVerification =>
       _items.isNotEmpty && _items.every((i) => i.type == 'verification');
 
   void addItem(CartItem item) {
-    // Prevent duplicates by id
     if (_items.any((i) => i.id == item.id)) return;
     _items.add(item);
     notifyListeners();
