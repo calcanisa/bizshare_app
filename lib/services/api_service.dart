@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://192.168.10.215:8000';
+  static const String baseUrl = 'https://sesha.co.za';
   static const _storage = FlutterSecureStorage();
   late final Dio _dio;
   DateTime? _tokenExpiry;
@@ -94,7 +94,7 @@ class ApiService {
         return false;
       }
       final response = await Dio().post(
-        '$baseUrl/api/token/refresh/',
+        '$baseUrl/api/v1/token/refresh/',
         data: {'refresh': refresh},
       );
       final newAccess = response.data['access'] as String;
@@ -127,7 +127,7 @@ class ApiService {
 
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
-      final response = await _dio.post('/api/token/', data: {
+      final response = await _dio.post('/api/v1/', data: {
         'email': email,
         'password': password,
       });

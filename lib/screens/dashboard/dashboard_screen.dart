@@ -7,7 +7,14 @@ import '../../utils/account_notifiers.dart';
 class DashboardScreen extends StatefulWidget {
   final VoidCallback? onProfileTap;
   final void Function(String)? onNavigate;
-  const DashboardScreen({super.key, this.onProfileTap, this.onNavigate});
+  final Map<String, dynamic> seshaSettings;
+
+  const DashboardScreen({
+    super.key,
+    this.onProfileTap,
+    this.onNavigate,
+    this.seshaSettings = const {},
+  });
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -15,6 +22,12 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   late DashboardProvider _provider;
+
+  bool _isEnabled(String? settingKey) {
+    if (settingKey == null) return true;
+    if (widget.seshaSettings.isEmpty) return false;
+    return widget.seshaSettings[settingKey] == true;
+  }
 
   @override
   void initState() {
@@ -90,10 +103,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           GestureDetector(
             onTap: () {
               widget.onNavigate?.call('Account');
-              // slight delay to let the screen switch before opening edit mode
               Future.delayed(const Duration(milliseconds: 300), () {
-                // AccountScreen reads this to open edit mode with upgrade selected
-                // We use a simple global flag via a ValueNotifier
                 accountEditUpgradeNotifier.value = true;
               });
             },
@@ -229,56 +239,71 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _countsSection(DashboardProvider provider) {
-    final items = [
+    // setting: null means always visible
+    final allItems = [
       {
         'key': 'directory.Business',
         'label': 'Businesses',
         'icon': Icons.business,
-        'route': 'Directory'
+        'route': 'Directory',
+        'setting': null
       },
       {
         'key': 'classifieds.Classified',
         'label': 'Classifieds',
         'icon': Icons.sell_outlined,
-        'route': 'Classifieds'
+        'route': 'Classifieds',
+        'setting': 'classifieds'
       },
       {
         'key': 'events.Event',
         'label': 'Events',
         'icon': Icons.event_outlined,
-        'route': 'Events'
+        'route': 'Events',
+        'setting': 'events'
       },
       {
         'key': 'jobs.Job',
         'label': 'Jobs',
         'icon': Icons.work_outline,
-        'route': 'Jobs'
+        'route': 'Jobs',
+        'setting': 'jobs'
       },
       {
         'key': 'directory.ServiceLeadMatches',
         'label': 'Leads',
         'icon': Icons.people_outline,
-        'route': 'Leads'
+        'route': 'Leads',
+        'setting': null
       },
       {
         'key': 'opportunities.Opportunity',
         'label': 'Opportunities',
         'icon': Icons.trending_up,
-        'route': 'Opportunities'
+        'route': 'Opportunities',
+        'setting': 'opportunities'
       },
       {
         'key': 'projects.Project',
         'label': 'Projects',
         'icon': Icons.lightbulb_outline,
-        'route': 'Projects'
+        'route': 'Projects',
+        'setting': 'projects'
       },
       {
         'key': 'websites.Website',
         'label': 'Websites',
         'icon': Icons.language,
-        'route': 'Websites'
+        'route': 'Websites',
+        'setting': null
       },
     ];
+
+    final items = allItems
+        .where((item) => _isEnabled(item['setting'] as String?))
+        .toList();
+
+    if (items.isEmpty) return const SizedBox.shrink();
 
     return Container(
       margin: const EdgeInsets.only(top: 4, bottom: 4),
@@ -340,81 +365,91 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _statsSection(DashboardProvider provider) {
-    final stats = [
+    final allStats = [
       {
         'key': 'directory.Business',
         'label': 'Businesses',
         'icon': Icons.business,
         'route': 'Directory',
+        'setting': null,
         'viewKey': 'directory.BusinessView',
         'clickKey': 'directory.BusinessClick',
         'extraKey': null,
-        'extraLabel': null,
+        'extraLabel': null
       },
       {
         'key': 'classifieds.Classified',
         'label': 'Classifieds',
         'icon': Icons.sell_outlined,
         'route': 'Classifieds',
+        'setting': 'classifieds',
         'viewKey': 'classifieds.ClassifiedView',
         'clickKey': 'classifieds.ClassifiedClick',
         'extraKey': null,
-        'extraLabel': null,
+        'extraLabel': null
       },
       {
         'key': 'events.Event',
         'label': 'Events',
         'icon': Icons.event_outlined,
         'route': 'Events',
+        'setting': 'events',
         'viewKey': 'events.EventView',
         'clickKey': 'events.EventClick',
         'extraKey': null,
-        'extraLabel': null,
+        'extraLabel': null
       },
       {
         'key': 'jobs.Job',
         'label': 'Jobs',
         'icon': Icons.work_outline,
         'route': 'Jobs',
+        'setting': 'jobs',
         'viewKey': 'jobs.JobView',
         'clickKey': 'jobs.JobClick',
         'extraKey': 'jobs.JobApplication',
-        'extraLabel': 'Applications',
+        'extraLabel': 'Applications'
       },
       {
         'key': 'opportunities.Opportunity',
         'label': 'Opportunities',
         'icon': Icons.trending_up,
         'route': 'Opportunities',
+        'setting': 'opportunities',
         'viewKey': 'opportunities.OpportunityView',
         'clickKey': 'opportunities.OpportunityClick',
         'extraKey': 'opportunities.OpportunityApplicationsReceived',
-        'extraLabel': 'Applications',
+        'extraLabel': 'Applications'
       },
       {
         'key': 'projects.Project',
         'label': 'Projects',
         'icon': Icons.lightbulb_outline,
         'route': 'Projects',
+        'setting': 'projects',
         'viewKey': 'projects.ProjectView',
         'clickKey': 'projects.ProjectClick',
         'extraKey': 'projects.ProjectInterestReceived',
-        'extraLabel': 'Interests',
+        'extraLabel': 'Interests'
       },
       {
         'key': 'websites.Website',
         'label': 'Websites',
         'icon': Icons.language,
         'route': 'Websites',
+        'setting': null,
         'viewKey': 'websites.WebsiteView',
         'clickKey': 'websites.WebsiteClick',
         'extraKey': null,
-        'extraLabel': null,
+        'extraLabel': null
       },
     ];
 
-    final visible =
-        stats.where((s) => provider.count(s['key'] as String) > 0).toList();
+    final visible = allStats
+        .where((s) =>
+            _isEnabled(s['setting'] as String?) &&
+            provider.count(s['key'] as String) > 0)
+        .toList();
 
     return Container(
       margin: const EdgeInsets.only(top: 4, bottom: 4),

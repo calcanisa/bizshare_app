@@ -41,27 +41,59 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Map<String, dynamic> _seshaSettings = {};
   final List<int> _history = [];
 
+  // setting: null = always visible, string = must be true in _seshaSettings
   final List<Map<String, dynamic>> _sections = [
-    {'title': 'Account', 'icon': Icons.account_circle_outlined},
-    {'title': 'Settings', 'icon': Icons.settings_outlined},
-    {'title': 'Profile', 'icon': Icons.person_outline},
-    {'title': 'Alerts', 'icon': Icons.notifications_outlined},
-    {'title': 'Mail', 'icon': Icons.mail_outline},
-    {'title': 'Cart', 'icon': Icons.shopping_cart_outlined},
-    {'title': 'Bookmarks', 'icon': Icons.bookmark_outline},
-    {'title': 'Classifieds', 'icon': Icons.sell_outlined},
-    {'title': 'Contacts', 'icon': Icons.contacts_outlined},
-    {'title': 'Directory', 'icon': Icons.business},
-    {'title': 'Events', 'icon': Icons.event_outlined},
-    {'title': 'Jobs', 'icon': Icons.work_outline},
-    {'title': 'Leads', 'icon': Icons.people_outline},
-    {'title': 'Opportunities', 'icon': Icons.trending_up},
-    {'title': 'People', 'icon': Icons.group_outlined},
-    {'title': 'Products', 'icon': Icons.shopping_bag_outlined},
-    {'title': 'Projects', 'icon': Icons.lightbulb_outline},
-    {'title': 'Services', 'icon': Icons.miscellaneous_services_outlined},
-    {'title': 'Websites', 'icon': Icons.language},
+    {
+      'title': 'Account',
+      'icon': Icons.account_circle_outlined,
+      'setting': null
+    },
+    {'title': 'Settings', 'icon': Icons.settings_outlined, 'setting': null},
+    {'title': 'Profile', 'icon': Icons.person_outline, 'setting': null},
+    {'title': 'Alerts', 'icon': Icons.notifications_outlined, 'setting': null},
+    {'title': 'Mail', 'icon': Icons.mail_outline, 'setting': null},
+    {'title': 'Cart', 'icon': Icons.shopping_cart_outlined, 'setting': null},
+    {'title': 'Bookmarks', 'icon': Icons.bookmark_outline, 'setting': null},
+    {
+      'title': 'Classifieds',
+      'icon': Icons.sell_outlined,
+      'setting': 'classifieds'
+    },
+    {'title': 'Contacts', 'icon': Icons.contacts_outlined, 'setting': null},
+    {'title': 'Directory', 'icon': Icons.business, 'setting': null},
+    {'title': 'Events', 'icon': Icons.event_outlined, 'setting': 'events'},
+    {'title': 'Jobs', 'icon': Icons.work_outline, 'setting': 'jobs'},
+    {'title': 'Leads', 'icon': Icons.people_outline, 'setting': null},
+    {
+      'title': 'Opportunities',
+      'icon': Icons.trending_up,
+      'setting': 'opportunities'
+    },
+    {'title': 'People', 'icon': Icons.group_outlined, 'setting': 'people'},
+    {
+      'title': 'Products',
+      'icon': Icons.shopping_bag_outlined,
+      'setting': 'products'
+    },
+    {
+      'title': 'Projects',
+      'icon': Icons.lightbulb_outline,
+      'setting': 'projects'
+    },
+    {
+      'title': 'Services',
+      'icon': Icons.miscellaneous_services_outlined,
+      'setting': null
+    },
+    {'title': 'Websites', 'icon': Icons.language, 'setting': null},
   ];
+
+  bool _isEnabled(Map<String, dynamic> section) {
+    final key = section['setting'] as String?;
+    if (key == null) return true;
+    if (_seshaSettings.isEmpty) return false;
+    return _seshaSettings[key] == true;
+  }
 
   @override
   void initState() {
@@ -119,6 +151,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       return DashboardScreen(
         onProfileTap: () => _navigateToNamed('Profile'),
         onNavigate: _navigateToNamed,
+        seshaSettings: _seshaSettings,
       );
     }
     switch (_sections[_currentIndex]['title']) {
@@ -307,11 +340,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 TextStyle(fontSize: 14, color: Colors.black87)),
                         onTap: () {
                           Navigator.pop(context);
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => HelpScreen(),
-                              ));
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (_) => HelpScreen()));
                         },
                       ),
                       const Divider(height: 1),
@@ -390,18 +420,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   Widget _navItem(String title) {
     final index = _sections.indexWhere((s) => s['title'] == title);
-    final isSelected = _currentIndex == index;
-    final icon =
-        index != -1 ? _sections[index]['icon'] as IconData : Icons.circle;
+    if (index == -1) return const SizedBox.shrink();
 
-    if (index == -1) {
-      return ListTile(
-        dense: true,
-        leading: Icon(icon, size: 18, color: Colors.black26),
-        title: Text(title,
-            style: const TextStyle(fontSize: 14, color: Colors.black38)),
-      );
-    }
+    final section = _sections[index];
+    if (!_isEnabled(section)) return const SizedBox.shrink();
+
+    final isSelected = _currentIndex == index;
+    final icon = section['icon'] as IconData;
 
     return ListTile(
       dense: true,
@@ -432,18 +457,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         Navigator.pop(context);
         switch (title) {
           case 'Feedback':
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const FeedbackScreen(),
-                ));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const FeedbackScreen()));
             break;
           case 'Help':
             Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => HelpScreen(),
-                ));
+                context, MaterialPageRoute(builder: (_) => HelpScreen()));
             break;
           case 'About':
           case 'Terms':
