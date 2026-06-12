@@ -48,13 +48,11 @@ class ApiService {
           }
         }
 
-        // 403 — permission denied, not a logout
         return handler.next(error);
       },
     ));
   }
 
-  // ── Proactive refresh ─────────────────────────────────────────────────────
   Future<void> refreshIfNeeded() async {
     try {
       final token = await _storage.read(key: 'access_token');
@@ -73,16 +71,13 @@ class ApiService {
       if (_tokenExpiry!.difference(DateTime.now()).inMinutes < 5) {
         await _refreshToken();
       }
-    } catch (_) {
-      // Decode failed — leave token as-is
-    }
+    } catch (_) {}
   }
 
   bool _refreshing = false;
 
   Future<bool> _refreshToken() async {
     if (_refreshing) {
-      // Wait for the in-progress refresh to complete
       await Future.delayed(const Duration(milliseconds: 500));
       return await _storage.read(key: 'access_token') != null;
     }
@@ -94,7 +89,7 @@ class ApiService {
         return false;
       }
       final response = await Dio().post(
-        '$baseUrl/api/v1/token/refresh/',
+        '$baseUrl/api/token/refresh/',
         data: {'refresh': refresh},
       );
       final newAccess = response.data['access'] as String;
@@ -125,16 +120,17 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> login(String email, String password) async {
-    try {
-      final response = await _dio.post('/api/v1/', data: {
-        'email': email,
-        'password': password,
-      });
-      return response.data;
-    } catch (e) {
-      rethrow;
-    }
+  Future<Map<String, dynamic>> login(
+    String email,
+    String password, {
+    bool rememberMe = false,
+  }) async {
+    final response = await _dio.post('/api/token/', data: {
+      'email': email,
+      'password': password,
+      'remember_me': rememberMe,
+    });
+    return response.data;
   }
 
   Future<void> saveTokens(String access, String refresh) async {
@@ -153,7 +149,6 @@ class ApiService {
 
   Dio get dio => _dio;
 
-  // ── Multipart POST ────────────────────────────────────────────────────────
   Future<Map<String, dynamic>> postMultipart(
     String path, {
     required Map<String, String> fields,
@@ -168,7 +163,6 @@ class ApiService {
     return response.data as Map<String, dynamic>;
   }
 
-  // ── Multipart PATCH ───────────────────────────────────────────────────────
   Future<Map<String, dynamic>> patchMultipart(
     String path, {
     required Map<String, String> fields,
