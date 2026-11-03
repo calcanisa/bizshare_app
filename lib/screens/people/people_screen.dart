@@ -97,13 +97,15 @@ class _PeopleScreenState extends State<PeopleScreen> {
       final api = context.read<ApiService>();
       final results = await Future.wait([
         api.dio.get('/api/v1/locations/provinces/'),
-        api.dio.get('/api/v1/profiles/skills/'),
+        api.dio.get('/api/v1/jobs/skills/'),
       ]);
       final pData = results[0].data;
       final sData = results[1].data;
+      final allSkills = sData is List ? sData : (sData['results'] ?? []);
       setState(() {
         _provinces = pData is List ? pData : (pData['results'] ?? []);
-        _skills = sData is List ? sData : (sData['results'] ?? []);
+        _skills = allSkills.where((s) => s['parent'] == null).toList();
+        _subcategories = allSkills.where((s) => s['parent'] != null).toList();
       });
     } catch (_) {}
   }
@@ -111,8 +113,7 @@ class _PeopleScreenState extends State<PeopleScreen> {
   Future<void> _loadCities(int provinceId) async {
     try {
       final api = context.read<ApiService>();
-      final res = await api.dio.get('/api/v1/locations/cities/',
-          queryParameters: {'province': provinceId});
+      final res = await api.dio.get('/api/v1/locations/cities/$provinceId/');
       final data = res.data;
       setState(() => _cities = data is List ? data : (data['results'] ?? []));
     } catch (_) {}
@@ -191,7 +192,7 @@ class _PeopleScreenState extends State<PeopleScreen> {
             ? <dynamic>[]
             : _subcategories
                 .where((s) =>
-                    s['skill'] == _tempSkill || s['parent'] == _tempSkill)
+                    s['parent'] == _tempSkill)
                 .toList();
 
         final tempCities = _tempProvince == null
@@ -280,18 +281,6 @@ class _PeopleScreenState extends State<PeopleScreen> {
                             _tempSkill = v;
                             _tempSubcategory = null;
                           });
-                          if (v != null) {
-                            try {
-                              final api = context.read<ApiService>();
-                              final res = await api.dio.get(
-                                  '/api/v1/profiles/skills/$v/subcategories/');
-                              final data = res.data;
-                              setState(() => _subcategories = data is List
-                                  ? data
-                                  : (data['results'] ?? []));
-                              setSheetState(() {});
-                            } catch (_) {}
-                          }
                         },
                       ),
                       if (tempSubcats.isNotEmpty) ...[
@@ -672,7 +661,7 @@ class _PeopleScreenState extends State<PeopleScreen> {
     final firstName = profile['first_name'] ?? '';
     final lastName = profile['last_name'] ?? '';
     final fullName = '$firstName $lastName'.trim();
-    final bio = profile['bio']?.toString() ?? '';
+    final bio = profile['headline']?.toString() ?? '';
     final picture = profile['profile_picture'];
     final status = profile['employment_status'];
     final position = profile['current_position'];

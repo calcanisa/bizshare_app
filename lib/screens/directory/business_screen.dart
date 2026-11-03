@@ -63,11 +63,32 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
     super.dispose();
   }
 
+  int? _productLimit;
+
   Future<void> _loadAccount() async {
     try {
       final api = context.read<ApiService>();
-      final res = await api.dio.get('/api/v1/users/current/');
-      setState(() => _accountId = res.data['id']);
+      final results = await Future.wait([
+        api.dio.get('/api/v1/users/current/'),
+        api.dio.get('/api/v1/limits/'),
+      ]);
+      final account = results[0].data;
+      final limits = results[1].data;
+      final membership = account is Map ? account['membership'] : null;
+      final memType = membership is Map && membership['is_active'] != false
+          ? membership['mem_type']?.toString() ?? ''
+          : '';
+      final tier = memType.startsWith('silver')
+          ? 'silver'
+          : memType.startsWith('gold')
+              ? 'gold'
+              : 'bronze';
+      final limit = limits is Map ? limits['${tier}_business_products'] : null;
+      if (!mounted) return;
+      setState(() {
+        _accountId = account is Map ? account['id'] : null;
+        _productLimit = limit is int ? limit : int.tryParse('$limit');
+      });
     } catch (_) {}
   }
 
@@ -124,24 +145,76 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
     }
   }
 
-  Future<void> _saveSocialProfile(
-      Map<String, dynamic> data, dynamic socialId) async {
-    final auth = context.read<AuthProvider>();
-    try {
-      if (socialId != null) {
-        await auth.apiService.dio.put(
-          '/api/v1/directory/business/social/$socialId/u/',
-          data: data,
-        );
-      } else {
-        await auth.apiService.dio.post(
-          '/api/v1/directory/business/${widget.businessId}/social/c/',
-          data: {...data, 'business': widget.businessId},
-        );
+  static const _socialImages = {
+    'facebook': '/src/assets/img/facebook.png',
+    'x': '/src/assets/img/x.webp',
+    'linkedin': '/src/assets/img/linkedin.webp',
+    'instagram': '/src/assets/img/instagram.webp',
+    'pinterest': '/src/assets/img/pinterest.webp',
+    'youtube': '/src/assets/img/youtube-icon.png',
+    'tumblr': '/src/assets/img/tumblr-icon.png',
+  };
+
+  List<Map<String, dynamic>> _currentSocials() {
+    final raw = _business?['social_profiles'];
+    dynamic list = raw;
+    if (raw is String && raw.isNotEmpty) {
+      try {
+        list = jsonDecode(raw);
+      } catch (_) {
+        list = [];
       }
+    }
+    if (list is Map) list = [list];
+    if (list is! List) return [];
+    return list
+        .whereType<Map>()
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
+  }
+
+  Future<void> _saveSocialProfile(
+      Map<String, dynamic> data, Map<String, dynamic>? original) async {
+    final auth = context.read<AuthProvider>();
+    final network = data['network'] as String?;
+    final url = data['url'] as String?;
+    if (network == null || url == null) return;
+    final entry = {
+      'network': network,
+      'url': url,
+      'imageUrl': _socialImages[network] ?? '',
+    };
+    final socials = _currentSocials();
+    if (original != null) {
+      final index =
+          socials.indexWhere((s) => s['network'] == original['network']);
+      if (index == -1) {
+        socials.add(entry);
+      } else {
+        socials[index] = entry;
+      }
+    } else {
+      if (socials.any((s) => s['network'] == network)) {
+        _showSnack('The $network network is already added');
+        return;
+      }
+      if (socials.length >= 5) {
+        _showSnack('You are only allowed up to 5 profiles');
+        return;
+      }
+      socials.add(entry);
+    }
+    try {
+      await auth.apiService.dio.patch(
+        '/api/v1/directory/business/${widget.businessId}/u/',
+        data: {'social_profiles': socials},
+      );
       if (mounted) _loadBusiness();
     } on DioException catch (e) {
-      _showSnack(e.response?.data?['error'] ?? 'Could not save. Try again.');
+      final body = e.response?.data;
+      _showSnack(body is Map && body['error'] != null
+          ? body['error'].toString()
+          : 'Could not save. Try again.');
     } catch (_) {
       _showSnack('Something went wrong. Try again.');
     }
@@ -273,13 +346,11 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
     if (!_isOwner) {
       actions.add(TextButton(
         onPressed: () async {
-          final user = _business!['user'] as Map?;
-          final recipientId = user?['id'] as int?;
           await SendMessageSheet.show(
             context,
             origin: 'business',
             title: 'Message ${_business!['name'] ?? 'Business'}',
-            recipientId: recipientId,
+            targetId: widget.businessId,
             recipientName: _business!['name']?.toString(),
           );
         },
@@ -746,7 +817,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
 
   Widget _productsTab() {
     final products = _business?['products'] as List? ?? [];
-    final productLimit = (_business?['product_limit'] as int?) ?? 5;
+    final productLimit = _productLimit ?? 0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -756,23 +827,25 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
             child: ElevatedButton.icon(
-              onPressed: () async {
-                final result = await Navigator.push<dynamic>(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => AddProductScreen(
-                      action: 'add',
-                      businessId: widget.businessId,
-                      currentCount: products.length,
-                      productLimit: productLimit,
-                    ),
-                  ),
-                );
-                // Reload the business so the new products appear
-                if (result != null && mounted) {
-                  _loadBusiness();
-                }
-              },
+              onPressed: _productLimit == null
+                  ? null
+                  : () async {
+                      final result = await Navigator.push<dynamic>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AddProductScreen(
+                            action: 'add',
+                            businessId: widget.businessId,
+                            currentCount: products.length,
+                            productLimit: productLimit,
+                          ),
+                        ),
+                      );
+                      // Reload the business so the new products appear
+                      if (result != null && mounted) {
+                        _loadBusiness();
+                      }
+                    },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF1B4748),
                 minimumSize: const Size(double.infinity, 44),
@@ -1060,7 +1133,8 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                     ),
                   );
                   if (result != null && mounted) {
-                    await _saveSocialProfile(result, null);
+                    await _saveSocialProfile(
+                        Map<String, dynamic>.from(result), null);
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -1213,7 +1287,6 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
   Widget _socialRow(Map<String, dynamic> social) {
     final network = social['network'] ?? '';
     final url = social['url'] ?? '';
-    final socialId = social['id'];
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -1256,7 +1329,8 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                   ),
                 );
                 if (result != null && mounted) {
-                  await _saveSocialProfile(result, socialId);
+                  await _saveSocialProfile(
+                      Map<String, dynamic>.from(result), social);
                 }
               },
               child: const Padding(

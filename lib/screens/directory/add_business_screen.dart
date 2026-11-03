@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -272,8 +273,15 @@ class _AddBusinessModalState extends State<AddBusinessModal> {
         MapEntry('affiliate_url', _affiliateController.text.trim()),
         MapEntry('categories',
             '[${_selectedCategories.map((c) => c['id'].toString()).join(',')}]'),
-        const MapEntry('social_profiles', '{}'),
       ]);
+      final existingSocials = widget.business?['social_profiles'];
+      formData.fields.add(MapEntry(
+          'social_profiles',
+          existingSocials == null
+              ? '[]'
+              : existingSocials is String
+                  ? existingSocials
+                  : jsonEncode(existingSocials)));
 
       // Office hours
       for (final d in _days) {

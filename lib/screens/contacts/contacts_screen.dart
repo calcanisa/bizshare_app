@@ -103,7 +103,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
     if (!confirm) return;
     try {
       final api = context.read<ApiService>();
-      await api.dio.post('/api/v1/contacts/bulk-delete/',
+      await api.dio.post('/api/v1/contacts/d/',
           data: {'ids': _selectedContacts.toList()});
       setState(() {
         _contacts.removeWhere((c) => _selectedContacts.contains(c['id']));
@@ -123,7 +123,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
     if (!confirm) return;
     try {
       final api = context.read<ApiService>();
-      await api.dio.post('/api/v1/contacts/groups/bulk-delete/',
+      await api.dio.post('/api/v1/contacts/groups/d/',
           data: {'ids': _selectedGroups.toList()});
       setState(() {
         _groups.removeWhere((g) => _selectedGroups.contains(g['id']));

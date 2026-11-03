@@ -113,7 +113,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
       final response =
           await api.dio.get('/api/v1/directory/business/following/current/');
       setState(
-          () => _following = response.data['results'] ?? response.data ?? []);
+          () => _following = (response.data is List ? response.data : (response.data['results'] ?? [])));
     } catch (_) {}
     setState(() => _loadingFollowing = false);
   }
@@ -136,7 +136,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
       final api = context.read<ApiService>();
       final response = await api.dio.get('/api/v1/locations/provinces/');
       setState(
-          () => _provinces = response.data['results'] ?? response.data ?? []);
+          () => _provinces = (response.data is List ? response.data : (response.data['results'] ?? [])));
     } catch (_) {}
   }
 
@@ -145,7 +145,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
       final api = context.read<ApiService>();
       final response =
           await api.dio.get('/api/v1/locations/cities/$provinceId/');
-      setState(() => _cities = response.data['results'] ?? response.data ?? []);
+      setState(() => _cities = (response.data is List ? response.data : (response.data['results'] ?? [])));
     } catch (_) {}
   }
 
@@ -153,7 +153,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
     try {
       final api = context.read<ApiService>();
       final response = await api.dio.get('/api/v1/locations/areas/$cityId/');
-      setState(() => _areas = response.data['results'] ?? response.data ?? []);
+      setState(() => _areas = (response.data is List ? response.data : (response.data['results'] ?? [])));
     } catch (_) {}
   }
 

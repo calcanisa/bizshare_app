@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../services/api_service.dart';
 import '../../providers/auth_provider.dart';
-import './sesha_passive.dart';
+import 'affiliate_screen.dart';
 import '../../utils/account_notifiers.dart';
-import 'withdraw.dart';
 import '../../providers/cart_provider.dart';
 
 class AccountScreen extends StatefulWidget {
@@ -26,7 +25,6 @@ class _AccountScreenState extends State<AccountScreen> {
   bool _chgEmail = false;
   bool _upAcc = false;
   bool _delAcc = false;
-  bool _joinPass = false;
   bool _forgot = false;
 
   bool _correct = false;
@@ -36,6 +34,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   int _memTab = 1;
   String _memType = '';
+  Map<String, dynamic>? _pricing;
   String _reason = '';
 
   List<dynamic> _orders = [];
@@ -73,9 +72,7 @@ class _AccountScreenState extends State<AccountScreen> {
   static const double _minDeposit = 50.0;
   static const double _feeRate = 0.04;
 
-  bool get _passiveEnabled => _seshaSettings['passive'] == true;
-  bool get _hasPassiveMembership =>
-      _account?['passive_membership']?['is_active'] == true;
+  bool get _affiliatesEnabled => _seshaSettings['passive'] == true;
 
   String get _membershipLabel {
     final type = _account?['membership']?['mem_type'];
@@ -134,6 +131,7 @@ class _AccountScreenState extends State<AccountScreen> {
   void initState() {
     super.initState();
     _loadSeshaSettings();
+    _loadPricing();
     _loadAccount();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (accountEditUpgradeNotifier.value) {
@@ -167,6 +165,37 @@ class _AccountScreenState extends State<AccountScreen> {
       if (mounted)
         setState(() => _seshaSettings = res.data as Map<String, dynamic>);
     } catch (_) {}
+  }
+
+  Future<void> _loadPricing() async {
+    try {
+      final api = context.read<ApiService>();
+      final res = await api.dio.get('/api/v1/pricing/');
+      if (mounted && res.data is Map) {
+        setState(() => _pricing = Map<String, dynamic>.from(res.data as Map));
+      }
+    } catch (_) {}
+  }
+
+  double? _price(String key) {
+    final v = _pricing?[key];
+    if (v is num) return v.toDouble();
+    return double.tryParse(v?.toString() ?? '');
+  }
+
+  String _rand(String key) {
+    final v = _price(key);
+    if (v == null) return '';
+    return v == v.roundToDouble()
+        ? 'R${v.toStringAsFixed(0)}'
+        : 'R${v.toStringAsFixed(2)}';
+  }
+
+  String get _yearlyNote {
+    final free = _pricing?['yearly_months_free'];
+    final n = free is num ? free.toInt() : int.tryParse(free?.toString() ?? '');
+    if (n == null || n <= 0) return '';
+    return ' ($n month${n == 1 ? '' : 's'} free)';
   }
 
   Future<void> _loadAccount() async {
@@ -388,15 +417,37 @@ class _AccountScreenState extends State<AccountScreen> {
         setState(() => _account?['membership'] = null);
         _showSnack('Membership downgraded to Bronze');
         _closeForm();
-      } else if (_buttonLabel == 'Downgrade' || _buttonLabel == 'Change') {
-        await api.dio.patch('/api/v1/products/membership/c/',
-            data: {'mem_type': _memType});
-        _showSnack('Membership updated');
-        _closeForm();
       } else {
-        _showSnack(
-            'Membership upgrade added to cart. Go to cart to complete payment.');
-        _closeForm();
+        const plans = {
+          'silverM': ('silver_monthly', 'Silver Membership Monthly'),
+          'goldM': ('gold_monthly', 'Gold Membership Monthly'),
+          'silverY': ('silver_yearly', 'Silver Membership Yearly'),
+          'goldY': ('gold_yearly', 'Gold Membership Yearly'),
+        };
+        final plan = plans[_memType];
+        final price = plan == null ? null : _price(plan.$1);
+        if (plan == null || price == null) {
+          _showSnack(
+              'Membership prices are still loading. Try again in a moment.');
+        } else {
+          final cart = context.read<CartProvider>();
+          for (final item in cart.items
+              .where((i) => i.type == 'membership')
+              .toList()) {
+            cart.removeItem(item.id);
+          }
+          cart.addItem(CartItem(
+            id: 'membership_$_memType',
+            title: plan.$2,
+            price: price,
+            type: 'membership',
+            memType: _memType,
+          ));
+          _showSnack(
+              'Membership added to your cart. Complete the upgrade in the cart.');
+          _closeForm();
+          homeSectionNotifier.value = 'Cart';
+        }
       }
     } catch (_) {
       _showSnack('Could not update membership. Try again.');
@@ -410,55 +461,17 @@ class _AccountScreenState extends State<AccountScreen> {
       return;
     }
     final confirm = await _confirm(
-        'Are you sure? Your account will be disabled for 30 days then permanently deleted.');
+        'Are you sure you want to delete your account? It will be disabled and you will be logged out.');
     if (!confirm) return;
     setState(() => _submitting = true);
     try {
       final api = context.read<ApiService>();
-      await api.dio.post('/api/v1/users/s/');
+      await api.dio.post('/api/v1/users/d/');
       if (mounted) Provider.of<AuthProvider>(context, listen: false).logout();
     } catch (_) {
       _showSnack('Could not delete account. Try again.');
     }
-    setState(() => _submitting = false);
-  }
-
-  Future<void> _cancelPassiveMembership() async {
-    final confirm = await _confirm(
-        'Cancel BizShare Passive? You will lose all benefits and your passive code immediately. This cannot be undone.');
-    if (!confirm) return;
-    setState(() => _submitting = true);
-    try {
-      final api = context.read<ApiService>();
-      await api.dio.delete('/api/v1/users/passive/cancel/');
-      setState(() {
-        _account?['passive_membership'] = null;
-        _joinPass = false;
-      });
-      _showSnack('Passive membership cancelled');
-    } catch (_) {
-      _showSnack('Could not cancel. Try again.');
-    }
-    setState(() => _submitting = false);
-  }
-
-  Future<void> _cancelApplication() async {
-    final confirm = await _confirm('Cancel your BizShare Passive application?');
-    if (!confirm) return;
-    setState(() => _submitting = true);
-    try {
-      final api = context.read<ApiService>();
-      await api.dio.delete('/api/v1/users/sesha/d/');
-      setState(() {
-        _account?['applied'] = false;
-        _account?['approved'] = false;
-        _joinPass = false;
-      });
-      _showSnack('Application cancelled');
-    } catch (_) {
-      _showSnack('Could not cancel application. Try again.');
-    }
-    setState(() => _submitting = false);
+    if (mounted) setState(() => _submitting = false);
   }
 
   void _closeForm() {
@@ -468,7 +481,6 @@ class _AccountScreenState extends State<AccountScreen> {
       _chgEmail = false;
       _upAcc = false;
       _delAcc = false;
-      _joinPass = false;
       _forgot = false;
       _correct = false;
       _mailSent = false;
@@ -554,7 +566,7 @@ class _AccountScreenState extends State<AccountScreen> {
           child: CircularProgressIndicator(color: Color(0xFF1B4748)));
     }
 
-    final showPassiveTab = _passiveEnabled && _hasPassiveMembership;
+    final showAffiliateTab = _affiliatesEnabled;
 
     return Column(
       children: [
@@ -563,7 +575,7 @@ class _AccountScreenState extends State<AccountScreen> {
           child: Row(
             children: [
               _tabBtn(1, 'Account'),
-              if (showPassiveTab) _tabBtn(2, 'BizShare Passive'),
+              if (showAffiliateTab) _tabBtn(2, 'Affiliate'),
               _tabBtn(3, 'Wallet'),
               _tabBtn(4, 'Financials'),
             ],
@@ -581,8 +593,8 @@ class _AccountScreenState extends State<AccountScreen> {
               padding: const EdgeInsets.all(16),
               child: _tab == 1
                   ? _accountTab()
-                  : _tab == 2 && showPassiveTab
-                      ? _passiveTab()
+                  : _tab == 2 && showAffiliateTab
+                      ? const AffiliateSection()
                       : _tab == 3
                           ? _walletTab()
                           : _financialsTab(),
@@ -628,8 +640,6 @@ class _AccountScreenState extends State<AccountScreen> {
     final email = _account?['email'] ?? '—';
     final createdAt = _account?['created_at'];
     final updatedAt = _account?['updated_at'];
-    final earnings = _account?['total_earnings'] ?? 0;
-    final referCode = _account?['refer_code'];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -651,13 +661,7 @@ class _AccountScreenState extends State<AccountScreen> {
           _detailRow('Joined', _formatDate(createdAt?.toString())),
           _detailRow('Last Update', _formatDate(updatedAt?.toString())),
           _detailRow('Membership', _membershipLabel),
-          if (_passiveEnabled)
-            _detailRow('Passive Member', _hasPassiveMembership ? 'Yes' : 'No'),
-          if (_passiveEnabled && _hasPassiveMembership && referCode != null)
-            _detailRow('Passive Code', referCode.toString()),
           _detailRow('Wallet Balance', 'R${_walletBalance.toStringAsFixed(2)}'),
-          if (_passiveEnabled && _hasPassiveMembership)
-            _detailRow('Current Earnings', 'R$earnings'),
         ]),
       ],
     );
@@ -700,7 +704,7 @@ class _AccountScreenState extends State<AccountScreen> {
   // ─── Edit View ────────────────────────────────────────────────────────────
 
   Widget _editView() {
-    final anyActive = _chgPass || _chgEmail || _upAcc || _delAcc || _joinPass;
+    final anyActive = _chgPass || _chgEmail || _upAcc || _delAcc;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -728,7 +732,6 @@ class _AccountScreenState extends State<AccountScreen> {
             if (_chgEmail) _changeEmailFields(),
             if (_upAcc) _membershipSelector(),
             if (_delAcc) _deleteAccountFields(),
-            if (_joinPass) _passiveFields(),
           ],
           if (_mailSent && !_codeAccepted) _codeEntry(),
           if (_codeAccepted && (_chgPass || _forgot)) _newPasswordFields(),
@@ -755,10 +758,8 @@ class _AccountScreenState extends State<AccountScreen> {
     if (_upAcc)
       return 'Upgrading gives you more features and higher limits. You can\'t change tier again for 30 days.';
     if (_delAcc)
-      return 'Your account will be disabled for 30 days. After that all data is permanently deleted.';
-    if (_joinPass)
-      return 'BizShare Passive lets you earn passive income by referring members.';
-    return 'Manage your account — change password or email, upgrade, join BizShare Passive, or delete your account.';
+      return 'Deleting your account disables it and logs you out.';
+    return 'Manage your account: change your password or email, upgrade, or delete your account.';
   }
 
   Widget _infoBox(String text) {
@@ -776,7 +777,7 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Widget _actionCheckboxes() {
-    final anyActive = _chgPass || _chgEmail || _upAcc || _delAcc || _joinPass;
+    final anyActive = _chgPass || _chgEmail || _upAcc || _delAcc;
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -800,11 +801,6 @@ class _AccountScreenState extends State<AccountScreen> {
             _actionCheckbox('Upgrade / Downgrade', _upAcc, (v) {
               _resetActions();
               setState(() => _upAcc = v!);
-            }),
-          if (_passiveEnabled && (!anyActive || _joinPass))
-            _actionCheckbox('BizShare Passive', _joinPass, (v) {
-              _resetActions();
-              setState(() => _joinPass = v!);
             }),
           if (!anyActive || _delAcc)
             _actionCheckbox('Delete Account', _delAcc, (v) {
@@ -1066,15 +1062,17 @@ class _AccountScreenState extends State<AccountScreen> {
               style: TextStyle(fontSize: 12, color: Colors.black54)),
           const SizedBox(height: 10),
           _memOption('Bronze', 'Free', 'bronze'),
-          _memOption('Silver', 'R799 p/m', 'silverM'),
-          _memOption('Gold', 'R2499 p/m', 'goldM'),
+          _memOption('Silver', '${_rand('silver_monthly')} p/m', 'silverM'),
+          _memOption('Gold', '${_rand('gold_monthly')} p/m', 'goldM'),
         ] else ...[
-          const Text('Membership charged annually (save ~6%)',
+          const Text('Membership charged annually',
               style: TextStyle(fontSize: 12, color: Colors.black54)),
           const SizedBox(height: 10),
           _memOption('Bronze', 'Free', 'bronze'),
-          _memOption('Silver', 'R9000/yr (save R588)', 'silverY'),
-          _memOption('Gold', 'R29000/yr (save R988)', 'goldY'),
+          _memOption('Silver', '${_rand('silver_yearly')} a year$_yearlyNote',
+              'silverY'),
+          _memOption(
+              'Gold', '${_rand('gold_yearly')} a year$_yearlyNote', 'goldY'),
         ],
         const SizedBox(height: 16),
       ],
@@ -1103,12 +1101,19 @@ class _AccountScreenState extends State<AccountScreen> {
 
   Widget _memOption(String label, String price, String value) {
     final currentType = _account?['membership']?['mem_type'];
-    final isCurrent =
-        currentType == value || (value == 'bronze' && currentType == null);
+    String tier(String? t) => t == null
+        ? 'bronze'
+        : t.startsWith('silver')
+            ? 'silver'
+            : t.startsWith('gold')
+                ? 'gold'
+                : t;
+    final isCurrent = tier(currentType as String?) == tier(value);
+    final disabled = isCurrent || (value != 'bronze' && _pricing == null);
     final isSelected = _memType == value;
 
     return GestureDetector(
-      onTap: isCurrent ? null : () => setState(() => _memType = value),
+      onTap: disabled ? null : () => setState(() => _memType = value),
       child: Container(
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.all(12),
@@ -1128,13 +1133,13 @@ class _AccountScreenState extends State<AccountScreen> {
               groupValue: _memType,
               activeColor: const Color(0xFF1B4748),
               onChanged:
-                  isCurrent ? null : (v) => setState(() => _memType = v!),
+                  disabled ? null : (v) => setState(() => _memType = v!),
             ),
             Expanded(
               child: Text('$label — $price',
                   style: TextStyle(
                       fontSize: 13,
-                      color: isCurrent ? Colors.black38 : Colors.black87)),
+                      color: disabled ? Colors.black38 : Colors.black87)),
             ),
             if (isCurrent)
               Container(
@@ -1186,103 +1191,6 @@ class _AccountScreenState extends State<AccountScreen> {
                 'You will be logged out and your account disabled for 30 days. After that, all data is permanently deleted.',
                 style: TextStyle(fontSize: 12, color: Color(0xFFF48900))),
           ),
-        const SizedBox(height: 16),
-      ],
-    );
-  }
-
-  Widget _passiveFields() {
-    final applied = _account?['applied'] == true;
-    final approved = _account?['approved'] == true;
-    final hasPassiveApp = _account?['passive_application'] != null;
-
-    if (_hasPassiveMembership) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _infoBox(
-              'Cancelling removes all benefits and your passive code immediately. This is irreversible.'),
-          const SizedBox(height: 12),
-          ElevatedButton(
-            onPressed: _submitting ? null : _cancelPassiveMembership,
-            style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFF48900)),
-            child: const Text('Cancel Passive Membership',
-                style: TextStyle(color: Colors.white)),
-          ),
-          const SizedBox(height: 16),
-        ],
-      );
-    }
-
-    if (applied && !approved) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _infoBox(
-              'Your application is under review. This can take up to 30 days.'),
-          const SizedBox(height: 12),
-          ElevatedButton(
-            onPressed: _submitting ? null : _cancelApplication,
-            style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFF48900)),
-            child: const Text('Cancel Application',
-                style: TextStyle(color: Colors.white)),
-          ),
-          const SizedBox(height: 16),
-        ],
-      );
-    }
-
-    if (hasPassiveApp && approved) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _infoBox(
-              'You are approved but have not paid the yearly membership fee.'),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              ElevatedButton(
-                onPressed: () => _showSnack('Passive membership added to cart'),
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1B4748)),
-                child: const Text('Pay Membership',
-                    style: TextStyle(color: Colors.white)),
-              ),
-              const SizedBox(width: 10),
-              TextButton(
-                onPressed: _submitting ? null : _cancelApplication,
-                child: const Text('Cancel Application',
-                    style: TextStyle(color: Color(0xFFF48900))),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-        ],
-      );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _infoBox(
-            'Join BizShare Passive to earn passive income by referring members. Applications take up to 30 days to process.'),
-        const SizedBox(height: 12),
-        ElevatedButton(
-          onPressed: () async {
-            final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => SeshaPassiveScreen(
-                        profile:
-                            _account?['profile'] as Map<String, dynamic>?)));
-            if (result == true && mounted) _loadAccount();
-          },
-          style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF1B4748)),
-          child: const Text('Apply', style: TextStyle(color: Colors.white)),
-        ),
         const SizedBox(height: 16),
       ],
     );
@@ -1342,86 +1250,6 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  // ─── Tab 2 — BizShare Passive ────────────────────────────────────────────────
-
-  Widget _passiveTab() {
-    final isActive = _hasPassiveMembership;
-    final totalEarnings = _account?['total_earnings'] ?? 0;
-    final passiveCount = _account?['passive_count'] ?? 0;
-    final advertisings = _account?['advertisings'] ?? 0;
-    final featureCount = _account?['feature_count'] ?? 0;
-    final referredMemberships =
-        _account?['referred_memberships'] as List? ?? [];
-    final monthly =
-        referredMemberships.where((m) => m['duration'] == 'monthly').toList();
-    final yearly =
-        referredMemberships.where((m) => m['duration'] == 'yearly').toList();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _sectionHeader('BizShare Passive'),
-        const Text(
-          'You\'re part of the BizShare Passive program! Once results start coming in, you\'re on the path to earning passive income for life.',
-          style: TextStyle(fontSize: 13, color: Colors.black87, height: 1.5),
-        ),
-        const SizedBox(height: 20),
-        _infoTile('Status', isActive ? 'Up to date' : 'Suspended',
-            isActive ? Colors.green : const Color(0xFFF48900)),
-        const SizedBox(height: 20),
-        _sectionHeader('Referrals'),
-        _referralGroup('Monthly', [
-          _referralStat('Silver memberships',
-              '${monthly.where((m) => m['mem_type']?.toString().contains('silver') == true).length}'),
-          _referralStat('Gold memberships',
-              '${monthly.where((m) => m['mem_type']?.toString().contains('gold') == true).length}'),
-        ]),
-        _referralGroup('Yearly', [
-          _referralStat('Silver memberships',
-              '${yearly.where((m) => m['mem_type']?.toString().contains('silver') == true).length}'),
-          _referralStat('Gold memberships',
-              '${yearly.where((m) => m['mem_type']?.toString().contains('gold') == true).length}'),
-        ]),
-        _referralGroup('Once-off', [
-          _referralStat('Passive', '$passiveCount'),
-          _referralStat('Advertising', '$advertisings'),
-          _referralStat('Features', '$featureCount'),
-        ]),
-        const SizedBox(height: 20),
-        _sectionHeader('Earnings'),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Row(
-            children: [
-              const Text('Total Earned: ',
-                  style: TextStyle(fontSize: 14, color: Colors.black54)),
-              Text('R$totalEarnings',
-                  style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1B4748))),
-            ],
-          ),
-        ),
-        ElevatedButton(
-          onPressed: () async {
-            final result = await WithdrawSheet.show(context);
-            if (result != null && mounted) {
-              _showSnack('Withdrawal request submitted.');
-              _loadAccount();
-            }
-          },
-          style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF1B4748)),
-          child: const Text('Request Withdrawal',
-              style: TextStyle(color: Colors.white)),
-        ),
-        const SizedBox(height: 20),
-      ],
-    );
-  }
-
-  // ─── Tab 3 — Wallet ───────────────────────────────────────────────────────
 
   Widget _walletTab() {
     const fixedAmounts = ['1000', '2500', '5000', '10000', '20000', '50000'];
@@ -1569,6 +1397,12 @@ class _AccountScreenState extends State<AccountScreen> {
                 ? null
                 : () {
                     final amount = double.tryParse(_fundAmount) ?? 0;
+                    if (amount < _minDeposit) {
+                      _showSnack(
+                          'Minimum deposit is R${_minDeposit.toInt()}.');
+                      return;
+                    }
+                    context.read<CartProvider>().removeItem('wallet_topup');
                     context.read<CartProvider>().addItem(CartItem(
                           id: 'wallet_topup',
                           title: 'Wallet Top-up — R$_fundAmount',
@@ -1577,8 +1411,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         ));
                     _showSnack(
                         'Added to cart. Complete your top-up in the cart.');
-                    // Navigate to cart — adjust to your routing approach
-                    Navigator.pushNamed(context, '/cart');
+                    homeSectionNotifier.value = 'Cart';
                   },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF1B4748),
@@ -1939,71 +1772,6 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   // ─── Shared helpers ───────────────────────────────────────────────────────
-
-  Widget _infoTile(String label, String value, Color valueColor) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
-        ],
-      ),
-      child: Row(
-        children: [
-          Text('$label: ',
-              style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black54)),
-          Text(value,
-              style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: valueColor)),
-        ],
-      ),
-    );
-  }
-
-  Widget _referralGroup(String title, List<Widget> items) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Text(title,
-              style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF1B4748),
-                  letterSpacing: 0.5)),
-        ),
-        ...items,
-        const SizedBox(height: 8),
-      ],
-    );
-  }
-
-  Widget _referralStat(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        children: [
-          SizedBox(
-              width: 140,
-              child: Text(label,
-                  style: const TextStyle(fontSize: 13, color: Colors.black54))),
-          Text(value,
-              style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87)),
-        ],
-      ),
-    );
-  }
 
   Widget _sectionHeader(String title) => Padding(
         padding: const EdgeInsets.only(bottom: 12),

@@ -106,7 +106,7 @@ class _AddContactModalState extends State<AddContactModal> {
       final api = context.read<ApiService>();
       final res = await api.dio.get('/api/v1/contacts/groups/current/');
       setState(() {
-        _allGroups = res.data['results'] ?? res.data ?? [];
+        _allGroups = (res.data is List ? res.data : (res.data['results'] ?? []));
       });
     } catch (_) {}
   }

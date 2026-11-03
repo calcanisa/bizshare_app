@@ -158,7 +158,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
     if (_categories.isNotEmpty) return;
     try {
       final api = context.read<ApiService>();
-      final response = await api.dio.get('/api/v1/directory/categories/');
+      final response = await api.dio.get('/api/v1/directory/business/categories/top/');
       final data = response.data;
       setState(
           () => _categories = data is List ? data : (data['results'] ?? []));

@@ -207,7 +207,7 @@ class _AddClassifiedModalState extends State<AddClassifiedModal> {
     _bodyType = ad['body_type'] ?? '';
     _transmission = ad['transmission'] ?? '';
     _driveType = ad['drive_type'] ?? '';
-    _carColor = ad['car_color'] ?? '';
+    _carColor = (ad['color'] ?? ad['car_color'] ?? '').toString();
     _fuelType = ad['fuel_type'] ?? '';
     _availableFrom = ad['available_from'];
     _availableTill = ad['available_till'];
@@ -386,6 +386,7 @@ class _AddClassifiedModalState extends State<AddClassifiedModal> {
         MapEntry('transmission', _transmission),
         MapEntry('drive_type', _driveType),
         MapEntry('car_color', _carColor),
+        MapEntry('color', _carColor),
         MapEntry('fuel_type', _fuelType),
         MapEntry('parking', _parking),
         MapEntry('bedrooms', _bedrooms ?? ''),

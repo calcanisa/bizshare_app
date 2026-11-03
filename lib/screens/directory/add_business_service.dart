@@ -65,7 +65,7 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
     setState(() => _loadingData = true);
     try {
       final api = context.read<ApiService>();
-      final res = await api.dio.get('/api/v1/directory/categories/');
+      final res = await api.dio.get('/api/v1/directory/business/categories/top/');
       final data = res.data;
       setState(() {
         _categories = List<Map<String, dynamic>>.from(

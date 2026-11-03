@@ -68,7 +68,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       _descCtrl.text = p['description'] ?? '';
       _priceCtrl.text = (p['price'] ?? '').toString();
       _urlCtrl.text = p['url'] ?? '';
-      _existingImageUrl = p['main_image'] as String?;
+      _existingImageUrl = (p['image'] ?? p['main_image'])?.toString();
     }
   }
 

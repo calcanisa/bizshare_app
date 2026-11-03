@@ -68,7 +68,7 @@ class _AddLeadModalState extends State<AddLeadModal> {
       final api = context.read<ApiService>();
       final results = await Future.wait([
         api.dio.get('/api/v1/directory/services/'),
-        api.dio.get('/api/v1/directory/categories/'),
+        api.dio.get('/api/v1/directory/business/categories/top/'),
         api.dio.get('/api/v1/locations/provinces/'),
         api.dio.get('/api/v1/users/current/'),
       ]);

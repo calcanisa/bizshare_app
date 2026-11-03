@@ -67,9 +67,10 @@ class _ReportScreenState extends State<ReportScreen> {
     final auth = context.read<AuthProvider>();
     try {
       final res = await auth.apiService.dio.post(
-        '/api/v1/${widget.type}/r/',
+        '/api/v1/${widget.type == 'businesses' ? 'directory/business' : widget.type}/r/',
         data: {
           'id': widget.contentId,
+          'pk': widget.contentId,
           'reason': _reason,
           'description': _detailCtrl.text.trim(),
         },

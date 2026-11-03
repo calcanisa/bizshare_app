@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/cart_provider.dart';
+import '../../services/api_service.dart';
 
 class FeatureScreen extends StatefulWidget {
   final String type;
@@ -23,17 +24,51 @@ class _FeatureScreenState extends State<FeatureScreen> {
 
   bool _featureTop = false;
   bool _featureHighlight = false;
-  bool _featureReduced = false;
   bool _featureUrgent = false;
 
   String? _selectedPeriod;
 
-  static const _rates = {
-    'top': 10,
-    'highlight': 8,
-    'urgent': 10,
-    'reduced': 5,
-  };
+  Map<String, double> _rates = {};
+  bool _loadingRates = true;
+  bool _ratesFailed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRates();
+  }
+
+  static double _toDouble(dynamic v) {
+    if (v is num) return v.toDouble();
+    return double.tryParse(v?.toString() ?? '') ?? 0;
+  }
+
+  Future<void> _loadRates() async {
+    try {
+      final api = context.read<ApiService>();
+      final res = await api.dio.get('/api/v1/pricing/');
+      final data = res.data is Map ? res.data as Map : {};
+      if (!mounted) return;
+      setState(() {
+        _rates = {
+          'top': _toDouble(data['feature_top_daily']),
+          'highlight': _toDouble(data['feature_highlight_daily']),
+          'urgent': _toDouble(data['feature_urgent_daily']),
+        };
+        _ratesFailed = _rates.values.every((r) => r <= 0);
+        _loadingRates = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _ratesFailed = true;
+        _loadingRates = false;
+      });
+    }
+  }
+
+  String _money(double v) =>
+      v == v.roundToDouble() ? v.toStringAsFixed(0) : v.toStringAsFixed(2);
 
   static const _periods = [
     ('one_month', 'One month', 30),
@@ -46,13 +81,12 @@ class _FeatureScreenState extends State<FeatureScreen> {
     final list = <String>[];
     if (_featureTop) list.add('top');
     if (_featureHighlight) list.add('highlight');
-    if (_featureReduced) list.add('reduced');
     if (_featureUrgent) list.add('urgent');
     return list;
   }
 
-  int get _pricePerDay =>
-      _selectedFeatures.fold(0, (total, f) => total + (_rates[f] ?? 0));
+  double get _pricePerDay =>
+      _selectedFeatures.fold(0.0, (total, f) => total + (_rates[f] ?? 0));
 
   int get _periodDays {
     final p = _periods.firstWhere((p) => p.$1 == _selectedPeriod,
@@ -60,7 +94,7 @@ class _FeatureScreenState extends State<FeatureScreen> {
     return p.$3;
   }
 
-  int get _totalCost => _pricePerDay * _periodDays;
+  double get _totalCost => _pricePerDay * _periodDays;
 
   int get _daysLeft {
     final createdAt =
@@ -79,6 +113,10 @@ class _FeatureScreenState extends State<FeatureScreen> {
   }
 
   void _submit() {
+    if (_loadingRates || _ratesFailed) {
+      _showError('Feature prices are not loaded yet. Try again.');
+      return;
+    }
     if (_selectedFeatures.isEmpty) {
       _showError('Please choose at least one feature.');
       return;
@@ -98,14 +136,14 @@ class _FeatureScreenState extends State<FeatureScreen> {
     cart.addItem(CartItem(
       id: 'feature_${widget.item['id']}_${DateTime.now().millisecondsSinceEpoch}',
       title: 'Feature ${widget.type} "$itemName" (${_selectedFeatures.join(", ")}) for $periodLabel',
-      price: _totalCost.toDouble(),
+      price: _totalCost,
       type: 'feature',
       contentType: widget.type,
       contentId: widget.item['id'] is int
           ? widget.item['id'] as int
           : int.tryParse(widget.item['id'].toString()),
-      feature: true,
       featureTypes: _selectedFeatures,
+      period: _selectedPeriod,
     ));
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -190,23 +228,43 @@ class _FeatureScreenState extends State<FeatureScreen> {
                             fontWeight: FontWeight.w600,
                             color: _green)),
                     const SizedBox(height: 12),
-                    _featureCheckbox('Top of lists', 'R10/day', _featureTop,
-                        (v) => setState(() => _featureTop = v ?? false)),
-                    _featureCheckbox('Highlighted', 'R8/day', _featureHighlight,
-                        (v) => setState(() => _featureHighlight = v ?? false)),
-                    if (isClassified)
-                      _featureCheckbox('Reduced', 'R5/day', _featureReduced,
-                          (v) => setState(() => _featureReduced = v ?? false)),
-                    if (isClassifiedOrJob)
-                      _featureCheckbox('Urgent', 'R10/day', _featureUrgent,
-                          (v) => setState(() => _featureUrgent = v ?? false)),
+                    if (_loadingRates)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        child: Center(
+                            child: CircularProgressIndicator(
+                                color: _green, strokeWidth: 2)),
+                      )
+                    else if (_ratesFailed)
+                      const Text(
+                          'Could not load feature prices. Go back and try again.',
+                          style: TextStyle(fontSize: 13, color: _red))
+                    else ...[
+                      _featureCheckbox(
+                          'Top of lists',
+                          'R${_money(_rates['top'] ?? 0)}/day',
+                          _featureTop,
+                          (v) => setState(() => _featureTop = v ?? false)),
+                      _featureCheckbox(
+                          'Highlighted',
+                          'R${_money(_rates['highlight'] ?? 0)}/day',
+                          _featureHighlight,
+                          (v) =>
+                              setState(() => _featureHighlight = v ?? false)),
+                      if (isClassifiedOrJob)
+                        _featureCheckbox(
+                            'Urgent',
+                            'R${_money(_rates['urgent'] ?? 0)}/day',
+                            _featureUrgent,
+                            (v) => setState(() => _featureUrgent = v ?? false)),
+                    ],
                     const Divider(height: 24),
                     Row(
                       children: [
                         const Text('Cost per day:',
                             style: TextStyle(fontSize: 13, color: Colors.black54)),
                         const SizedBox(width: 8),
-                        Text('R$_pricePerDay',
+                        Text('R${_money(_pricePerDay)}',
                             style: const TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
@@ -256,7 +314,7 @@ class _FeatureScreenState extends State<FeatureScreen> {
                         const Text('Feature Cost:',
                             style: TextStyle(fontSize: 13, color: Colors.black54)),
                         const SizedBox(width: 8),
-                        Text('R$_totalCost',
+                        Text('R${_money(_totalCost)}',
                             style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,

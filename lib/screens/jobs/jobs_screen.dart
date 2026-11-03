@@ -230,7 +230,7 @@ class _JobsScreenState extends State<JobsScreen> {
     if (confirm != true) return;
     try {
       final api = context.read<ApiService>();
-      await api.dio.delete('/api/v1/job/$id/d/');
+      await api.dio.delete('/api/v1/jobs/job/$id/d/');
       setState(() => _myJobs.removeWhere((j) => j['id'] == id));
       if (mounted) {
         ScaffoldMessenger.of(context)
@@ -293,7 +293,7 @@ class _JobsScreenState extends State<JobsScreen> {
     if (confirm != true) return;
     try {
       final api = context.read<ApiService>();
-      await api.dio.delete('/api/v1/jobs/applications/$id/d/');
+      await api.dio.delete('/api/v1/jobs/application/$id/d/');
       setState(() => _appliedJobs.removeWhere((a) => a['id'] == id));
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

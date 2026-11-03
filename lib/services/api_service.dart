@@ -149,16 +149,30 @@ class ApiService {
 
   Dio get dio => _dio;
 
+  Future<FormData> _multipart(Map<String, String> fields,
+      Map<String, File> files, Map<String, List<File>> fileLists) async {
+    final formData = FormData();
+    formData.fields.addAll(fields.entries);
+    for (final entry in files.entries) {
+      formData.files.add(MapEntry(
+          entry.key, await MultipartFile.fromFile(entry.value.path)));
+    }
+    for (final entry in fileLists.entries) {
+      for (final file in entry.value) {
+        formData.files
+            .add(MapEntry(entry.key, await MultipartFile.fromFile(file.path)));
+      }
+    }
+    return formData;
+  }
+
   Future<Map<String, dynamic>> postMultipart(
     String path, {
     required Map<String, String> fields,
     Map<String, File> files = const {},
+    Map<String, List<File>> fileLists = const {},
   }) async {
-    final fileEntries = <String, MultipartFile>{};
-    for (final entry in files.entries) {
-      fileEntries[entry.key] = await MultipartFile.fromFile(entry.value.path);
-    }
-    final formData = FormData.fromMap({...fields, ...fileEntries});
+    final formData = await _multipart(fields, files, fileLists);
     final response = await _dio.post(path, data: formData);
     return response.data as Map<String, dynamic>;
   }
@@ -167,13 +181,21 @@ class ApiService {
     String path, {
     required Map<String, String> fields,
     Map<String, File> files = const {},
+    Map<String, List<File>> fileLists = const {},
   }) async {
-    final fileEntries = <String, MultipartFile>{};
-    for (final entry in files.entries) {
-      fileEntries[entry.key] = await MultipartFile.fromFile(entry.value.path);
-    }
-    final formData = FormData.fromMap({...fields, ...fileEntries});
+    final formData = await _multipart(fields, files, fileLists);
     final response = await _dio.patch(path, data: formData);
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> putMultipart(
+    String path, {
+    required Map<String, String> fields,
+    Map<String, File> files = const {},
+    Map<String, List<File>> fileLists = const {},
+  }) async {
+    final formData = await _multipart(fields, files, fileLists);
+    final response = await _dio.put(path, data: formData);
     return response.data as Map<String, dynamic>;
   }
 }

@@ -32,10 +32,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     'hide_email': false,
     'hide_resume': false,
     'email_msg_biz': false,
-    'email_classifed_interest': false,
+    'email_classified_interest': false,
     'email_event_msg': false,
     'email_job_interest': false,
     'email_new_lead': false,
+    'email_lead_response': false,
     'email_apply_opportunity': false,
     'email_use_code': false,
   };
@@ -54,7 +55,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     try {
       final api = context.read<ApiService>();
       final results = await Future.wait([
-        api.dio.get('/api/v1/users/current/settings/'),
+        api.dio.get('/api/v1/usersettings/'),
         api.dio.get('/api/v1/users/current/'),
       ]);
       final settingsData = results[0].data as Map<String, dynamic>;
@@ -289,7 +290,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         if (_hasMembership) ...[
           _sectionHeader('Classifieds'),
           _settingTile(
-            'email_classifed_interest',
+            'email_classified_interest',
             'Email me if someone sends me a message about one of my ads',
             null,
           ),
@@ -314,6 +315,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           'Email me if a new lead arrives',
           null,
         ),
+        _settingTile(
+          'email_lead_response',
+          'Email me when a business responds to my request',
+          null,
+        ),
         if (_hasMembership) ...[
           _sectionHeader('Opportunities'),
           _settingTile(
@@ -322,7 +328,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             null,
           ),
         ],
-        _sectionHeader('BizShare Passive'),
+        _sectionHeader('Affiliate Program'),
         _settingTile(
           'email_use_code',
           'Email me if someone uses my code for a purchase',

@@ -68,7 +68,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
     if (_categories.isNotEmpty) return;
     try {
       final api = context.read<ApiService>();
-      final res = await api.dio.get('/api/v1/directory/categories/');
+      final res = await api.dio.get('/api/v1/directory/business/categories/top/');
       final data = res.data;
       setState(
           () => _categories = data is List ? data : (data['results'] ?? []));

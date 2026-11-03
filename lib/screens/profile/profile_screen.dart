@@ -46,9 +46,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       _userId = accountData['id'];
 
       // Determine membership from account data
-      final membership = accountData['membership'];
-      final passiveMembership = accountData['passive_membership'];
-      _hasMembership = membership != null || passiveMembership != null;
+      _hasMembership = accountData['membership'] != null;
 
       final response = await api.dio.get('/api/v1/user/$_userId/profile/');
       setState(() {

@@ -134,10 +134,7 @@ class _AddVideoGalleryScreenState extends State<AddVideoGalleryScreen> {
           'videos_to_remove': _videosToRemove.toString(),
       };
 
-      final files = <String, File>{};
-      for (var i = 0; i < _newFiles.length; i++) {
-        files['videos_$i'] = _newFiles[i];
-      }
+      final fileLists = <String, List<File>>{'videos': List<File>.from(_newFiles)};
 
       String url;
       if (widget.target == 'business') {
@@ -153,10 +150,10 @@ class _AddVideoGalleryScreenState extends State<AddVideoGalleryScreen> {
       final Map<String, dynamic> result;
       if (isEdit) {
         result = await auth.apiService
-            .patchMultipart(url, fields: fields, files: files);
+            .putMultipart(url, fields: fields, fileLists: fileLists);
       } else {
         result = await auth.apiService
-            .postMultipart(url, fields: fields, files: files);
+            .postMultipart(url, fields: fields, fileLists: fileLists);
       }
 
       if (!mounted) return;

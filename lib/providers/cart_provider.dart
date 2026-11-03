@@ -9,8 +9,8 @@ class CartItem {
   final String? contentType;
   final int? contentId;
   final String? memType;
-  final bool? feature;
   final List<String>? featureTypes;
+  final String? period;
 
   CartItem({
     required this.id,
@@ -21,20 +21,18 @@ class CartItem {
     this.contentType,
     this.contentId,
     this.memType,
-    this.feature,
     this.featureTypes,
+    this.period,
   });
 
   Map<String, dynamic> toJson() => {
         'type': type,
-        'title': title,
-        'amount': price,
-        'content_type': contentType,
-        'content_id': contentId,
-        'mem_type': memType,
-        'quantity': 1,
-        'feature': feature,
-        'feature_types': featureTypes,
+        if (memType != null) 'mem_type': memType,
+        if (contentType != null) 'content_type': contentType,
+        if (contentId != null) 'content_id': contentId,
+        if (featureTypes != null) 'feature': featureTypes,
+        if (period != null) 'period': period,
+        if (type == 'funding') 'amount': price.toStringAsFixed(2),
       };
 }
 

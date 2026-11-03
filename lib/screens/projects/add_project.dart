@@ -96,8 +96,8 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
     try {
       final api = context.read<ApiService>();
       final results = await Future.wait([
-        api.dio.get('/api/v1/directory/categories/'),
-        api.dio.get('/api/v1/directory/provinces/'),
+        api.dio.get('/api/v1/directory/business/categories/top/'),
+        api.dio.get('/api/v1/locations/provinces/'),
       ]);
       if (!mounted) return;
       final cats = results[0].data;
@@ -132,8 +132,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
     });
     try {
       final api = context.read<ApiService>();
-      final res = await api.dio.get('/api/v1/directory/cities/',
-          queryParameters: {'province': provinceId});
+      final res = await api.dio.get('/api/v1/locations/cities/$provinceId/');
       setState(() {
         _cities = List<Map<String, dynamic>>.from(
             res.data is List ? res.data : (res.data['results'] ?? []));
@@ -148,8 +147,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
     });
     try {
       final api = context.read<ApiService>();
-      final res = await api.dio
-          .get('/api/v1/directory/areas/', queryParameters: {'city': cityId});
+      final res = await api.dio.get('/api/v1/locations/areas/$cityId/');
       setState(() {
         _areas = List<Map<String, dynamic>>.from(
             res.data is List ? res.data : (res.data['results'] ?? []));

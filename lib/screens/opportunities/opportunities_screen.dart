@@ -166,17 +166,19 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     try {
       final api = context.read<ApiService>();
       final response = await api.dio.get('/api/v1/locations/provinces/');
+      final data = response.data;
       setState(
-          () => _provinces = response.data['results'] ?? response.data ?? []);
+          () => _provinces = data is List ? data : (data['results'] ?? []));
     } catch (_) {}
   }
 
   Future<void> _loadCities(int provinceId) async {
     try {
       final api = context.read<ApiService>();
-      final response = await api.dio.get('/api/v1/locations/cities/',
-          queryParameters: {'province': provinceId});
-      setState(() => _cities = response.data['results'] ?? response.data ?? []);
+      final response =
+          await api.dio.get('/api/v1/locations/cities/$provinceId/');
+      final data = response.data;
+      setState(() => _cities = data is List ? data : (data['results'] ?? []));
     } catch (_) {}
   }
 

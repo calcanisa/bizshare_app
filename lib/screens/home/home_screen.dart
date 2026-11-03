@@ -28,6 +28,7 @@ import '../help_screen.dart';
 import '../../widgets/sesh_agent.dart';
 import '../../services/api_service.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../utils/account_notifiers.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -103,11 +104,20 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       context.read<AuthProvider>().apiService.refreshIfNeeded();
     });
     _loadSeshaSettings();
+    homeSectionNotifier.addListener(_onSectionRequest);
+  }
+
+  void _onSectionRequest() {
+    final name = homeSectionNotifier.value;
+    if (name == null || !mounted) return;
+    homeSectionNotifier.value = null;
+    _navigateToNamed(name);
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    homeSectionNotifier.removeListener(_onSectionRequest);
     super.dispose();
   }
 

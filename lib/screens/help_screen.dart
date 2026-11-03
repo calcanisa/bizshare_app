@@ -116,8 +116,8 @@ class _HelpScreenState extends State<HelpScreen> {
         ]);
       case 'account':
         return _helpBlock('Account Help', [
-          'Your account page is one of the more important pages on the app as it controls access, your membership, BizShare Passive and other important functions.',
-          'If you are a BizShare Passive member then you will see two tabs. One is for your account and the other is for BizShare Passive where you monitor your progress.',
+          'Your account page is one of the more important pages on the app as it controls access, your membership, the affiliate program and other important functions.',
+          'The Affiliate tab is where you join the free BizShare Affiliate Program, copy your referral link and code, track your commission and request withdrawals.',
           'To edit your account tap the Edit button. Your account will switch to edit mode where you can update your details section by section.',
         ]);
       case 'advertise':
@@ -141,8 +141,7 @@ class _HelpScreenState extends State<HelpScreen> {
       case 'cart':
         return _helpBlock('Cart Help', [
           'The cart displays all products you have added, with each item showing its price, VAT and a button to remove it.',
-          'At the bottom is the total and an input to add a passive code for a discount.',
-          'After entering the passive code the system will calculate your discount and apply it to the total.',
+          'At the bottom is the total. If you are buying a membership and a BizShare affiliate introduced you, you can enter their affiliate code so they are credited. It does not change your price.',
           'Accept the terms and proceed to payment. Wait for the payment processor to complete before doing anything else.',
         ]);
       case 'classifieds':

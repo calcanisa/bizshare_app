@@ -136,7 +136,7 @@ class _EventsScreenState extends State<EventsScreen> {
       if (_filterDateTo != null) params['event_to'] = _filterDateTo;
 
       final response =
-          await api.dio.get('/api/v1/events', queryParameters: params);
+          await api.dio.get('/api/v1/events/', queryParameters: params);
       final results = response.data['results'] as List? ?? [];
       setState(() {
         _events.addAll(results);

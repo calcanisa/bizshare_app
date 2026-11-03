@@ -116,17 +116,18 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
     try {
       final api = context.read<ApiService>();
       final response =
-          await api.dio.get('/api/v1/locations/cities/?province=$provinceId');
-      setState(() => _cities = response.data['results'] ?? response.data ?? []);
+          await api.dio.get('/api/v1/locations/cities/$provinceId/');
+      final data = response.data;
+      setState(() => _cities = data is List ? data : (data['results'] ?? []));
     } catch (_) {}
   }
 
   Future<void> _loadAreas(int cityId) async {
     try {
       final api = context.read<ApiService>();
-      final response =
-          await api.dio.get('/api/v1/locations/areas/?city=$cityId');
-      setState(() => _areas = response.data['results'] ?? response.data ?? []);
+      final response = await api.dio.get('/api/v1/locations/areas/$cityId/');
+      final data = response.data;
+      setState(() => _areas = data is List ? data : (data['results'] ?? []));
     } catch (_) {}
   }
 

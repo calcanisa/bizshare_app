@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -18,20 +19,17 @@ class _CartScreenState extends State<CartScreen> {
   bool _paying = false;
   bool _walletPaying = false;
   bool _validatingCode = false;
-  bool _showDiscount = false;
+  bool _codeValid = false;
   bool _showCodeInfo = false;
-  final double _discountPercentage = 2.0;
 
   double _walletBalance = 0.0;
   bool _loadingWallet = false;
 
   final _refCodeController = TextEditingController();
-  int? _accountId;
 
   @override
   void initState() {
     super.initState();
-    _loadAccount();
     _loadWallet();
   }
 
@@ -39,14 +37,6 @@ class _CartScreenState extends State<CartScreen> {
   void dispose() {
     _refCodeController.dispose();
     super.dispose();
-  }
-
-  Future<void> _loadAccount() async {
-    try {
-      final api = context.read<ApiService>();
-      final res = await api.dio.get('/api/v1/users/current/');
-      setState(() => _accountId = res.data['id']);
-    } catch (_) {}
   }
 
   Future<void> _loadWallet() async {
@@ -64,45 +54,75 @@ class _CartScreenState extends State<CartScreen> {
 
   double _vatAmount(double price) => price * _vatRate;
 
-  double get _discountAmount {
-    final cart = context.read<CartProvider>();
-    return cart.subtotal * _discountPercentage / 100;
-  }
-
-  double get _cartTotal {
-    final cart = context.read<CartProvider>();
-    return _showDiscount ? cart.subtotal - _discountAmount : cart.subtotal;
-  }
+  double get _cartTotal => context.read<CartProvider>().subtotal;
 
   bool _isCardOnlyCart(CartProvider cart) => cart.items
-      .any((i) => ['wallet_topup', 'membership', 'sesha'].contains(i.type));
+      .any((i) => ['wallet_topup', 'membership', 'funding'].contains(i.type));
+
+  bool _hasMembership(CartProvider cart) =>
+      cart.items.any((i) => i.type == 'membership');
 
   bool get _walletHasFunds => _walletBalance >= _cartTotal;
 
+  String get _referCode => _codeValid ? _refCodeController.text.trim() : '';
+
+  String _serverError(Object e, String fallback) {
+    if (e is DioException) {
+      final data = e.response?.data;
+      if (data is Map) {
+        for (final key in ['items', 'refer_code', 'detail', 'error']) {
+          final v = data[key];
+          if (v is List && v.isNotEmpty) return v.join(' ');
+          if (v is String && v.isNotEmpty && v.length < 200) return v;
+        }
+      }
+    }
+    return fallback;
+  }
+
   Future<void> _validateCode(String code) async {
-    if (code.trim().isEmpty) return;
+    setState(() => _codeValid = false);
+    final value = code.trim();
+    if (value.isEmpty) return;
     setState(() => _validatingCode = true);
     try {
       final api = context.read<ApiService>();
       final res = await api.dio
-          .post('/api/v1/users/passive/c/', data: {'code': code.trim()});
-      if (res.data['exists'] == true) {
-        setState(() => _showDiscount = true);
-        _showSnack('Code is valid — discount applied!');
+          .post('/api/v1/users/referral/check/', data: {'code': value});
+      if (res.data is Map && res.data['valid'] == true) {
+        setState(() => _codeValid = true);
+        _showSnack('Affiliate code accepted.');
       } else {
-        setState(() {
-          _showDiscount = false;
-          _refCodeController.clear();
-        });
-        _showSnack('Code is not valid.');
+        final err = res.data is Map ? res.data['error'] : null;
+        setState(() => _refCodeController.clear());
+        _showSnack(err is String && err.isNotEmpty
+            ? err
+            : 'This code is not valid.');
       }
-    } catch (_) {
-      setState(() {
-        _showDiscount = false;
-        _refCodeController.clear();
-      });
+    } catch (e) {
+      _showSnack(_serverError(e, 'Could not check the code. Try again.'));
     }
-    setState(() => _validatingCode = false);
+    if (mounted) setState(() => _validatingCode = false);
+  }
+
+  Future<void> _openPayFast(dynamic url, dynamic fields) async {
+    if (url is! String || fields is! Map) {
+      _showSnack('Could not open payment page.');
+      return;
+    }
+    final base = Uri.tryParse(url);
+    if (base == null || base.scheme != 'https') {
+      _showSnack('Could not open payment page.');
+      return;
+    }
+    final query = fields.entries
+        .map((e) =>
+            '${Uri.encodeQueryComponent(e.key.toString())}=${Uri.encodeQueryComponent(e.value.toString())}')
+        .join('&');
+    final payUri = Uri.parse('$url?$query');
+    final opened =
+        await launchUrl(payUri, mode: LaunchMode.externalApplication);
+    if (!opened) _showSnack('Could not open payment page.');
   }
 
   Future<void> _payWithWallet() async {
@@ -133,27 +153,27 @@ class _CartScreenState extends State<CartScreen> {
     setState(() => _walletPaying = true);
     try {
       final api = context.read<ApiService>();
-      final validTypes = ['feature', 'funding', 'lead', 'verification'];
-      final items = cart.items
-          .where((i) => validTypes.contains(i.type))
-          .map((i) => i.toJson())
-          .toList();
-
-      await api.dio.post('/api/v1/products/cart/wallet/', data: {
-        'refer_code': _refCodeController.text.trim(),
-        'total': _cartTotal,
-        'items': items,
+      final res = await api.dio.post('/api/v1/products/cart/wallet/', data: {
+        'refer_code': _referCode,
+        'items': cart.items.map((i) => i.toJson()).toList(),
       });
 
       cart.clear();
-      _showSnack('Payment successful! Your wallet has been debited.');
+      final paid = res.data is Map ? res.data['total'] : null;
+      _showSnack(paid != null
+          ? 'Payment of R$paid successful. Your wallet has been debited.'
+          : 'Payment successful. Your wallet has been debited.');
       await _loadWallet();
     } catch (e) {
-      final response = (e as dynamic)?.response;
-      if (response?.data?['error'] == 'insufficient_funds') {
+      final data = e is DioException ? e.response?.data : null;
+      final code = data is Map ? data['error'] : null;
+      if (code == 'insufficient_funds') {
         _showSnack('Insufficient wallet balance. Please fund your wallet.');
+      } else if (code == 'no_wallet') {
+        _showSnack('Activate your wallet first.');
       } else {
-        _showSnack('Payment failed. Please try again or pay with card.');
+        _showSnack(_serverError(
+            e, 'Could not complete the payment. Try again or pay by card.'));
       }
     }
     setState(() => _walletPaying = false);
@@ -184,76 +204,21 @@ class _CartScreenState extends State<CartScreen> {
     setState(() => _paying = true);
     try {
       final api = context.read<ApiService>();
-      final validTypes = [
-        'sesha',
-        'membership',
-        'feature',
-        'funding',
-        'lead',
-        'verification',
-        'wallet_topup'
-      ];
-      final items = cart.items
-          .where((i) => validTypes.contains(i.type))
-          .map((i) => i.toJson())
-          .toList();
-      final total = _cartTotal;
-
-      final response = await api.dio.post('/api/v1/products/cart/c/', data: {
-        'refer_code': _refCodeController.text.trim(),
-        'items': items,
-        'total': total,
-      });
-
-      final cartId = response.data['cart_id'];
-
-      final membership = cart.items.firstWhere(
-        (i) => i.type == 'membership',
-        orElse: () => CartItem(id: '', title: '', price: 0, type: ''),
-      );
-
-      final params = <String, String>{
-        'merchant_id': '10000100',
-        'merchant_key': '46f0cd694581a',
-        'return_url': 'https://bizshare.co.za/success',
-        'cancel_url': 'https://bizshare.co.za/failure',
-        'item_name': 'BizShare Payment',
-        'amount': total.toStringAsFixed(2),
-        'custom_str1': _accountId?.toString() ?? '',
-        'custom_str2': cartId.toString(),
-        'm_payment_id': cartId.toString(),
-      };
-
-      if (membership.type == 'membership' && membership.memType != null) {
-        int? frequency;
-        if (membership.memType == 'silverM' || membership.memType == 'goldM')
-          frequency = 3;
-        else if (membership.memType == 'silverY' ||
-            membership.memType == 'goldY') frequency = 6;
-        if (frequency != null) {
-          final today = DateTime.now().toIso8601String().split('T')[0];
-          params['subscription_type'] = '1';
-          params['billing_date'] = today;
-          params['recurring_amount'] = total.toStringAsFixed(2);
-          params['frequency'] = frequency.toString();
-          params['cycles'] = '0';
-        }
-      }
-
-      final queryString = params.entries
-          .map((e) =>
-              '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
-          .join('&');
-      final payFastUrl =
-          Uri.parse('https://sandbox.payfast.co.za/eng/process?$queryString');
-
-      if (await canLaunchUrl(payFastUrl)) {
-        await launchUrl(payFastUrl, mode: LaunchMode.externalApplication);
+      final topUp = cart.items.where((i) => i.type == 'wallet_topup').toList();
+      if (topUp.isNotEmpty) {
+        final res = await api.dio.post('/api/v1/wallet/topup/',
+            data: {'amount': topUp.first.price.toStringAsFixed(2)});
+        cart.removeItem(topUp.first.id);
+        await _openPayFast(res.data['payfast_url'], res.data['payfast_data']);
       } else {
-        _showSnack('Could not open payment page.');
+        final res = await api.dio.post('/api/v1/products/cart/c/', data: {
+          'refer_code': _referCode,
+          'items': cart.items.map((i) => i.toJson()).toList(),
+        });
+        await _openPayFast(res.data['payfast_url'], res.data['payfast']);
       }
-    } catch (_) {
-      _showSnack('Could not create cart. Try again.');
+    } catch (e) {
+      _showSnack(_serverError(e, 'Could not create your order. Try again.'));
     }
     setState(() => _paying = false);
   }
@@ -353,15 +318,7 @@ class _CartScreenState extends State<CartScreen> {
                     Checkbox(
                       value: _accepted,
                       activeColor: const Color(0xFF1B4748),
-                      onChanged: (v) {
-                        setState(() => _accepted = v ?? false);
-                        if (!(v ?? false))
-                          setState(() => _showDiscount = false);
-                        if ((v ?? false) &&
-                            _refCodeController.text.trim().isNotEmpty) {
-                          _validateCode(_refCodeController.text);
-                        }
-                      },
+                      onChanged: (v) => setState(() => _accepted = v ?? false),
                     ),
                     const Text('I accept the ', style: TextStyle(fontSize: 13)),
                     GestureDetector(
@@ -484,31 +441,20 @@ class _CartScreenState extends State<CartScreen> {
           child: Column(
             children: [
               _totalRow('Subtotal', 'R${cart.subtotal.toStringAsFixed(2)}'),
-              if (_showDiscount) ...[
-                const SizedBox(height: 6),
-                _totalRow(
-                    'Discount (${_discountPercentage.toStringAsFixed(0)}%)',
-                    '− R${_discountAmount.toStringAsFixed(2)}',
-                    valueColor: const Color(0xFFF8BB25)),
-                const Divider(height: 16),
-                _totalRow('Total to Pay', 'R${_cartTotal.toStringAsFixed(2)}',
-                    bold: true),
-              ] else ...[
-                const Divider(height: 16),
-                _totalRow('Total to Pay', 'R${_cartTotal.toStringAsFixed(2)}',
-                    bold: true),
-              ],
+              const Divider(height: 16),
+              _totalRow('Total to Pay', 'R${_cartTotal.toStringAsFixed(2)}',
+                  bold: true),
             ],
           ),
         ),
         const SizedBox(height: 16),
-        if (!cardOnly) ...[
+        if (_hasMembership(cart)) ...[
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  const Text('Got a referral code?',
+                  const Text('Affiliate code',
                       style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
@@ -539,7 +485,7 @@ class _CartScreenState extends State<CartScreen> {
                       color: Colors.black87,
                       borderRadius: BorderRadius.circular(8)),
                   child: const Text(
-                    'This is part of the BizShare Passive affiliate program where members earn a commission and you get a discount. This does not apply to BizShare Passive itself.',
+                    'If a BizShare affiliate introduced you to BizShare, enter their code so they are credited. It does not change your price.',
                     style: TextStyle(
                         fontSize: 12, color: Colors.white, height: 1.4),
                   ),
@@ -552,7 +498,7 @@ class _CartScreenState extends State<CartScreen> {
                     child: TextField(
                       controller: _refCodeController,
                       decoration: InputDecoration(
-                        hintText: 'Enter code for discount',
+                        hintText: 'Optional',
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8)),
                         focusedBorder: OutlineInputBorder(
@@ -562,18 +508,22 @@ class _CartScreenState extends State<CartScreen> {
                         ),
                         contentPadding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 10),
-                        suffixIcon: _showDiscount
+                        suffixIcon: _codeValid
                             ? const Icon(Icons.check_circle,
                                 color: Colors.green, size: 18)
                             : null,
                       ),
+                      maxLength: 10,
+                      buildCounter: (_,
+                              {required currentLength,
+                              required isFocused,
+                              maxLength}) =>
+                          null,
                       onChanged: (v) {
-                        if (v.trim().isEmpty)
-                          setState(() => _showDiscount = false);
+                        if (_codeValid) setState(() => _codeValid = false);
+                        setState(() {});
                       },
-                      onSubmitted: (v) {
-                        if (_accepted) _validateCode(v);
-                      },
+                      onSubmitted: _validateCode,
                     ),
                   ),
                   if (_validatingCode) ...[
@@ -584,12 +534,10 @@ class _CartScreenState extends State<CartScreen> {
                         child: CircularProgressIndicator(
                             strokeWidth: 2, color: Color(0xFF1B4748))),
                   ] else if (_refCodeController.text.isNotEmpty &&
-                      !_showDiscount) ...[
+                      !_codeValid) ...[
                     const SizedBox(width: 8),
                     ElevatedButton(
-                      onPressed: _accepted
-                          ? () => _validateCode(_refCodeController.text)
-                          : null,
+                      onPressed: () => _validateCode(_refCodeController.text),
                       style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF1B4748),
                           padding: const EdgeInsets.symmetric(

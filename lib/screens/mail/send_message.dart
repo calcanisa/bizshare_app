@@ -4,16 +4,16 @@ import 'package:dio/dio.dart';
 import '../../providers/auth_provider.dart';
 
 class SendMessageSheet extends StatefulWidget {
-  final String origin; // 'business' | 'event' | 'leads' | 'profile' | 'mail'
+  final String origin;
   final String title;
-  final int? recipientId; // pre-set recipient (business/event/profile/leads)
-  final String? recipientName; // display name for pre-set recipient
+  final int targetId;
+  final String? recipientName;
 
   const SendMessageSheet({
     super.key,
     required this.origin,
     required this.title,
-    this.recipientId,
+    required this.targetId,
     this.recipientName,
   });
 
@@ -21,7 +21,7 @@ class SendMessageSheet extends StatefulWidget {
     BuildContext context, {
     required String origin,
     required String title,
-    int? recipientId,
+    required int targetId,
     String? recipientName,
   }) {
     return showModalBottomSheet<Map<String, dynamic>>(
@@ -34,7 +34,7 @@ class SendMessageSheet extends StatefulWidget {
       builder: (_) => SendMessageSheet(
         origin: origin,
         title: title,
-        recipientId: recipientId,
+        targetId: targetId,
         recipientName: recipientName,
       ),
     );
@@ -51,20 +51,11 @@ class _SendMessageSheetState extends State<SendMessageSheet> {
 
   final _messageCtrl = TextEditingController();
   bool _submitting = false;
-  bool _loadingConnections = false;
-
-  // For mail origin — pick from connections
-  List<dynamic> _connections = [];
-  int? _selectedRecipientId;
-  String? _selectedRecipientName;
 
   @override
   void initState() {
     super.initState();
-    _selectedRecipientId = widget.recipientId;
-    _selectedRecipientName = widget.recipientName;
     _messageCtrl.addListener(() => setState(() {}));
-    if (widget.origin == 'mail') _loadConnections();
   }
 
   @override
@@ -73,27 +64,9 @@ class _SendMessageSheetState extends State<SendMessageSheet> {
     super.dispose();
   }
 
-  Future<void> _loadConnections() async {
-    setState(() => _loadingConnections = true);
-    final auth = context.read<AuthProvider>();
-    try {
-      final res = await auth.apiService.dio.get('/api/v1/connections/current/');
-      setState(() {
-        _connections =
-            res.data is List ? res.data : (res.data['results'] ?? []);
-      });
-    } catch (_) {
-      _showError('Could not load connections. Try again.');
-    }
-    setState(() => _loadingConnections = false);
-  }
-
   Future<void> _send() async {
-    if (_selectedRecipientId == null) {
-      _showError('You must choose a recipient.');
-      return;
-    }
-    if (_messageCtrl.text.trim().isEmpty) {
+    final text = _messageCtrl.text.trim();
+    if (text.isEmpty) {
       _showError('Message cannot be empty.');
       return;
     }
@@ -104,19 +77,20 @@ class _SendMessageSheetState extends State<SendMessageSheet> {
       final res = await auth.apiService.dio.post(
         '/api/v1/mailbox/message/c/',
         data: {
-          'receiver': _selectedRecipientId,
-          'message': _messageCtrl.text.trim(),
           'origin': widget.origin,
-          'name': _selectedRecipientName ?? '',
+          'target_id': widget.targetId,
+          'message': text,
         },
       );
       if (!mounted) return;
       if (res.statusCode == 201) {
-        Navigator.pop(context, res.data);
+        Navigator.pop(context, Map<String, dynamic>.from(res.data as Map));
       }
     } on DioException catch (e) {
-      _showError(
-          e.response?.data?['error'] ?? 'Could not send message. Try again.');
+      final body = e.response?.data;
+      _showError(body is Map && body['error'] != null
+          ? body['error'].toString()
+          : 'Could not send message. Try again.');
     } catch (_) {
       _showError('Something went wrong. Try again.');
     } finally {
@@ -140,7 +114,6 @@ class _SendMessageSheetState extends State<SendMessageSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Handle
           Center(
             child: Container(
               width: 40,
@@ -152,97 +125,31 @@ class _SendMessageSheetState extends State<SendMessageSheet> {
             ),
           ),
           const SizedBox(height: 16),
-
-          // Title
           Text(widget.title,
               style: const TextStyle(
                   fontSize: 17, fontWeight: FontWeight.bold, color: _green)),
           const SizedBox(height: 16),
-
-          // Recipient
           const Text('Recipient',
               style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: Colors.black87)),
           const SizedBox(height: 6),
-
-          // Mail origin — dropdown of connections
-          if (widget.origin == 'mail') ...[
-            _loadingConnections
-                ? const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(8),
-                      child: CircularProgressIndicator(
-                          color: _green, strokeWidth: 2),
-                    ),
-                  )
-                : Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey[300]!),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<int>(
-                        value: _selectedRecipientId,
-                        isExpanded: true,
-                        hint: Text('Choose a connection',
-                            style: TextStyle(
-                                color: Colors.grey[400], fontSize: 13)),
-                        icon: const Icon(Icons.keyboard_arrow_down,
-                            color: _green, size: 20),
-                        items: _connections.map((c) {
-                          final profile = c['profile'] as Map?;
-                          final name = profile != null
-                              ? '${profile['first_name'] ?? ''} ${profile['last_name'] ?? ''}'
-                                  .trim()
-                              : 'No profile';
-                          return DropdownMenuItem<int>(
-                            value: c['id'] as int,
-                            child: Text(name,
-                                style: const TextStyle(
-                                    fontSize: 13, color: Colors.black87)),
-                          );
-                        }).toList(),
-                        onChanged: (v) {
-                          setState(() {
-                            _selectedRecipientId = v;
-                            final conn = _connections.firstWhere(
-                                (c) => c['id'] == v,
-                                orElse: () => null);
-                            if (conn != null) {
-                              final profile = conn['profile'] as Map?;
-                              _selectedRecipientName = profile != null
-                                  ? '${profile['first_name'] ?? ''} ${profile['last_name'] ?? ''}'
-                                      .trim()
-                                  : '';
-                            }
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-          ] else ...[
-            // Pre-set recipient — just show the name
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              decoration: BoxDecoration(
-                color: _green.withValues(alpha: 0.05),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: _green.withValues(alpha: 0.2)),
-              ),
-              child: Text(
-                _selectedRecipientName ?? '—',
-                style: const TextStyle(
-                    fontSize: 14, fontWeight: FontWeight.w600, color: _green),
-              ),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            decoration: BoxDecoration(
+              color: _green.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: _green.withValues(alpha: 0.2)),
             ),
-          ],
+            child: Text(
+              widget.recipientName ?? '',
+              style: const TextStyle(
+                  fontSize: 14, fontWeight: FontWeight.w600, color: _green),
+            ),
+          ),
           const SizedBox(height: 16),
-
-          // Message
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -284,8 +191,6 @@ class _SendMessageSheetState extends State<SendMessageSheet> {
             textCapitalization: TextCapitalization.sentences,
           ),
           const SizedBox(height: 20),
-
-          // Buttons
           Row(
             children: [
               Expanded(
