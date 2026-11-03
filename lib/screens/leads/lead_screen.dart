@@ -167,7 +167,7 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF094a25),
+        backgroundColor: const Color(0xFF1B4748),
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           serviceName,
@@ -179,24 +179,24 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
             TextButton(
               onPressed: () {}, // TODO: edit lead modal
               child: const Text('Edit',
-                  style: TextStyle(color: Color(0xFFf8b324), fontSize: 12)),
+                  style: TextStyle(color: Color(0xFFF8BB25), fontSize: 12)),
             ),
             TextButton(
               onPressed: _deleteLead,
               child: const Text('Delete',
-                  style: TextStyle(color: Color(0xFFbc2023), fontSize: 12)),
+                  style: TextStyle(color: Color(0xFFF48900), fontSize: 12)),
             ),
           ],
         ],
       ),
       body: _loading
           ? const Center(
-              child: CircularProgressIndicator(color: Color(0xFF094a25)))
+              child: CircularProgressIndicator(color: Color(0xFF1B4748)))
           : _lead == null
               ? const Center(child: Text('Lead not found'))
               : RefreshIndicator(
                   onRefresh: _loadLead,
-                  color: const Color(0xFF094a25),
+                  color: const Color(0xFF1B4748),
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     child: Column(
@@ -227,7 +227,7 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                   TextSpan(
                     text: '$_responseCount ',
                     style: const TextStyle(
-                        color: Color(0xFF094a25),
+                        color: Color(0xFF1B4748),
                         fontWeight: FontWeight.bold,
                         fontSize: 14),
                   ),
@@ -245,11 +245,11 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
             const Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.check_circle, color: Color(0xFF094a25), size: 16),
+                Icon(Icons.check_circle, color: Color(0xFF1B4748), size: 16),
                 SizedBox(width: 4),
                 Text('You have responded',
                     style: TextStyle(
-                        color: Color(0xFF094a25),
+                        color: Color(0xFF1B4748),
                         fontSize: 12,
                         fontWeight: FontWeight.bold)),
               ],
@@ -258,7 +258,7 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
             ElevatedButton(
               onPressed: _openRespond,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF094a25),
+                backgroundColor: const Color(0xFF1B4748),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 minimumSize: Size.zero,
@@ -317,7 +317,7 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                         style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF094a25))),
+                            color: Color(0xFF1B4748))),
                     if (firstName.isNotEmpty || lastName.isNotEmpty) ...[
                       const SizedBox(height: 4),
                       Text('Posted by $firstName $lastName'.trim(),
@@ -400,13 +400,13 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(Icons.check_circle,
-                                color: Color(0xFF094a25), size: 16),
+                                color: Color(0xFF1B4748), size: 16),
                             SizedBox(width: 4),
                             Flexible(
                               child: Text(
                                 'You have purchased this lead',
                                 style: TextStyle(
-                                    color: Color(0xFF094a25),
+                                    color: Color(0xFF1B4748),
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold),
                               ),
@@ -435,7 +435,7 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                               child: ElevatedButton(
                                 onPressed: _buyThisLead,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFFf8b324),
+                                  backgroundColor: const Color(0xFFF8BB25),
                                   foregroundColor: Colors.black87,
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 10, vertical: 8),
@@ -470,7 +470,7 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
             style: const TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF094a25))),
+                color: Color(0xFF1B4748))),
       );
 
   Widget _fieldValue(String value, {bool bold = false}) => Padding(
@@ -478,7 +478,7 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
         child: Text(value,
             style: TextStyle(
                 fontSize: 13,
-                color: const Color(0xFF094a25),
+                color: const Color(0xFF1B4748),
                 fontWeight: bold ? FontWeight.bold : FontWeight.w500)),
       );
 }

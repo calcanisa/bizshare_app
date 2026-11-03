@@ -141,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Future<void> _loadSeshaSettings() async {
     try {
       final api = context.read<ApiService>();
-      final res = await api.dio.get('/api/v1/sesha/settings/');
+      final res = await api.dio.get('/api/v1/dobiz/settings/');
       setState(() => _seshaSettings = res.data as Map<String, dynamic>);
     } catch (_) {}
   }
@@ -197,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         return Center(
           child: Text(
             _sections[_currentIndex]['title'] as String,
-            style: const TextStyle(fontSize: 24, color: Color(0xFF094a25)),
+            style: const TextStyle(fontSize: 24, color: Color(0xFF1B4748)),
           ),
         );
     }
@@ -212,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       },
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color(0xFF094a25),
+          backgroundColor: const Color(0xFF1B4748),
           iconTheme: const IconThemeData(color: Colors.white),
           titleSpacing: 0,
           title: Padding(
@@ -250,7 +250,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       child: Container(
                         padding: const EdgeInsets.all(3),
                         decoration: const BoxDecoration(
-                          color: Color(0xFFbc2023),
+                          color: Color(0xFFF48900),
                           shape: BoxShape.circle,
                         ),
                         constraints:
@@ -281,7 +281,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     children: [
                       DrawerHeader(
                         decoration:
-                            const BoxDecoration(color: Color(0xFF094a25)),
+                            const BoxDecoration(color: Color(0xFF1B4748)),
                         child: Center(
                           child:
                               Image.asset('assets/img/sesha.png', height: 60),
@@ -289,11 +289,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       ),
                       ListTile(
                         leading: const Icon(Icons.dashboard_outlined,
-                            color: Color(0xFF094a25)),
+                            color: Color(0xFF1B4748)),
                         title: const Text('Dashboard'),
                         selected: _currentIndex == -1,
                         selectedTileColor:
-                            const Color(0xFF094a25).withValues(alpha: 0.1),
+                            const Color(0xFF1B4748).withValues(alpha: 0.1),
                         onTap: () {
                           setState(() {
                             _history.add(_currentIndex);
@@ -334,7 +334,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         contentPadding:
                             const EdgeInsets.symmetric(horizontal: 16),
                         leading: const Icon(Icons.help_outline,
-                            size: 20, color: Color(0xFF094a25)),
+                            size: 20, color: Color(0xFF1B4748)),
                         title: const Text('Help',
                             style:
                                 TextStyle(fontSize: 14, color: Colors.black87)),
@@ -347,9 +347,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       const Divider(height: 1),
                       ListTile(
                         leading:
-                            const Icon(Icons.logout, color: Color(0xFFbc2023)),
+                            const Icon(Icons.logout, color: Color(0xFFF48900)),
                         title: const Text('Logout',
-                            style: TextStyle(color: Color(0xFFbc2023))),
+                            style: TextStyle(color: Color(0xFFF48900))),
                         onTap: () {
                           Navigator.pop(context);
                           Provider.of<AuthProvider>(context, listen: false)
@@ -380,7 +380,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ],
                       ),
                       const SizedBox(height: 6),
-                      const Text('© 2026 Sesha. All rights reserved.',
+                      const Text('© 2026 BizShare. All rights reserved.',
                           style:
                               TextStyle(fontSize: 11, color: Colors.black45)),
                     ],
@@ -432,7 +432,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       dense: true,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
       leading: Icon(icon,
-          size: 20, color: isSelected ? Colors.white : const Color(0xFF094a25)),
+          size: 20, color: isSelected ? Colors.white : const Color(0xFF1B4748)),
       title: Text(
         title,
         style: TextStyle(
@@ -442,7 +442,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         ),
       ),
       selected: isSelected,
-      selectedTileColor: const Color(0xFF094a25),
+      selectedTileColor: const Color(0xFF1B4748),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
       onTap: () {
         _navigateTo(index);
@@ -474,7 +474,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               'Privacy': 'privacy',
               'Cookies': 'cookies',
             };
-            final url = Uri.parse('https://sesha.co.za/sesha-${slugs[title]}');
+            final url = Uri.parse('https://bizshare.co.za/${slugs[title]}/');
             launchUrl(url, mode: LaunchMode.externalApplication);
             break;
         }
@@ -482,7 +482,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       child: Text(title,
           style: const TextStyle(
               fontSize: 12,
-              color: Color(0xFF094a25),
+              color: Color(0xFF1B4748),
               decoration: TextDecoration.underline)),
     );
   }

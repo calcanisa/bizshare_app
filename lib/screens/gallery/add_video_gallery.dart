@@ -27,8 +27,8 @@ class AddVideoGalleryScreen extends StatefulWidget {
 }
 
 class _AddVideoGalleryScreenState extends State<AddVideoGalleryScreen> {
-  static const _green = Color(0xFF094a25);
-  static const _red = Color(0xFFbc2023);
+  static const _green = Color(0xFF1B4748);
+  static const _red = Color(0xFFF48900);
 
   final _titleCtrl = TextEditingController();
   bool _saving = false;
@@ -449,7 +449,7 @@ class _VideoTileShell extends StatelessWidget {
   final VoidCallback onRemove;
   final String label;
 
-  static const _red = Color(0xFFbc2023);
+  static const _red = Color(0xFFF48900);
 
   const _VideoTileShell({
     required this.thumbnail,

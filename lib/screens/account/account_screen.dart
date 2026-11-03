@@ -163,7 +163,7 @@ class _AccountScreenState extends State<AccountScreen> {
   Future<void> _loadSeshaSettings() async {
     try {
       final api = context.read<ApiService>();
-      final res = await api.dio.get('/api/v1/sesha/settings/');
+      final res = await api.dio.get('/api/v1/dobiz/settings/');
       if (mounted)
         setState(() => _seshaSettings = res.data as Map<String, dynamic>);
     } catch (_) {}
@@ -425,7 +425,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   Future<void> _cancelPassiveMembership() async {
     final confirm = await _confirm(
-        'Cancel Sesha Passive? You will lose all benefits and your passive code immediately. This cannot be undone.');
+        'Cancel BizShare Passive? You will lose all benefits and your passive code immediately. This cannot be undone.');
     if (!confirm) return;
     setState(() => _submitting = true);
     try {
@@ -443,7 +443,7 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Future<void> _cancelApplication() async {
-    final confirm = await _confirm('Cancel your Sesha Passive application?');
+    final confirm = await _confirm('Cancel your BizShare Passive application?');
     if (!confirm) return;
     setState(() => _submitting = true);
     try {
@@ -551,7 +551,7 @@ class _AccountScreenState extends State<AccountScreen> {
   Widget build(BuildContext context) {
     if (_loading) {
       return const Center(
-          child: CircularProgressIndicator(color: Color(0xFF094a25)));
+          child: CircularProgressIndicator(color: Color(0xFF1B4748)));
     }
 
     final showPassiveTab = _passiveEnabled && _hasPassiveMembership;
@@ -559,11 +559,11 @@ class _AccountScreenState extends State<AccountScreen> {
     return Column(
       children: [
         Container(
-          color: const Color(0xFF094a25),
+          color: const Color(0xFF1B4748),
           child: Row(
             children: [
               _tabBtn(1, 'Account'),
-              if (showPassiveTab) _tabBtn(2, 'Sesha Passive'),
+              if (showPassiveTab) _tabBtn(2, 'BizShare Passive'),
               _tabBtn(3, 'Wallet'),
               _tabBtn(4, 'Financials'),
             ],
@@ -575,7 +575,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 ? () =>
                     Future.wait([_loadWallet(), _loadTransactions(reset: true)])
                 : _loadAccount,
-            color: const Color(0xFF094a25),
+            color: const Color(0xFF1B4748),
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.all(16),
@@ -607,11 +607,11 @@ class _AccountScreenState extends State<AccountScreen> {
         },
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
-          color: active ? Colors.white : const Color(0xFF094a25),
+          color: active ? Colors.white : const Color(0xFF1B4748),
           child: Text(label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: active ? const Color(0xFF094a25) : Colors.white60,
+                color: active ? const Color(0xFF1B4748) : Colors.white60,
                 fontSize: 11,
                 fontWeight: active ? FontWeight.bold : FontWeight.normal,
               )),
@@ -639,7 +639,7 @@ class _AccountScreenState extends State<AccountScreen> {
           child: ElevatedButton(
             onPressed: () => setState(() => _editing = true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFf8b324),
+              backgroundColor: const Color(0xFFF8BB25),
               foregroundColor: Colors.black87,
             ),
             child: const Text('Edit Account'),
@@ -687,7 +687,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF094a25))),
+                    color: Color(0xFF1B4748))),
           ),
           Expanded(
               child: Text(value,
@@ -712,7 +712,7 @@ class _AccountScreenState extends State<AccountScreen> {
             icon: const Icon(Icons.close, size: 16),
             label: const Text('Cancel'),
             style:
-                TextButton.styleFrom(foregroundColor: const Color(0xFFbc2023)),
+                TextButton.styleFrom(foregroundColor: const Color(0xFFF48900)),
           ),
         ),
         const SizedBox(height: 8),
@@ -757,17 +757,17 @@ class _AccountScreenState extends State<AccountScreen> {
     if (_delAcc)
       return 'Your account will be disabled for 30 days. After that all data is permanently deleted.';
     if (_joinPass)
-      return 'Sesha Passive lets you earn passive income by referring members.';
-    return 'Manage your account — change password or email, upgrade, join Sesha Passive, or delete your account.';
+      return 'BizShare Passive lets you earn passive income by referring members.';
+    return 'Manage your account — change password or email, upgrade, join BizShare Passive, or delete your account.';
   }
 
   Widget _infoBox(String text) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF094a25).withOpacity(0.06),
+        color: const Color(0xFF1B4748).withOpacity(0.06),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFF094a25).withOpacity(0.2)),
+        border: Border.all(color: const Color(0xFF1B4748).withOpacity(0.2)),
       ),
       child: Text(text,
           style: const TextStyle(
@@ -802,7 +802,7 @@ class _AccountScreenState extends State<AccountScreen> {
               setState(() => _upAcc = v!);
             }),
           if (_passiveEnabled && (!anyActive || _joinPass))
-            _actionCheckbox('Sesha Passive', _joinPass, (v) {
+            _actionCheckbox('BizShare Passive', _joinPass, (v) {
               _resetActions();
               setState(() => _joinPass = v!);
             }),
@@ -823,12 +823,12 @@ class _AccountScreenState extends State<AccountScreen> {
       children: [
         Checkbox(
             value: value,
-            activeColor: const Color(0xFF094a25),
+            activeColor: const Color(0xFF1B4748),
             onChanged: onChanged),
         GestureDetector(
           onTap: () => onChanged(!value),
           child: Text(label,
-              style: const TextStyle(fontSize: 13, color: Color(0xFF094a25))),
+              style: const TextStyle(fontSize: 13, color: Color(0xFF1B4748))),
         ),
       ],
     );
@@ -850,7 +850,7 @@ class _AccountScreenState extends State<AccountScreen> {
             ElevatedButton(
               onPressed: _submitting ? null : _checkPassword,
               style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF094a25),
+                  backgroundColor: const Color(0xFF1B4748),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 14)),
               child: _submitting
@@ -876,7 +876,7 @@ class _AccountScreenState extends State<AccountScreen> {
           child: const Text('Forgot Password?',
               style: TextStyle(
                   fontSize: 12,
-                  color: Color(0xFFf8b324),
+                  color: Color(0xFFF8BB25),
                   decoration: TextDecoration.underline)),
         ),
         const SizedBox(height: 16),
@@ -895,7 +895,7 @@ class _AccountScreenState extends State<AccountScreen> {
             ElevatedButton(
               onPressed: _submitting ? null : _requestForgotPassword,
               style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF094a25)),
+                  backgroundColor: const Color(0xFF1B4748)),
               child: const Text('Send Reset Code',
                   style: TextStyle(color: Colors.white)),
             ),
@@ -903,7 +903,7 @@ class _AccountScreenState extends State<AccountScreen> {
             TextButton(
               onPressed: () => setState(() => _forgot = false),
               child: const Text('Cancel',
-                  style: TextStyle(color: Color(0xFFbc2023))),
+                  style: TextStyle(color: Color(0xFFF48900))),
             ),
           ],
         ),
@@ -921,7 +921,7 @@ class _AccountScreenState extends State<AccountScreen> {
         ElevatedButton(
           onPressed: _submitting ? null : _requestCode,
           style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF094a25)),
+              backgroundColor: const Color(0xFF1B4748)),
           child: const Text('Send Code', style: TextStyle(color: Colors.white)),
         ),
         const SizedBox(height: 16),
@@ -944,7 +944,7 @@ class _AccountScreenState extends State<AccountScreen> {
         ElevatedButton(
           onPressed: _submitting ? null : _requestCode,
           style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF094a25)),
+              backgroundColor: const Color(0xFF1B4748)),
           child: const Text('Send Code', style: TextStyle(color: Colors.white)),
         ),
         const SizedBox(height: 16),
@@ -980,7 +980,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide:
-                        const BorderSide(color: Color(0xFF094a25), width: 2),
+                        const BorderSide(color: Color(0xFF1B4748), width: 2),
                   ),
                 ),
                 onChanged: (v) {
@@ -997,7 +997,7 @@ class _AccountScreenState extends State<AccountScreen> {
             ElevatedButton(
               onPressed: _submitting ? null : _confirmCode,
               style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF094a25)),
+                  backgroundColor: const Color(0xFF1B4748)),
               child: const Text('Submit Code',
                   style: TextStyle(color: Colors.white)),
             ),
@@ -1005,7 +1005,7 @@ class _AccountScreenState extends State<AccountScreen> {
             TextButton(
               onPressed: _closeForm,
               child: const Text('Cancel',
-                  style: TextStyle(color: Color(0xFFbc2023))),
+                  style: TextStyle(color: Color(0xFFF48900))),
             ),
           ],
         ),
@@ -1088,14 +1088,14 @@ class _AccountScreenState extends State<AccountScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: active ? const Color(0xFF094a25) : Colors.transparent,
+          color: active ? const Color(0xFF1B4748) : Colors.transparent,
           borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: const Color(0xFF094a25)),
+          border: Border.all(color: const Color(0xFF1B4748)),
         ),
         child: Text(label,
             style: TextStyle(
                 fontSize: 13,
-                color: active ? Colors.white : const Color(0xFF094a25),
+                color: active ? Colors.white : const Color(0xFF1B4748),
                 fontWeight: active ? FontWeight.bold : FontWeight.normal)),
       ),
     );
@@ -1114,19 +1114,19 @@ class _AccountScreenState extends State<AccountScreen> {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFF094a25).withOpacity(0.08)
+              ? const Color(0xFF1B4748).withOpacity(0.08)
               : Colors.grey.shade50,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
               color:
-                  isSelected ? const Color(0xFF094a25) : Colors.grey.shade300),
+                  isSelected ? const Color(0xFF1B4748) : Colors.grey.shade300),
         ),
         child: Row(
           children: [
             Radio<String>(
               value: value,
               groupValue: _memType,
-              activeColor: const Color(0xFF094a25),
+              activeColor: const Color(0xFF1B4748),
               onChanged:
                   isCurrent ? null : (v) => setState(() => _memType = v!),
             ),
@@ -1140,7 +1140,7 @@ class _AccountScreenState extends State<AccountScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                    color: const Color(0xFF094a25),
+                    color: const Color(0xFF1B4748),
                     borderRadius: BorderRadius.circular(4)),
                 child: const Text('Current',
                     style: TextStyle(fontSize: 11, color: Colors.white)),
@@ -1165,7 +1165,7 @@ class _AccountScreenState extends State<AccountScreen> {
         ...reasons.map((r) => RadioListTile<String>(
               value: r.$1,
               groupValue: _reason,
-              activeColor: const Color(0xFFbc2023),
+              activeColor: const Color(0xFFF48900),
               title: Text(r.$2, style: const TextStyle(fontSize: 13)),
               onChanged: (v) => setState(() => _reason = v!),
             )),
@@ -1177,14 +1177,14 @@ class _AccountScreenState extends State<AccountScreen> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: const Color(0xFFbc2023).withOpacity(0.08),
+              color: const Color(0xFFF48900).withOpacity(0.08),
               borderRadius: BorderRadius.circular(8),
               border:
-                  Border.all(color: const Color(0xFFbc2023).withOpacity(0.3)),
+                  Border.all(color: const Color(0xFFF48900).withOpacity(0.3)),
             ),
             child: const Text(
                 'You will be logged out and your account disabled for 30 days. After that, all data is permanently deleted.',
-                style: TextStyle(fontSize: 12, color: Color(0xFFbc2023))),
+                style: TextStyle(fontSize: 12, color: Color(0xFFF48900))),
           ),
         const SizedBox(height: 16),
       ],
@@ -1206,7 +1206,7 @@ class _AccountScreenState extends State<AccountScreen> {
           ElevatedButton(
             onPressed: _submitting ? null : _cancelPassiveMembership,
             style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFbc2023)),
+                backgroundColor: const Color(0xFFF48900)),
             child: const Text('Cancel Passive Membership',
                 style: TextStyle(color: Colors.white)),
           ),
@@ -1225,7 +1225,7 @@ class _AccountScreenState extends State<AccountScreen> {
           ElevatedButton(
             onPressed: _submitting ? null : _cancelApplication,
             style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFbc2023)),
+                backgroundColor: const Color(0xFFF48900)),
             child: const Text('Cancel Application',
                 style: TextStyle(color: Colors.white)),
           ),
@@ -1246,7 +1246,7 @@ class _AccountScreenState extends State<AccountScreen> {
               ElevatedButton(
                 onPressed: () => _showSnack('Passive membership added to cart'),
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF094a25)),
+                    backgroundColor: const Color(0xFF1B4748)),
                 child: const Text('Pay Membership',
                     style: TextStyle(color: Colors.white)),
               ),
@@ -1254,7 +1254,7 @@ class _AccountScreenState extends State<AccountScreen> {
               TextButton(
                 onPressed: _submitting ? null : _cancelApplication,
                 child: const Text('Cancel Application',
-                    style: TextStyle(color: Color(0xFFbc2023))),
+                    style: TextStyle(color: Color(0xFFF48900))),
               ),
             ],
           ),
@@ -1267,7 +1267,7 @@ class _AccountScreenState extends State<AccountScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _infoBox(
-            'Join Sesha Passive to earn passive income by referring members. Applications take up to 30 days to process.'),
+            'Join BizShare Passive to earn passive income by referring members. Applications take up to 30 days to process.'),
         const SizedBox(height: 12),
         ElevatedButton(
           onPressed: () async {
@@ -1280,7 +1280,7 @@ class _AccountScreenState extends State<AccountScreen> {
             if (result == true && mounted) _loadAccount();
           },
           style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF094a25)),
+              backgroundColor: const Color(0xFF1B4748)),
           child: const Text('Apply', style: TextStyle(color: Colors.white)),
         ),
         const SizedBox(height: 16),
@@ -1304,7 +1304,7 @@ class _AccountScreenState extends State<AccountScreen> {
           ElevatedButton(
             onPressed: _submitting ? null : _savePassword,
             style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF094a25)),
+                backgroundColor: const Color(0xFF1B4748)),
             child: const Text('Save Password',
                 style: TextStyle(color: Colors.white)),
           ),
@@ -1312,7 +1312,7 @@ class _AccountScreenState extends State<AccountScreen> {
           ElevatedButton(
             onPressed: _submitting ? null : _saveEmail,
             style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF094a25)),
+                backgroundColor: const Color(0xFF1B4748)),
             child:
                 const Text('Save Email', style: TextStyle(color: Colors.white)),
           ),
@@ -1320,7 +1320,7 @@ class _AccountScreenState extends State<AccountScreen> {
           ElevatedButton(
             onPressed: _submitting ? null : _saveMembership,
             style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF094a25)),
+                backgroundColor: const Color(0xFF1B4748)),
             child:
                 Text(_buttonLabel, style: const TextStyle(color: Colors.white)),
           ),
@@ -1328,7 +1328,7 @@ class _AccountScreenState extends State<AccountScreen> {
           ElevatedButton(
             onPressed: _submitting ? null : _deleteAccount,
             style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFbc2023)),
+                backgroundColor: const Color(0xFFF48900)),
             child: const Text('Delete Account',
                 style: TextStyle(color: Colors.white)),
           ),
@@ -1336,13 +1336,13 @@ class _AccountScreenState extends State<AccountScreen> {
         TextButton(
           onPressed: _closeForm,
           child:
-              const Text('Cancel', style: TextStyle(color: Color(0xFFbc2023))),
+              const Text('Cancel', style: TextStyle(color: Color(0xFFF48900))),
         ),
       ],
     );
   }
 
-  // ─── Tab 2 — Sesha Passive ────────────────────────────────────────────────
+  // ─── Tab 2 — BizShare Passive ────────────────────────────────────────────────
 
   Widget _passiveTab() {
     final isActive = _hasPassiveMembership;
@@ -1360,14 +1360,14 @@ class _AccountScreenState extends State<AccountScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _sectionHeader('Sesha Passive'),
+        _sectionHeader('BizShare Passive'),
         const Text(
-          'You\'re part of the Sesha Passive program! Once results start coming in, you\'re on the path to earning passive income for life.',
+          'You\'re part of the BizShare Passive program! Once results start coming in, you\'re on the path to earning passive income for life.',
           style: TextStyle(fontSize: 13, color: Colors.black87, height: 1.5),
         ),
         const SizedBox(height: 20),
         _infoTile('Status', isActive ? 'Up to date' : 'Suspended',
-            isActive ? Colors.green : const Color(0xFFbc2023)),
+            isActive ? Colors.green : const Color(0xFFF48900)),
         const SizedBox(height: 20),
         _sectionHeader('Referrals'),
         _referralGroup('Monthly', [
@@ -1399,7 +1399,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF094a25))),
+                      color: Color(0xFF1B4748))),
             ],
           ),
         ),
@@ -1412,7 +1412,7 @@ class _AccountScreenState extends State<AccountScreen> {
             }
           },
           style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF094a25)),
+              backgroundColor: const Color(0xFF1B4748)),
           child: const Text('Request Withdrawal',
               style: TextStyle(color: Colors.white)),
         ),
@@ -1454,12 +1454,12 @@ class _AccountScreenState extends State<AccountScreen> {
                             height: 24,
                             width: 24,
                             child: CircularProgressIndicator(
-                                strokeWidth: 2, color: Color(0xFF094a25)))
+                                strokeWidth: 2, color: Color(0xFF1B4748)))
                         : Text('R${_walletBalance.toStringAsFixed(2)}',
                             style: const TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF094a25))),
+                                color: Color(0xFF1B4748))),
                   ],
                 ),
               ),
@@ -1495,12 +1495,12 @@ class _AccountScreenState extends State<AccountScreen> {
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? const Color(0xFF094a25)
+                      ? const Color(0xFF1B4748)
                       : Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(6),
                   border: Border.all(
                       color: isSelected
-                          ? const Color(0xFF094a25)
+                          ? const Color(0xFF1B4748)
                           : Colors.grey.shade300),
                 ),
                 child: Text('R$a',
@@ -1542,12 +1542,12 @@ class _AccountScreenState extends State<AccountScreen> {
                 _breakdownRow(
                     'Service fee (4%)',
                     '- R${bd['fee']!.toStringAsFixed(2)}',
-                    const Color(0xFFbc2023)),
+                    const Color(0xFFF48900)),
                 const Divider(height: 16),
                 _breakdownRow(
                     'You receive',
                     'R${bd['net']!.toStringAsFixed(2)}',
-                    const Color(0xFF094a25),
+                    const Color(0xFF1B4748),
                     bold: true),
               ],
             ),
@@ -1558,7 +1558,7 @@ class _AccountScreenState extends State<AccountScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 8),
             child: Text('Minimum deposit is R${_minDeposit.toInt()}.',
-                style: const TextStyle(fontSize: 12, color: Color(0xFFbc2023))),
+                style: const TextStyle(fontSize: 12, color: Color(0xFFF48900))),
           ),
 
         const SizedBox(height: 16),
@@ -1581,7 +1581,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     Navigator.pushNamed(context, '/cart');
                   },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF094a25),
+              backgroundColor: const Color(0xFF1B4748),
               padding: const EdgeInsets.symmetric(vertical: 14),
               disabledBackgroundColor: Colors.grey.shade300,
             ),
@@ -1653,10 +1653,10 @@ class _AccountScreenState extends State<AccountScreen> {
 
         if (_loadingTx && _transactions.isEmpty)
           const Center(
-              child: CircularProgressIndicator(color: Color(0xFF094a25)))
+              child: CircularProgressIndicator(color: Color(0xFF1B4748)))
         else if (_transactions.isEmpty)
           const Text('No transactions yet.',
-              style: TextStyle(color: Color(0xFF094a25)))
+              style: TextStyle(color: Color(0xFF1B4748)))
         else ...[
           ..._transactions.map((tx) => _txRow(tx as Map<String, dynamic>)),
           if (_txNextPage != null)
@@ -1666,7 +1666,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 child: TextButton(
                   onPressed: _loadingTx ? null : _loadMoreTransactions,
                   child: Text(_loadingTx ? 'Loading...' : 'Load More',
-                      style: const TextStyle(color: Color(0xFF094a25))),
+                      style: const TextStyle(color: Color(0xFF1B4748))),
                 ),
               ),
             ),
@@ -1744,8 +1744,8 @@ class _AccountScreenState extends State<AccountScreen> {
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
                     color: isCredit
-                        ? const Color(0xFF094a25)
-                        : const Color(0xFFbc2023)),
+                        ? const Color(0xFF1B4748)
+                        : const Color(0xFFF48900)),
               ),
               if (fee != null)
                 Text('fee R$fee',
@@ -1768,17 +1768,17 @@ class _AccountScreenState extends State<AccountScreen> {
         const SizedBox(height: 8),
         if (_loadingOrders)
           const Center(
-              child: CircularProgressIndicator(color: Color(0xFF094a25)))
+              child: CircularProgressIndicator(color: Color(0xFF1B4748)))
         else if (_orders.isEmpty)
           const Text('No orders yet.',
-              style: TextStyle(color: Color(0xFF094a25)))
+              style: TextStyle(color: Color(0xFF1B4748)))
         else
           ..._orders.map((o) => _orderCard(o as Map<String, dynamic>)),
         const SizedBox(height: 24),
         _sectionHeader('Withdrawals'),
         const SizedBox(height: 8),
         const Text('No withdrawals yet.',
-            style: TextStyle(color: Color(0xFF094a25))),
+            style: TextStyle(color: Color(0xFF1B4748))),
         const SizedBox(height: 20),
       ],
     );
@@ -1825,7 +1825,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF094a25))),
+                            color: Color(0xFF1B4748))),
                   ],
                 ),
               )),
@@ -1839,10 +1839,10 @@ class _AccountScreenState extends State<AccountScreen> {
                           style: TextStyle(
                               fontSize: 12,
                               color:
-                                  const Color(0xFFf8b324).withOpacity(0.8)))),
+                                  const Color(0xFFF8BB25).withOpacity(0.8)))),
                   Text('- R$discount',
                       style: const TextStyle(
-                          fontSize: 12, color: Color(0xFFf8b324))),
+                          fontSize: 12, color: Color(0xFFF8BB25))),
                 ],
               ),
             ),
@@ -1855,7 +1855,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF094a25))),
+                        color: Color(0xFF1B4748))),
                 const SizedBox(width: 10),
                 Text(_formatDate(order['created_at']?.toString()),
                     style:
@@ -1865,7 +1865,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFFbc2023))),
+                        color: Color(0xFFF48900))),
                 const SizedBox(width: 10),
                 GestureDetector(
                   onTap: () => _showInvoiceDialog(order),
@@ -1873,7 +1873,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
-                        color: const Color(0xFFf8b324),
+                        color: const Color(0xFFF8BB25),
                         borderRadius: BorderRadius.circular(4)),
                     child: const Text('Invoice',
                         style: TextStyle(fontSize: 12, color: Colors.black87)),
@@ -1924,7 +1924,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   Text('R$amountPaid',
                       style: const TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF094a25))),
+                          color: Color(0xFF1B4748))),
                 ],
               ),
             ],
@@ -1977,7 +1977,7 @@ class _AccountScreenState extends State<AccountScreen> {
               style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF094a25),
+                  color: Color(0xFF1B4748),
                   letterSpacing: 0.5)),
         ),
         ...items,
@@ -2011,7 +2011,7 @@ class _AccountScreenState extends State<AccountScreen> {
             style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF094a25))),
+                color: Color(0xFF1B4748))),
       );
 
   Widget _sectionLabel(String label) => Padding(
@@ -2020,7 +2020,7 @@ class _AccountScreenState extends State<AccountScreen> {
             style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF094a25))),
+                color: Color(0xFF1B4748))),
       );
 
   Widget _inputField(
@@ -2040,7 +2040,7 @@ class _AccountScreenState extends State<AccountScreen> {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: const BorderSide(color: Color(0xFF094a25)),
+            borderSide: const BorderSide(color: Color(0xFF1B4748)),
           ),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -2063,7 +2063,7 @@ class _AccountScreenState extends State<AccountScreen> {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: const BorderSide(color: Color(0xFF094a25)),
+            borderSide: const BorderSide(color: Color(0xFF1B4748)),
           ),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 10),

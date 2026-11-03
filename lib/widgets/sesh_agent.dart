@@ -14,7 +14,7 @@ class SeshAgent extends StatefulWidget {
 
 class _SeshAgentState extends State<SeshAgent>
     with SingleTickerProviderStateMixin {
-  static const _green = Color(0xFF094a25);
+  static const _green = Color(0xFF1B4748);
 
   bool _open = false;
   bool _thinking = false;
@@ -29,7 +29,7 @@ class _SeshAgentState extends State<SeshAgent>
     {
       'role': 'assistant',
       'content':
-          "Hi! I'm Sesh, your SESHA assistant. How can I help you today?",
+          "Hi! I'm Bizby, your BizShare assistant. How can I help you today?",
     },
   ];
 
@@ -71,7 +71,7 @@ class _SeshAgentState extends State<SeshAgent>
       _messages.add({
         'role': 'assistant',
         'content':
-            "Hi! I'm Sesh, your SESHA assistant. How can I help you today?",
+            "Hi! I'm Bizby, your BizShare assistant. How can I help you today?",
       });
     });
   }
@@ -237,12 +237,12 @@ class _SeshAgentState extends State<SeshAgent>
           const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Sesh',
+              Text('Bizby',
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 14,
                       fontWeight: FontWeight.bold)),
-              Text('SESHA Assistant',
+              Text('BizShare Assistant',
                   style: TextStyle(color: Colors.white70, fontSize: 11)),
             ],
           ),

@@ -220,7 +220,7 @@ class _AddOpportunityModalState extends State<AddOpportunityModal> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF094a25),
+        backgroundColor: const Color(0xFF1B4748),
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           widget.action == 'edit'
@@ -244,7 +244,7 @@ class _AddOpportunityModalState extends State<AddOpportunityModal> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: const Color(0xFFbc2023).withOpacity(0.07),
+              color: const Color(0xFFF48900).withOpacity(0.07),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Text(
@@ -382,7 +382,7 @@ class _AddOpportunityModalState extends State<AddOpportunityModal> {
             children: [
               Checkbox(
                 value: _quoteMe,
-                activeColor: const Color(0xFF094a25),
+                activeColor: const Color(0xFF1B4748),
                 onChanged: (v) =>
                     setState(() => _quoteMe = v ?? false),
               ),
@@ -398,7 +398,7 @@ class _AddOpportunityModalState extends State<AddOpportunityModal> {
                     style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF094a25))),
+                        color: Color(0xFF1B4748))),
                 Expanded(
                   child: _textField(_valueController,
                       hint: 'What is this opportunity worth?',
@@ -427,7 +427,7 @@ class _AddOpportunityModalState extends State<AddOpportunityModal> {
                 builder: (ctx, child) => Theme(
                   data: Theme.of(ctx).copyWith(
                     colorScheme: const ColorScheme.light(
-                        primary: Color(0xFF094a25)),
+                        primary: Color(0xFF1B4748)),
                   ),
                   child: child!,
                 ),
@@ -471,7 +471,7 @@ class _AddOpportunityModalState extends State<AddOpportunityModal> {
             children: [
               Checkbox(
                 value: _published,
-                activeColor: const Color(0xFF094a25),
+                activeColor: const Color(0xFF1B4748),
                 onChanged: (v) =>
                     setState(() => _published = v ?? true),
               ),
@@ -486,7 +486,7 @@ class _AddOpportunityModalState extends State<AddOpportunityModal> {
               children: [
                 Checkbox(
                   value: _accepted,
-                  activeColor: const Color(0xFF094a25),
+                  activeColor: const Color(0xFF1B4748),
                   onChanged: (v) =>
                       setState(() => _accepted = v ?? false),
                 ),
@@ -495,7 +495,7 @@ class _AddOpportunityModalState extends State<AddOpportunityModal> {
                   onTap: () {},
                   child: const Text('terms',
                       style: TextStyle(
-                          color: Color(0xFF094a25),
+                          color: Color(0xFF1B4748),
                           decoration:
                               TextDecoration.underline)),
                 ),
@@ -511,7 +511,7 @@ class _AddOpportunityModalState extends State<AddOpportunityModal> {
                 child: ElevatedButton(
                   onPressed: _saving ? null : _save,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF094a25),
+                    backgroundColor: const Color(0xFF1B4748),
                     disabledBackgroundColor:
                         Colors.grey.shade300,
                     padding: const EdgeInsets.symmetric(
@@ -539,9 +539,9 @@ class _AddOpportunityModalState extends State<AddOpportunityModal> {
                 child: OutlinedButton(
                   onPressed: widget.onCancel,
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFFbc2023),
+                    foregroundColor: const Color(0xFFF48900),
                     side: const BorderSide(
-                        color: Color(0xFFbc2023)),
+                        color: Color(0xFFF48900)),
                     padding: const EdgeInsets.symmetric(
                         vertical: 14),
                     shape: RoundedRectangleBorder(
@@ -630,7 +630,7 @@ class _AddOpportunityModalState extends State<AddOpportunityModal> {
                                       'Upload Image',
                                       style: TextStyle(
                                           color: Color(
-                                              0xFF094a25)))),
+                                              0xFF1B4748)))),
                             ],
                           ),
                         ),
@@ -644,7 +644,7 @@ class _AddOpportunityModalState extends State<AddOpportunityModal> {
         padding: const EdgeInsets.symmetric(
             horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFF094a25),
+          color: const Color(0xFF1B4748),
           borderRadius: BorderRadius.circular(6),
         ),
         child: Text(title,
@@ -658,7 +658,7 @@ class _AddOpportunityModalState extends State<AddOpportunityModal> {
       style: const TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.bold,
-          color: Color(0xFF094a25)));
+          color: Color(0xFF1B4748)));
 
   Widget _textField(
     TextEditingController controller, {
@@ -680,7 +680,7 @@ class _AddOpportunityModalState extends State<AddOpportunityModal> {
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
             borderSide:
-                const BorderSide(color: Color(0xFF094a25)),
+                const BorderSide(color: Color(0xFF1B4748)),
           ),
           contentPadding: const EdgeInsets.symmetric(
               horizontal: 12, vertical: 10),

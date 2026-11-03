@@ -134,7 +134,7 @@ class _AddPostModalState extends State<AddPostModal> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF094a25),
+        backgroundColor: const Color(0xFF1B4748),
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           widget.action == 'edit' ? 'Edit Post' : 'Create Post',
@@ -164,7 +164,7 @@ class _AddPostModalState extends State<AddPostModal> {
                   OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0xFF094a25)),
+                borderSide: const BorderSide(color: Color(0xFF1B4748)),
               ),
               contentPadding: const EdgeInsets.all(12),
             ),
@@ -251,8 +251,8 @@ class _AddPostModalState extends State<AddPostModal> {
               child: OutlinedButton.icon(
                 onPressed: _pickMedia,
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF094a25),
-                  side: const BorderSide(color: Color(0xFF094a25)),
+                  foregroundColor: const Color(0xFF1B4748),
+                  side: const BorderSide(color: Color(0xFF1B4748)),
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
                 icon: const Icon(Icons.add_photo_alternate),
@@ -268,7 +268,7 @@ class _AddPostModalState extends State<AddPostModal> {
               children: [
                 Checkbox(
                   value: _accepted,
-                  activeColor: const Color(0xFF094a25),
+                  activeColor: const Color(0xFF1B4748),
                   onChanged: (v) => setState(() => _accepted = v ?? false),
                 ),
                 const Text('I accept the '),
@@ -276,7 +276,7 @@ class _AddPostModalState extends State<AddPostModal> {
                   onTap: () {},
                   child: const Text('terms',
                       style: TextStyle(
-                          color: Color(0xFF094a25),
+                          color: Color(0xFF1B4748),
                           decoration: TextDecoration.underline)),
                 ),
               ],
@@ -291,7 +291,7 @@ class _AddPostModalState extends State<AddPostModal> {
                 child: ElevatedButton(
                   onPressed: _saving ? null : _save,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF094a25),
+                    backgroundColor: const Color(0xFF1B4748),
                     disabledBackgroundColor: Colors.grey.shade300,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
@@ -315,8 +315,8 @@ class _AddPostModalState extends State<AddPostModal> {
                 child: OutlinedButton(
                   onPressed: widget.onCancel,
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFFbc2023),
-                    side: const BorderSide(color: Color(0xFFbc2023)),
+                    foregroundColor: const Color(0xFFF48900),
+                    side: const BorderSide(color: Color(0xFFF48900)),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8)),

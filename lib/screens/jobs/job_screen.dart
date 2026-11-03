@@ -143,7 +143,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF094a25),
+        backgroundColor: const Color(0xFF1B4748),
         iconTheme: const IconThemeData(color: Colors.white),
         titleSpacing: 0,
         title: Padding(
@@ -178,7 +178,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                   );
                 },
                 child: const Text('Edit',
-                    style: TextStyle(color: Color(0xFFf8b324), fontSize: 12)),
+                    style: TextStyle(color: Color(0xFFF8BB25), fontSize: 12)),
               ),
               TextButton(
                 style: TextButton.styleFrom(
@@ -205,7 +205,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _hasApplied
                       ? Colors.grey.shade400
-                      : const Color(0xFF094a25),
+                      : const Color(0xFF1B4748),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   minimumSize: Size.zero,
@@ -240,12 +240,12 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
       ),
       body: _loading
           ? const Center(
-              child: CircularProgressIndicator(color: Color(0xFF094a25)))
+              child: CircularProgressIndicator(color: Color(0xFF1B4748)))
           : _job == null
               ? const Center(child: Text('Job not found'))
               : RefreshIndicator(
                   onRefresh: _loadJob,
-                  color: const Color(0xFF094a25),
+                  color: const Color(0xFF1B4748),
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     child: Column(
@@ -277,7 +277,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
     return Column(
       children: [
         Container(
-          color: const Color(0xFF0a5c2e),
+          color: const Color(0xFF296968),
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Column(
@@ -326,9 +326,9 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
 
   Widget _imagePlaceholder() => Container(
         height: 220,
-        color: const Color(0xFF094a25).withValues(alpha: 0.1),
+        color: const Color(0xFF1B4748).withValues(alpha: 0.1),
         child: const Center(
-          child: Icon(Icons.work_outline, color: Color(0xFF094a25), size: 60),
+          child: Icon(Icons.work_outline, color: Color(0xFF1B4748), size: 60),
         ),
       );
 
@@ -455,7 +455,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                         child: Row(
                           children: [
                             const Icon(Icons.circle,
-                                size: 6, color: Color(0xFF094a25)),
+                                size: 6, color: Color(0xFF1B4748)),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
@@ -482,7 +482,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Icon(Icons.circle,
-                                size: 6, color: Color(0xFF094a25)),
+                                size: 6, color: Color(0xFF1B4748)),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Column(
@@ -493,7 +493,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                                     style: const TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.bold,
-                                        color: Color(0xFF094a25)),
+                                        color: Color(0xFF1B4748)),
                                   ),
                                   if (d['description'] != null)
                                     Text(
@@ -546,7 +546,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                               style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF094a25))),
+                                  color: Color(0xFF1B4748))),
                           Expanded(
                             child: Text(
                               '${e.value['title'] ?? ''}?',
@@ -614,7 +614,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
   Widget _sectionHeader(String title) => Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        color: const Color(0xFF094a25),
+        color: const Color(0xFF1B4748),
         child: Text(title,
             style: const TextStyle(
                 color: Colors.white,

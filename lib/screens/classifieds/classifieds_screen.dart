@@ -319,7 +319,7 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: const BoxDecoration(
-                    color: Color(0xFF094a25),
+                    color: Color(0xFF1B4748),
                     borderRadius:
                         BorderRadius.vertical(top: Radius.circular(16)),
                   ),
@@ -353,7 +353,7 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
                           _loadAds(refresh: true);
                         },
                         child: const Text('Reset',
-                            style: TextStyle(color: Color(0xFFf8b324))),
+                            style: TextStyle(color: Color(0xFFF8BB25))),
                       ),
                     ],
                   ),
@@ -503,7 +503,7 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
                         _loadAds(refresh: true);
                       },
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF094a25),
+                          backgroundColor: const Color(0xFF1B4748),
                           padding: const EdgeInsets.symmetric(vertical: 14)),
                       child: const Text('Apply Filters',
                           style: TextStyle(color: Colors.white, fontSize: 16)),
@@ -523,7 +523,7 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
         child: Text(label,
             style: const TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF094a25),
+                color: Color(0xFF1B4748),
                 fontSize: 13)),
       );
 
@@ -562,7 +562,7 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
     return Column(
       children: [
         Container(
-          color: const Color(0xFF094a25),
+          color: const Color(0xFF1B4748),
           child: Row(
             children: [
               _tabBtn(1, 'My Ads'),
@@ -584,11 +584,11 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
         onTap: () => setState(() => _tab = index),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
-          color: active ? Colors.white : const Color(0xFF094a25),
+          color: active ? Colors.white : const Color(0xFF1B4748),
           child: Text(label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: active ? const Color(0xFF094a25) : Colors.white60,
+                color: active ? const Color(0xFF1B4748) : Colors.white60,
                 fontSize: 13,
                 fontWeight: active ? FontWeight.bold : FontWeight.normal,
               )),
@@ -600,7 +600,7 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
   Widget _myAdsTab() {
     if (_loadingMine) {
       return const Center(
-          child: CircularProgressIndicator(color: Color(0xFF094a25)));
+          child: CircularProgressIndicator(color: Color(0xFF1B4748)));
     }
 
     final currentAds = _myAds.where((a) => !_isExpired(a)).toList();
@@ -612,12 +612,12 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text('You have not created any ads.',
-                style: TextStyle(color: Color(0xFF094a25))),
+                style: TextStyle(color: Color(0xFF1B4748))),
             const SizedBox(height: 12),
             ElevatedButton.icon(
               onPressed: _openAddAd,
               style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF094a25)),
+                  backgroundColor: const Color(0xFF1B4748)),
               icon: const Icon(Icons.add, color: Colors.white),
               label: const Text('Create Ad',
                   style: TextStyle(color: Colors.white)),
@@ -629,7 +629,7 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
 
     return RefreshIndicator(
       onRefresh: _loadMyAds,
-      color: const Color(0xFF094a25),
+      color: const Color(0xFF1B4748),
       child: ListView(
         children: [
           Padding(
@@ -637,7 +637,7 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
             child: ElevatedButton.icon(
               onPressed: _openAddAd,
               style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF094a25),
+                  backgroundColor: const Color(0xFF1B4748),
                   padding: const EdgeInsets.symmetric(vertical: 12)),
               icon: const Icon(Icons.add, color: Colors.white),
               label: const Text('Create New Ad',
@@ -661,11 +661,11 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
   Widget _listHeader(String title) => Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        color: const Color(0xFF094a25),
+        color: const Color(0xFF1B4748),
         margin: const EdgeInsets.only(bottom: 4),
         child: Text(title,
             style: const TextStyle(
-                color: Color(0xFFf8b324), fontWeight: FontWeight.bold)),
+                color: Color(0xFFF8BB25), fontWeight: FontWeight.bold)),
       );
 
   Widget _myAdCard(Map<String, dynamic> ad, {required bool expired}) {
@@ -725,14 +725,14 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
                         style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF094a25))),
+                            color: Color(0xFF1B4748))),
                     if (price != null) ...[
                       const SizedBox(height: 4),
                       Text(_formatPrice(price),
                           style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFFbc2023))),
+                              color: Color(0xFFF48900))),
                     ],
                     if (location.isNotEmpty) ...[
                       const SizedBox(height: 4),
@@ -764,7 +764,7 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
                             child: OutlinedButton(
                               onPressed: () => _openEditAd(ad),
                               style: OutlinedButton.styleFrom(
-                                  foregroundColor: const Color(0xFF094a25),
+                                  foregroundColor: const Color(0xFF1B4748),
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 4)),
                               child: const Text('Edit',
@@ -786,7 +786,7 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
                                 );
                               },
                               style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFFf8b324),
+                                  backgroundColor: const Color(0xFFF8BB25),
                                   foregroundColor: Colors.black87,
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 4)),
@@ -801,7 +801,7 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
                             child: OutlinedButton(
                               onPressed: () => _renewAd(ad['id']),
                               style: OutlinedButton.styleFrom(
-                                  foregroundColor: const Color(0xFF094a25),
+                                  foregroundColor: const Color(0xFF1B4748),
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 4)),
                               child: const Text('Renew',
@@ -814,7 +814,7 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
                           child: ElevatedButton(
                             onPressed: () => _deleteAd(ad['id']),
                             style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFbc2023),
+                                backgroundColor: const Color(0xFFF48900),
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 4)),
                             child: const Text('Delete',
@@ -873,18 +873,18 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
                               horizontal: 12, vertical: 4),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? const Color(0xFF094a25)
+                                ? const Color(0xFF1B4748)
                                 : Colors.white,
                             borderRadius: BorderRadius.circular(4),
                             border: Border.all(
-                                color: const Color(0xFF094a25), width: 1),
+                                color: const Color(0xFF1B4748), width: 1),
                           ),
                           child: Text(cat['name'] ?? '',
                               style: TextStyle(
                                   fontSize: 12,
                                   color: isSelected
                                       ? Colors.white
-                                      : const Color(0xFF094a25))),
+                                      : const Color(0xFF1B4748))),
                         ),
                       );
                     },
@@ -895,7 +895,7 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
                 Stack(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.tune, color: Color(0xFF094a25)),
+                      icon: const Icon(Icons.tune, color: Color(0xFF1B4748)),
                       onPressed: _openFilterSheet,
                     ),
                     if (_hasActiveFilters)
@@ -906,7 +906,7 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
                           width: 8,
                           height: 8,
                           decoration: const BoxDecoration(
-                            color: Color(0xFFbc2023),
+                            color: Color(0xFFF48900),
                             shape: BoxShape.circle,
                           ),
                         ),
@@ -1004,18 +1004,18 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
           child: _selectedCategory == null
               ? const Center(
                   child: Text('Select a category above to start',
-                      style: TextStyle(color: Color(0xFF094a25))))
+                      style: TextStyle(color: Color(0xFF1B4748))))
               : _loadingAll && _ads.isEmpty
                   ? const Center(
                       child:
-                          CircularProgressIndicator(color: Color(0xFF094a25)))
+                          CircularProgressIndicator(color: Color(0xFF1B4748)))
                   : _ads.isEmpty
                       ? const Center(
                           child: Text('No ads in this category at the moment',
-                              style: TextStyle(color: Color(0xFF094a25))))
+                              style: TextStyle(color: Color(0xFF1B4748))))
                       : RefreshIndicator(
                           onRefresh: () => _loadAds(refresh: true),
-                          color: const Color(0xFF094a25),
+                          color: const Color(0xFF1B4748),
                           child: ListView.builder(
                             controller: _scrollController,
                             itemCount: _ads.length + (_hasMore ? 1 : 0),
@@ -1025,7 +1025,7 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
                                   child: Padding(
                                     padding: EdgeInsets.all(16),
                                     child: CircularProgressIndicator(
-                                        color: Color(0xFF094a25)),
+                                        color: Color(0xFF1B4748)),
                                   ),
                                 );
                               }
@@ -1096,14 +1096,14 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
                         style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF094a25))),
+                            color: Color(0xFF1B4748))),
                     if (price != null) ...[
                       const SizedBox(height: 4),
                       Text(_formatPrice(price),
                           style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFFbc2023))),
+                              color: Color(0xFFF48900))),
                     ],
                     if (category != null && category['parent'] != null) ...[
                       const SizedBox(height: 4),
@@ -1148,8 +1148,8 @@ class _ClassifiedsScreenState extends State<ClassifiedsScreen> {
   Widget _imagePlaceholder() => Container(
         width: 90,
         height: 90,
-        color: const Color(0xFF094a25).withValues(alpha: 0.1),
+        color: const Color(0xFF1B4748).withValues(alpha: 0.1),
         child:
-            const Icon(Icons.sell_outlined, color: Color(0xFF094a25), size: 32),
+            const Icon(Icons.sell_outlined, color: Color(0xFF1B4748), size: 32),
       );
 }

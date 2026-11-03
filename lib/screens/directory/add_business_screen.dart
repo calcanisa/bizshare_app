@@ -325,7 +325,7 @@ class _AddBusinessModalState extends State<AddBusinessModal> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF094a25),
+        backgroundColor: const Color(0xFF1B4748),
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           widget.action == 'edit' ? 'Edit Business' : 'Create Business',
@@ -386,9 +386,9 @@ class _AddBusinessModalState extends State<AddBusinessModal> {
   Widget _infoBox() => Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: const Color(0xFF094a25).withOpacity(0.06),
+          color: const Color(0xFF1B4748).withOpacity(0.06),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xFF094a25).withOpacity(0.2)),
+          border: Border.all(color: const Color(0xFF1B4748).withOpacity(0.2)),
         ),
         child: const Text(
           'It is important for business profiles to be complete, as a partially completed profile can harm your brand.',
@@ -405,7 +405,7 @@ class _AddBusinessModalState extends State<AddBusinessModal> {
               style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF094a25))),
+                  color: Color(0xFF1B4748))),
           const Text('Ideal size: 1920 x 600px',
               style: TextStyle(fontSize: 11, color: Colors.black45)),
           const SizedBox(height: 8),
@@ -482,7 +482,7 @@ class _AddBusinessModalState extends State<AddBusinessModal> {
               style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF094a25))),
+                  color: Color(0xFF1B4748))),
           const Text('Ideal size: 300 x 300px',
               style: TextStyle(fontSize: 11, color: Colors.black45)),
           const SizedBox(height: 8),
@@ -607,7 +607,7 @@ class _AddBusinessModalState extends State<AddBusinessModal> {
               ElevatedButton(
                 onPressed: _addCategory,
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF094a25),
+                    backgroundColor: const Color(0xFF1B4748),
                     padding: const EdgeInsets.symmetric(
                         horizontal: 12, vertical: 10)),
                 child: const Text('Add',
@@ -628,7 +628,7 @@ class _AddBusinessModalState extends State<AddBusinessModal> {
                         label: Text(cat['name'] ?? '',
                             style: const TextStyle(
                                 color: Colors.white, fontSize: 12)),
-                        backgroundColor: const Color(0xFFbc2023),
+                        backgroundColor: const Color(0xFFF48900),
                         deleteIcon: const Icon(Icons.close,
                             size: 14, color: Colors.white),
                         onDeleted: () => setState(() => _selectedCategories
@@ -662,7 +662,7 @@ class _AddBusinessModalState extends State<AddBusinessModal> {
                 builder: (ctx, child) => Theme(
                   data: Theme.of(ctx).copyWith(
                     colorScheme:
-                        const ColorScheme.light(primary: Color(0xFF094a25)),
+                        const ColorScheme.light(primary: Color(0xFF1B4748)),
                   ),
                   child: child!,
                 ),
@@ -747,7 +747,7 @@ class _AddBusinessModalState extends State<AddBusinessModal> {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Text(
-                'Please send an email with your requirements to websites@sesha.co.za and someone will contact you promptly.',
+                'Please send an email with your requirements to websites@bizshare.co.za and someone will contact you promptly.',
                 style: TextStyle(fontSize: 12, color: Colors.black54),
               ),
             ),
@@ -809,7 +809,7 @@ class _AddBusinessModalState extends State<AddBusinessModal> {
               style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF094a25))),
+                  color: Color(0xFF1B4748))),
           const SizedBox(height: 4),
           Row(
             children: [
@@ -891,7 +891,7 @@ class _AddBusinessModalState extends State<AddBusinessModal> {
             children: [
               Checkbox(
                 value: _openHolidays,
-                activeColor: const Color(0xFF094a25),
+                activeColor: const Color(0xFF1B4748),
                 onChanged: (v) => setState(() => _openHolidays = v ?? false),
               ),
               const Text('Open on public holidays',
@@ -954,7 +954,7 @@ class _AddBusinessModalState extends State<AddBusinessModal> {
               children: [
                 Checkbox(
                   value: _accepted,
-                  activeColor: const Color(0xFF094a25),
+                  activeColor: const Color(0xFF1B4748),
                   onChanged: (v) => setState(() => _accepted = v ?? false),
                 ),
                 const Text('I accept the '),
@@ -962,7 +962,7 @@ class _AddBusinessModalState extends State<AddBusinessModal> {
                   onTap: () {},
                   child: const Text('terms',
                       style: TextStyle(
-                          color: Color(0xFF094a25),
+                          color: Color(0xFF1B4748),
                           decoration: TextDecoration.underline)),
                 ),
               ],
@@ -976,7 +976,7 @@ class _AddBusinessModalState extends State<AddBusinessModal> {
                       ? _save
                       : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF094a25),
+                    backgroundColor: const Color(0xFF1B4748),
                     disabledBackgroundColor: Colors.grey.shade300,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
@@ -1000,8 +1000,8 @@ class _AddBusinessModalState extends State<AddBusinessModal> {
                 child: OutlinedButton(
                   onPressed: widget.onCancel,
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFFbc2023),
-                    side: const BorderSide(color: Color(0xFFbc2023)),
+                    foregroundColor: const Color(0xFFF48900),
+                    side: const BorderSide(color: Color(0xFFF48900)),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8)),
@@ -1020,7 +1020,7 @@ class _AddBusinessModalState extends State<AddBusinessModal> {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFF094a25),
+          color: const Color(0xFF1B4748),
           borderRadius: BorderRadius.circular(6),
         ),
         child: Text(title,
@@ -1032,7 +1032,7 @@ class _AddBusinessModalState extends State<AddBusinessModal> {
 
   Widget _fieldLabel(String label) => Text(label,
       style: const TextStyle(
-          fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF094a25)));
+          fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF1B4748)));
 
   Widget _field(
     String label,
@@ -1072,7 +1072,7 @@ class _AddBusinessModalState extends State<AddBusinessModal> {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: const BorderSide(color: Color(0xFF094a25)),
+            borderSide: const BorderSide(color: Color(0xFF1B4748)),
           ),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -1134,7 +1134,7 @@ class _AddBusinessModalState extends State<AddBusinessModal> {
           Radio<String>(
             value: value,
             groupValue: groupValue,
-            activeColor: const Color(0xFF094a25),
+            activeColor: const Color(0xFF1B4748),
             onChanged: onChanged,
           ),
           Text(label,

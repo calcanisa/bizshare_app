@@ -206,7 +206,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: const BoxDecoration(
-                    color: Color(0xFF094a25),
+                    color: Color(0xFF1B4748),
                     borderRadius:
                         BorderRadius.vertical(top: Radius.circular(16)),
                   ),
@@ -226,7 +226,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                           _maxPriceController.clear();
                         }),
                         child: const Text('Reset',
-                            style: TextStyle(color: Color(0xFFf8b324))),
+                            style: TextStyle(color: Color(0xFFF8BB25))),
                       ),
                     ],
                   ),
@@ -288,7 +288,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                           const Padding(
                             padding: EdgeInsets.symmetric(horizontal: 8),
                             child: Text('—',
-                                style: TextStyle(color: Color(0xFF094a25))),
+                                style: TextStyle(color: Color(0xFF1B4748))),
                           ),
                           Expanded(
                             child: TextField(
@@ -325,7 +325,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         _fetchProducts(page: 1);
                       },
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF094a25),
+                          backgroundColor: const Color(0xFF1B4748),
                           padding: const EdgeInsets.symmetric(vertical: 14)),
                       child: const Text('Apply Filters',
                           style: TextStyle(color: Colors.white, fontSize: 16)),
@@ -345,7 +345,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
         child: Text(label,
             style: const TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF094a25),
+                color: Color(0xFF1B4748),
                 fontSize: 13)),
       );
 
@@ -390,7 +390,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
     return Column(
       children: [
         Container(
-          color: const Color(0xFF094a25),
+          color: const Color(0xFF1B4748),
           child: Row(
             children: [
               _tabBtn(1, 'All Products'),
@@ -415,11 +415,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
         },
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
-          color: active ? Colors.white : const Color(0xFF094a25),
+          color: active ? Colors.white : const Color(0xFF1B4748),
           child: Text(label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: active ? const Color(0xFF094a25) : Colors.white60,
+                color: active ? const Color(0xFF1B4748) : Colors.white60,
                 fontSize: 13,
                 fontWeight: active ? FontWeight.bold : FontWeight.normal,
               )),
@@ -442,7 +442,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
               Stack(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.tune, color: Color(0xFF094a25)),
+                    icon: const Icon(Icons.tune, color: Color(0xFF1B4748)),
                     onPressed: _openFilterSheet,
                   ),
                   if (_hasActiveFilters)
@@ -453,7 +453,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         width: 8,
                         height: 8,
                         decoration: const BoxDecoration(
-                          color: Color(0xFFbc2023),
+                          color: Color(0xFFF48900),
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -472,7 +472,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     value: _ordering,
                     isDense: true,
                     style:
-                        const TextStyle(fontSize: 12, color: Color(0xFF094a25)),
+                        const TextStyle(fontSize: 12, color: Color(0xFF1B4748)),
                     items: const [
                       DropdownMenuItem(
                           value: 'date-last', child: Text('Newest First')),
@@ -566,7 +566,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         value: _selectedPageSize,
                         isDense: true,
                         style: const TextStyle(
-                            fontSize: 12, color: Color(0xFF094a25)),
+                            fontSize: 12, color: Color(0xFF1B4748)),
                         items: [20, 50, 100]
                             .map((s) =>
                                 DropdownMenuItem(value: s, child: Text('$s')))
@@ -588,14 +588,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
         Expanded(
           child: _loadingProducts
               ? const Center(
-                  child: CircularProgressIndicator(color: Color(0xFF094a25)))
+                  child: CircularProgressIndicator(color: Color(0xFF1B4748)))
               : _products.isEmpty
                   ? const Center(
                       child: Text('No products found',
-                          style: TextStyle(color: Color(0xFF094a25))))
+                          style: TextStyle(color: Color(0xFF1B4748))))
                   : RefreshIndicator(
                       onRefresh: () => _fetchProducts(page: 1),
-                      color: const Color(0xFF094a25),
+                      color: const Color(0xFF1B4748),
                       child: ListView.builder(
                         itemCount: _products.length + 1,
                         itemBuilder: (context, index) {
@@ -656,7 +656,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF094a25))),
+                          color: Color(0xFF1B4748))),
                   const SizedBox(height: 4),
                   if (description.isNotEmpty) ...[
                     Text(
@@ -680,14 +680,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(Icons.open_in_new,
-                              size: 13, color: Color(0xFF094a25)),
+                              size: 13, color: Color(0xFF1B4748)),
                           SizedBox(width: 4),
                           Text('View on Website',
                               style: TextStyle(
                                   fontSize: 12,
-                                  color: Color(0xFF094a25),
+                                  color: Color(0xFF1B4748),
                                   decoration: TextDecoration.underline,
-                                  decorationColor: Color(0xFF094a25))),
+                                  decorationColor: Color(0xFF1B4748))),
                         ],
                       ),
                     ),
@@ -719,7 +719,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 label:
                     const Text('Add Request', style: TextStyle(fontSize: 13)),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFf8b324),
+                  backgroundColor: const Color(0xFFF8BB25),
                   foregroundColor: Colors.black87,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -731,7 +731,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
         Expanded(
           child: _loadingRequests
               ? const Center(
-                  child: CircularProgressIndicator(color: Color(0xFF094a25)))
+                  child: CircularProgressIndicator(color: Color(0xFF1B4748)))
               : _requests.isEmpty
                   ? Center(
                       child: Column(
@@ -739,12 +739,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         children: [
                           const Text(
                               'You have not submitted any product requests.',
-                              style: TextStyle(color: Color(0xFF094a25))),
+                              style: TextStyle(color: Color(0xFF1B4748))),
                           const SizedBox(height: 12),
                           ElevatedButton(
                             onPressed: () {}, // TODO: open add request modal
                             style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF094a25)),
+                                backgroundColor: const Color(0xFF1B4748)),
                             child: const Text('Submit One',
                                 style: TextStyle(color: Colors.white)),
                           ),
@@ -756,7 +756,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         _requests = [];
                         await _loadRequests();
                       },
-                      color: const Color(0xFF094a25),
+                      color: const Color(0xFF1B4748),
                       child: ListView.builder(
                         padding: const EdgeInsets.all(12),
                         itemCount: _requests.length,
@@ -792,7 +792,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF094a25))),
+                    color: Color(0xFF1B4748))),
             const SizedBox(height: 6),
             Text(
                 description.length > 100
@@ -810,7 +810,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   child: OutlinedButton(
                     onPressed: () {}, // TODO: open edit request modal
                     style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFF094a25),
+                        foregroundColor: const Color(0xFF1B4748),
                         padding: const EdgeInsets.symmetric(vertical: 4)),
                     child: const Text('Edit', style: TextStyle(fontSize: 12)),
                   ),
@@ -820,7 +820,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   child: ElevatedButton(
                     onPressed: () => _deleteRequest(request['id']),
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFbc2023),
+                        backgroundColor: const Color(0xFFF48900),
                         padding: const EdgeInsets.symmetric(vertical: 4)),
                     child: const Text('Delete',
                         style: TextStyle(color: Colors.white, fontSize: 12)),
@@ -854,13 +854,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: const Color(0xFF094a25).withValues(alpha: 0.08),
+              color: const Color(0xFF1B4748).withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text('Page $_currentPage of $totalPages',
                 style: const TextStyle(
                     fontSize: 12,
-                    color: Color(0xFF094a25),
+                    color: Color(0xFF1B4748),
                     fontWeight: FontWeight.bold)),
           ),
           if (_hasNext) ...[
@@ -877,11 +877,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xFF094a25)),
+            border: Border.all(color: const Color(0xFF1B4748)),
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(label,
-              style: const TextStyle(fontSize: 12, color: Color(0xFF094a25))),
+              style: const TextStyle(fontSize: 12, color: Color(0xFF1B4748))),
         ),
       );
 
@@ -910,21 +910,21 @@ class _ProductsScreenState extends State<ProductsScreen> {
         margin: const EdgeInsets.only(right: 6),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: const Color(0xFF094a25).withValues(alpha: 0.1),
+          color: const Color(0xFF1B4748).withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(16),
           border:
-              Border.all(color: const Color(0xFF094a25).withValues(alpha: 0.3)),
+              Border.all(color: const Color(0xFF1B4748).withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(label,
-                style: const TextStyle(fontSize: 11, color: Color(0xFF094a25))),
+                style: const TextStyle(fontSize: 11, color: Color(0xFF1B4748))),
             const SizedBox(width: 4),
             GestureDetector(
               onTap: onRemove,
               child:
-                  const Icon(Icons.close, size: 12, color: Color(0xFF094a25)),
+                  const Icon(Icons.close, size: 12, color: Color(0xFF1B4748)),
             ),
           ],
         ),
@@ -933,8 +933,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
   Widget _imagePlaceholder() => Container(
         width: 90,
         height: 90,
-        color: const Color(0xFF094a25).withValues(alpha: 0.1),
+        color: const Color(0xFF1B4748).withValues(alpha: 0.1),
         child: const Icon(Icons.shopping_bag_outlined,
-            color: Color(0xFF094a25), size: 32),
+            color: Color(0xFF1B4748), size: 32),
       );
 }

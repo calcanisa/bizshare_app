@@ -13,9 +13,9 @@ class ImportContactsScreen extends StatefulWidget {
 }
 
 class _ImportContactsScreenState extends State<ImportContactsScreen> {
-  static const _green = Color(0xFF094a25);
-  static const _red = Color(0xFFbc2023);
-  static const _yellow = Color(0xFFf8b324);
+  static const _green = Color(0xFF1B4748);
+  static const _red = Color(0xFFF48900);
+  static const _yellow = Color(0xFFF8BB25);
 
   List<Map<String, String>> _parsedContacts = [];
   List<Map<String, String>> _preview = [];
@@ -198,7 +198,7 @@ class _ImportContactsScreenState extends State<ImportContactsScreen> {
 
   Future<void> _downloadTemplate() async {
     final uri = Uri.parse(
-        'https://sesha.co.za/static/templates/sesha_contacts_template.csv');
+        'https://bizshare.co.za/static/templates/sesha_contacts_template.csv');
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
@@ -226,7 +226,7 @@ class _ImportContactsScreenState extends State<ImportContactsScreen> {
               Text(
                 'Upload a CSV or vCard (.vcf) file to import contacts. '
                 'When you import contacts, groups are automatically created. '
-                'If you reach your group limit, remaining contacts will be placed in the default "Sesha Contacts" group.',
+                'If you reach your group limit, remaining contacts will be placed in the default "BizShare Contacts" group.',
                 style: TextStyle(fontSize: 13, color: Colors.grey[700]),
               ),
               const SizedBox(height: 16),

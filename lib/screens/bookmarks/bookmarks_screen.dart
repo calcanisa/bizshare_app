@@ -145,14 +145,14 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
   Widget build(BuildContext context) {
     if (_loading) {
       return const Center(
-          child: CircularProgressIndicator(color: Color(0xFF094a25)));
+          child: CircularProgressIndicator(color: Color(0xFF1B4748)));
     }
 
     return Column(
       children: [
         // Tab bar — scrollable since 6 tabs
         Container(
-          color: const Color(0xFF094a25),
+          color: const Color(0xFF1B4748),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
@@ -163,7 +163,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
         Expanded(
           child: RefreshIndicator(
             onRefresh: _loadBookmarks,
-            color: const Color(0xFF094a25),
+            color: const Color(0xFF1B4748),
             child: _currentList.isEmpty
                 ? ListView(
                     children: [
@@ -172,7 +172,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
                         child: Text(
                           _tabEmptyMessage(_tab),
                           style: const TextStyle(
-                              color: Color(0xFF094a25), fontSize: 14),
+                              color: Color(0xFF1B4748), fontSize: 14),
                         ),
                       ),
                     ],
@@ -196,7 +196,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: active ? Colors.white : const Color(0xFF094a25),
+          color: active ? Colors.white : const Color(0xFF1B4748),
           border: active
               ? null
               : const Border(
@@ -204,7 +204,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
         ),
         child: Text(label,
             style: TextStyle(
-              color: active ? const Color(0xFF094a25) : Colors.white70,
+              color: active ? const Color(0xFF1B4748) : Colors.white70,
               fontSize: 12,
               fontWeight: active ? FontWeight.bold : FontWeight.normal,
             )),
@@ -271,7 +271,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
                     style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF094a25)),
+                        color: Color(0xFF1B4748)),
                   ),
                   if (description.isNotEmpty) ...[
                     const SizedBox(height: 4),
@@ -287,7 +287,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
                   ElevatedButton(
                     onPressed: () => _deleteBookmark(id, type, objectId),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFbc2023),
+                      backgroundColor: const Color(0xFFF48900),
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 6),
                       minimumSize: Size.zero,
@@ -334,7 +334,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
               width: 52,
               height: 52,
               decoration: BoxDecoration(
-                color: const Color(0xFF094a25).withOpacity(0.12),
+                color: const Color(0xFF1B4748).withOpacity(0.12),
                 shape: BoxShape.circle,
               ),
               child: Center(
@@ -342,7 +342,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
                     style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF094a25))),
+                        color: Color(0xFF1B4748))),
               ),
             ),
             const SizedBox(width: 12),
@@ -352,13 +352,13 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
                 style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF094a25)),
+                    color: Color(0xFF1B4748)),
               ),
             ),
             ElevatedButton(
               onPressed: () => _deleteBookmark(id, type, objectId),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFbc2023),
+                backgroundColor: const Color(0xFFF48900),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                 minimumSize: Size.zero,
@@ -398,10 +398,10 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
       width: 70,
       height: 70,
       decoration: BoxDecoration(
-        color: const Color(0xFF094a25).withValues(alpha: 0.08),
+        color: const Color(0xFF1B4748).withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(6),
       ),
-      child: Icon(icon, color: const Color(0xFF094a25), size: 28),
+      child: Icon(icon, color: const Color(0xFF1B4748), size: 28),
     );
   }
 }

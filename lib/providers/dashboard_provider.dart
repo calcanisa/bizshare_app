@@ -50,7 +50,7 @@ class DashboardProvider extends ChangeNotifier {
   Color get membershipColor {
     switch (membershipLabel) {
       case 'Silver': return const Color(0xFF9E9E9E);
-      case 'Gold': return const Color(0xFFf8b324);
+      case 'Gold': return const Color(0xFFF8BB25);
       default: return const Color(0xFF8D5524);
     }
   }

@@ -15,7 +15,7 @@ class CvGeneratorScreen extends StatefulWidget {
 }
 
 class _CvGeneratorScreenState extends State<CvGeneratorScreen> {
-  static const _green = PdfColor.fromInt(0xFF094a25);
+  static const _green = PdfColor.fromInt(0xFF1B4748);
   static const _lightGrey = PdfColor.fromInt(0xFFf5f5f5);
   static const _textDark = PdfColor.fromInt(0xFF222222);
   static const _textMid = PdfColor.fromInt(0xFF555555);
@@ -33,7 +33,7 @@ class _CvGeneratorScreenState extends State<CvGeneratorScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF094a25),
+        backgroundColor: const Color(0xFF1B4748),
         foregroundColor: Colors.white,
         title: Text('CV — $firstName $lastName'),
         elevation: 0,
@@ -49,23 +49,23 @@ class _CvGeneratorScreenState extends State<CvGeneratorScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF094a25).withValues(alpha: 0.06),
+                  color: const Color(0xFF1B4748).withValues(alpha: 0.06),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                      color: const Color(0xFF094a25).withValues(alpha: 0.2)),
+                      color: const Color(0xFF1B4748).withValues(alpha: 0.2)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Icon(Icons.picture_as_pdf_outlined,
-                        color: Color(0xFF094a25), size: 36),
+                        color: Color(0xFF1B4748), size: 36),
                     const SizedBox(height: 12),
                     Text(
                       '$firstName $lastName — CV',
                       style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF094a25)),
+                          color: Color(0xFF1B4748)),
                     ),
                     const SizedBox(height: 6),
                     Text(
@@ -85,7 +85,7 @@ class _CvGeneratorScreenState extends State<CvGeneratorScreen> {
                 child: ElevatedButton.icon(
                   onPressed: _generating ? null : _generate,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF094a25),
+                    backgroundColor: const Color(0xFF1B4748),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
@@ -128,7 +128,7 @@ class _CvGeneratorScreenState extends State<CvGeneratorScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Could not generate CV: $e'),
-        backgroundColor: const Color(0xFFbc2023),
+        backgroundColor: const Color(0xFFF48900),
       ));
     } finally {
       if (mounted) setState(() => _generating = false);

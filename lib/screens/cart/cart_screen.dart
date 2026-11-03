@@ -215,9 +215,9 @@ class _CartScreenState extends State<CartScreen> {
       final params = <String, String>{
         'merchant_id': '10000100',
         'merchant_key': '46f0cd694581a',
-        'return_url': 'https://sesha.co.za/success',
-        'cancel_url': 'https://sesha.co.za/failure',
-        'item_name': 'Sesha Payment',
+        'return_url': 'https://bizshare.co.za/success',
+        'cancel_url': 'https://bizshare.co.za/failure',
+        'item_name': 'BizShare Payment',
         'amount': total.toStringAsFixed(2),
         'custom_str1': _accountId?.toString() ?? '',
         'custom_str2': cartId.toString(),
@@ -276,10 +276,10 @@ class _CartScreenState extends State<CartScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF094a25).withOpacity(0.06),
+                  color: const Color(0xFF1B4748).withOpacity(0.06),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                      color: const Color(0xFF094a25).withOpacity(0.2)),
+                      color: const Color(0xFF1B4748).withOpacity(0.2)),
                 ),
                 child: const Text(
                   'Please do not close the app after making a payment. Wait until the success or failure page appears before navigating away.',
@@ -292,7 +292,7 @@ class _CartScreenState extends State<CartScreen> {
                   style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF094a25))),
+                      color: Color(0xFF1B4748))),
               const SizedBox(height: 12),
               if (cart.isEmpty)
                 Container(
@@ -352,7 +352,7 @@ class _CartScreenState extends State<CartScreen> {
                   children: [
                     Checkbox(
                       value: _accepted,
-                      activeColor: const Color(0xFF094a25),
+                      activeColor: const Color(0xFF1B4748),
                       onChanged: (v) {
                         setState(() => _accepted = v ?? false);
                         if (!(v ?? false))
@@ -366,7 +366,7 @@ class _CartScreenState extends State<CartScreen> {
                     const Text('I accept the ', style: TextStyle(fontSize: 13)),
                     GestureDetector(
                       onTap: () async {
-                        final uri = Uri.parse('https://sesha.co.za/terms');
+                        final uri = Uri.parse('https://bizshare.co.za/terms');
                         if (await canLaunchUrl(uri))
                           await launchUrl(uri,
                               mode: LaunchMode.externalApplication);
@@ -374,7 +374,7 @@ class _CartScreenState extends State<CartScreen> {
                       child: const Text('terms',
                           style: TextStyle(
                               fontSize: 13,
-                              color: Color(0xFF094a25),
+                              color: Color(0xFF1B4748),
                               decoration: TextDecoration.underline)),
                     ),
                   ],
@@ -424,7 +424,7 @@ class _CartScreenState extends State<CartScreen> {
               style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFF094a25)),
+                  color: Color(0xFF1B4748)),
             ),
           ),
           SizedBox(
@@ -442,7 +442,7 @@ class _CartScreenState extends State<CartScreen> {
               style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF094a25)),
+                  color: Color(0xFF1B4748)),
               textAlign: TextAlign.right,
             ),
           ),
@@ -453,7 +453,7 @@ class _CartScreenState extends State<CartScreen> {
               width: 24,
               height: 24,
               decoration: BoxDecoration(
-                  color: const Color(0xFFbc2023),
+                  color: const Color(0xFFF48900),
                   borderRadius: BorderRadius.circular(4)),
               child: const Center(
                   child: Text('×',
@@ -489,7 +489,7 @@ class _CartScreenState extends State<CartScreen> {
                 _totalRow(
                     'Discount (${_discountPercentage.toStringAsFixed(0)}%)',
                     '− R${_discountAmount.toStringAsFixed(2)}',
-                    valueColor: const Color(0xFFf8b324)),
+                    valueColor: const Color(0xFFF8BB25)),
                 const Divider(height: 16),
                 _totalRow('Total to Pay', 'R${_cartTotal.toStringAsFixed(2)}',
                     bold: true),
@@ -512,7 +512,7 @@ class _CartScreenState extends State<CartScreen> {
                       style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
-                          color: Color(0xFF094a25))),
+                          color: Color(0xFF1B4748))),
                   const SizedBox(width: 6),
                   GestureDetector(
                     onTap: () => setState(() => _showCodeInfo = !_showCodeInfo),
@@ -520,7 +520,7 @@ class _CartScreenState extends State<CartScreen> {
                       width: 18,
                       height: 18,
                       decoration: const BoxDecoration(
-                          color: Color(0xFF094a25), shape: BoxShape.circle),
+                          color: Color(0xFF1B4748), shape: BoxShape.circle),
                       child: const Center(
                           child: Text('?',
                               style: TextStyle(
@@ -539,7 +539,7 @@ class _CartScreenState extends State<CartScreen> {
                       color: Colors.black87,
                       borderRadius: BorderRadius.circular(8)),
                   child: const Text(
-                    'This is part of the Sesha Passive affiliate program where members earn a commission and you get a discount. This does not apply to Sesha Passive itself.',
+                    'This is part of the BizShare Passive affiliate program where members earn a commission and you get a discount. This does not apply to BizShare Passive itself.',
                     style: TextStyle(
                         fontSize: 12, color: Colors.white, height: 1.4),
                   ),
@@ -558,7 +558,7 @@ class _CartScreenState extends State<CartScreen> {
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                           borderSide:
-                              const BorderSide(color: Color(0xFF094a25)),
+                              const BorderSide(color: Color(0xFF1B4748)),
                         ),
                         contentPadding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 10),
@@ -582,7 +582,7 @@ class _CartScreenState extends State<CartScreen> {
                         width: 20,
                         height: 20,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Color(0xFF094a25))),
+                            strokeWidth: 2, color: Color(0xFF1B4748))),
                   ] else if (_refCodeController.text.isNotEmpty &&
                       !_showDiscount) ...[
                     const SizedBox(width: 8),
@@ -591,7 +591,7 @@ class _CartScreenState extends State<CartScreen> {
                           ? () => _validateCode(_refCodeController.text)
                           : null,
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF094a25),
+                          backgroundColor: const Color(0xFF1B4748),
                           padding: const EdgeInsets.symmetric(
                               horizontal: 14, vertical: 10)),
                       child: const Text('Apply',
@@ -624,20 +624,20 @@ class _CartScreenState extends State<CartScreen> {
                             width: 16,
                             height: 16,
                             child: CircularProgressIndicator(
-                                strokeWidth: 2, color: Color(0xFF094a25)))
+                                strokeWidth: 2, color: Color(0xFF1B4748)))
                         : Text('R${_walletBalance.toStringAsFixed(2)}',
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
                               color: _walletHasFunds
-                                  ? const Color(0xFF094a25)
-                                  : const Color(0xFFbc2023),
+                                  ? const Color(0xFF1B4748)
+                                  : const Color(0xFFF48900),
                             )),
                   ],
                 ),
                 if (!_walletHasFunds)
                   const Text('Insufficient',
-                      style: TextStyle(fontSize: 12, color: Color(0xFFbc2023))),
+                      style: TextStyle(fontSize: 12, color: Color(0xFFF48900))),
               ],
             ),
           ),
@@ -653,7 +653,7 @@ class _CartScreenState extends State<CartScreen> {
                       ? _payWithWallet
                       : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFf8b324),
+                    backgroundColor: const Color(0xFFF8BB25),
                     foregroundColor: Colors.black87,
                     disabledBackgroundColor: Colors.grey.shade300,
                     padding: const EdgeInsets.symmetric(vertical: 14),
@@ -678,7 +678,7 @@ class _CartScreenState extends State<CartScreen> {
                       ? _makePayment
                       : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF094a25),
+                    backgroundColor: const Color(0xFF1B4748),
                     disabledBackgroundColor: Colors.grey.shade300,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
@@ -709,7 +709,7 @@ class _CartScreenState extends State<CartScreen> {
                   ? _makePayment
                   : null,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF094a25),
+                backgroundColor: const Color(0xFF1B4748),
                 disabledBackgroundColor: Colors.grey.shade300,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
@@ -756,7 +756,7 @@ class _CartScreenState extends State<CartScreen> {
                 fontSize: bold ? 16 : 13,
                 fontWeight: bold ? FontWeight.bold : FontWeight.normal,
                 color: valueColor ??
-                    (bold ? const Color(0xFF094a25) : Colors.black87))),
+                    (bold ? const Color(0xFF1B4748) : Colors.black87))),
       ],
     );
   }
@@ -765,10 +765,10 @@ class _CartScreenState extends State<CartScreen> {
         width: 44,
         height: 44,
         decoration: BoxDecoration(
-          color: const Color(0xFF094a25).withOpacity(0.1),
+          color: const Color(0xFF1B4748).withOpacity(0.1),
           borderRadius: BorderRadius.circular(4),
         ),
         child: const Icon(Icons.shopping_cart_outlined,
-            color: Color(0xFF094a25), size: 20),
+            color: Color(0xFF1B4748), size: 20),
       );
 }

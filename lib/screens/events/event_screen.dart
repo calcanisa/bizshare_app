@@ -142,7 +142,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF094a25),
+        backgroundColor: const Color(0xFF1B4748),
         iconTheme: const IconThemeData(color: Colors.white),
         titleSpacing: 0,
         title: Padding(
@@ -162,7 +162,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap),
                 onPressed: () {},
                 child: const Text('Edit',
-                    style: TextStyle(color: Color(0xFFf8b324), fontSize: 12)),
+                    style: TextStyle(color: Color(0xFFF8BB25), fontSize: 12)),
               ),
               TextButton(
                 style: TextButton.styleFrom(
@@ -190,7 +190,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap),
                 onPressed: _deleteEvent,
                 child: const Text('Delete',
-                    style: TextStyle(color: Color(0xFFbc2023), fontSize: 12)),
+                    style: TextStyle(color: Color(0xFFF48900), fontSize: 12)),
               ),
             ] else ...[
               TextButton(
@@ -200,7 +200,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap),
                 onPressed: () {},
                 child: const Text('Contact',
-                    style: TextStyle(color: Color(0xFFf8b324), fontSize: 12)),
+                    style: TextStyle(color: Color(0xFFF8BB25), fontSize: 12)),
               ),
               TextButton(
                 style: TextButton.styleFrom(
@@ -217,12 +217,12 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
       ),
       body: _loading
           ? const Center(
-              child: CircularProgressIndicator(color: Color(0xFF094a25)))
+              child: CircularProgressIndicator(color: Color(0xFF1B4748)))
           : _event == null
               ? const Center(child: Text('Event not found'))
               : RefreshIndicator(
                   onRefresh: _loadEvent,
-                  color: const Color(0xFF094a25),
+                  color: const Color(0xFF1B4748),
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     child: Column(
@@ -253,7 +253,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     return Column(
       children: [
         Container(
-          color: const Color(0xFF0a5c2e),
+          color: const Color(0xFF296968),
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Column(
@@ -300,9 +300,9 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
   Widget _flyerPlaceholder() => Container(
         width: double.infinity,
         height: 200,
-        color: const Color(0xFF094a25).withValues(alpha: 0.1),
+        color: const Color(0xFF1B4748).withValues(alpha: 0.1),
         child: const Icon(Icons.event_outlined,
-            color: Color(0xFF094a25), size: 60),
+            color: Color(0xFF1B4748), size: 60),
       );
 
   // ─── Status section ───────────────────────────────────────────────────────
@@ -321,13 +321,13 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
         children: [
           if (status.isNotEmpty)
             Text(status,
-                style: const TextStyle(fontSize: 12, color: Color(0xFF094a25))),
+                style: const TextStyle(fontSize: 12, color: Color(0xFF1B4748))),
           const SizedBox(height: 4),
           Text(_formatDate(startDate?.toString()),
               style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF094a25))),
+                  color: Color(0xFF1B4748))),
           if (createdAt != null) ...[
             const SizedBox(height: 6),
             Text('Posted on: ${_formatDate(createdAt.toString())}',
@@ -338,7 +338,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
-                color: const Color(0xFFbc2023),
+                color: const Color(0xFFF48900),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: const Text('Expired',
@@ -416,13 +416,13 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 4),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF094a25)
+                                color: const Color(0xFF1B4748)
                                     .withValues(alpha: 0.08),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(d,
                                   style: const TextStyle(
-                                      fontSize: 12, color: Color(0xFF094a25))),
+                                      fontSize: 12, color: Color(0xFF1B4748))),
                             ))
                         .toList(),
                   ),
@@ -532,7 +532,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
               style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFbc2023))),
+                  color: Color(0xFFF48900))),
           const SizedBox(height: 8),
           if (venue['street'] != null)
             _detailRow('Street', venue['street'].toString()),
@@ -605,7 +605,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
   Widget _sectionHeader(String title) => Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        color: const Color(0xFF094a25),
+        color: const Color(0xFF1B4748),
         child: Text(title,
             style: const TextStyle(
                 color: Colors.white,

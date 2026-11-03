@@ -25,8 +25,8 @@ class AddWebsiteScreen extends StatefulWidget {
 }
 
 class _AddWebsiteScreenState extends State<AddWebsiteScreen> {
-  static const _green = Color(0xFF094a25);
-  static const _red = Color(0xFFbc2023);
+  static const _green = Color(0xFF1B4748);
+  static const _red = Color(0xFFF48900);
 
   final _nameCtrl = TextEditingController();
   final _urlCtrl = TextEditingController();

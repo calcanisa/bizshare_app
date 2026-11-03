@@ -115,14 +115,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     if (_loading) {
       return const Center(
-          child: CircularProgressIndicator(color: Color(0xFF094a25)));
+          child: CircularProgressIndicator(color: Color(0xFF1B4748)));
     }
 
     return Column(
       children: [
         // Tab bar + edit/save buttons
         Container(
-          color: const Color(0xFF094a25),
+          color: const Color(0xFF1B4748),
           child: Column(
             children: [
               // Edit / Save / Cancel buttons
@@ -134,15 +134,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     if (!_editing)
                       _headerBtn(
                           'Edit',
-                          const Color(0xFFf8b324),
+                          const Color(0xFFF8BB25),
                           Colors.black87,
                           () => setState(() => _editing = true)),
                     if (_editing) ...[
-                      _headerBtn('Save', const Color(0xFF094a25), Colors.white,
+                      _headerBtn('Save', const Color(0xFF1B4748), Colors.white,
                           _saving ? null : _saveSettings,
                           border: true),
                       const SizedBox(width: 8),
-                      _headerBtn('Cancel', const Color(0xFFbc2023),
+                      _headerBtn('Cancel', const Color(0xFFF48900),
                           Colors.white, _cancelEditing),
                     ],
                   ],
@@ -164,7 +164,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         Expanded(
           child: RefreshIndicator(
             onRefresh: _loadSettings,
-            color: const Color(0xFF094a25),
+            color: const Color(0xFF1B4748),
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               child: _tab == 1
@@ -186,11 +186,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         onTap: () => setState(() => _tab = index),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 11),
-          color: active ? Colors.white : const Color(0xFF094a25),
+          color: active ? Colors.white : const Color(0xFF1B4748),
           child: Text(label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: active ? const Color(0xFF094a25) : Colors.white60,
+                color: active ? const Color(0xFF1B4748) : Colors.white60,
                 fontSize: 12,
                 fontWeight: active ? FontWeight.bold : FontWeight.normal,
               )),
@@ -322,7 +322,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             null,
           ),
         ],
-        _sectionHeader('Sesha Passive'),
+        _sectionHeader('BizShare Passive'),
         _settingTile(
           'email_use_code',
           'Email me if someone uses my code for a purchase',
@@ -339,10 +339,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      color: const Color(0xFF094a25),
+      color: const Color(0xFF1B4748),
       child: Text(title,
           style: const TextStyle(
-              color: Color(0xFFf8b324),
+              color: Color(0xFFF8BB25),
               fontWeight: FontWeight.bold,
               fontSize: 13)),
     );
@@ -359,7 +359,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       child: SwitchListTile(
         value: value,
-        activeThumbColor: const Color(0xFF094a25),
+        activeThumbColor: const Color(0xFF1B4748),
         onChanged: isActive ? (v) => _toggle(key, v) : null,
         title: Text(
           label,

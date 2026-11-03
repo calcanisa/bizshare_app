@@ -77,7 +77,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF094a25),
+        backgroundColor: const Color(0xFF1B4748),
         iconTheme: const IconThemeData(color: Colors.white),
         titleSpacing: 0,
         title: Padding(
@@ -97,7 +97,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap),
                 onPressed: () {},
                 child: const Text('Edit',
-                    style: TextStyle(color: Color(0xFFf8b324), fontSize: 12)),
+                    style: TextStyle(color: Color(0xFFF8BB25), fontSize: 12)),
               ),
               TextButton(
                 style: TextButton.styleFrom(
@@ -125,7 +125,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap),
                 onPressed: _deleteProject,
                 child: const Text('Delete',
-                    style: TextStyle(color: Color(0xFFbc2023), fontSize: 12)),
+                    style: TextStyle(color: Color(0xFFF48900), fontSize: 12)),
               ),
             ],
             if (!_isOwner)
@@ -143,12 +143,12 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
       ),
       body: _loading
           ? const Center(
-              child: CircularProgressIndicator(color: Color(0xFF094a25)))
+              child: CircularProgressIndicator(color: Color(0xFF1B4748)))
           : _project == null
               ? const Center(child: Text('Project not found'))
               : RefreshIndicator(
                   onRefresh: _loadProject,
-                  color: const Color(0xFF094a25),
+                  color: const Color(0xFF1B4748),
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     child: Column(
@@ -174,7 +174,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
     return Column(
       children: [
         Container(
-          color: const Color(0xFF0a5c2e),
+          color: const Color(0xFF296968),
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Column(
@@ -219,9 +219,9 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
   Widget _imagePlaceholder() => Container(
         width: double.infinity,
         height: 260,
-        color: const Color(0xFF094a25).withValues(alpha: 0.1),
+        color: const Color(0xFF1B4748).withValues(alpha: 0.1),
         child: const Icon(Icons.lightbulb_outline,
-            color: Color(0xFF094a25), size: 60),
+            color: Color(0xFF1B4748), size: 60),
       );
 
   // ─── Details ──────────────────────────────────────────────────────────────
@@ -290,7 +290,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
             child: Text(value,
                 style: const TextStyle(
                     fontSize: 13,
-                    color: Color(0xFF094a25),
+                    color: Color(0xFF1B4748),
                     fontWeight: FontWeight.w500)),
           ),
         ],

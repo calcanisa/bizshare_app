@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiService {
-  static const String baseUrl = 'https://sesha.co.za';
+  static const String baseUrl = 'https://bizshare.co.za';
   static const _storage = FlutterSecureStorage();
   late final Dio _dio;
   DateTime? _tokenExpiry;

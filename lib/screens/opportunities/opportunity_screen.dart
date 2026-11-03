@@ -228,7 +228,7 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF094a25),
+        backgroundColor: const Color(0xFF1B4748),
         iconTheme: const IconThemeData(color: Colors.white),
         titleSpacing: 0,
         title: Padding(
@@ -242,12 +242,12 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
       ),
       body: _loading
           ? const Center(
-              child: CircularProgressIndicator(color: Color(0xFF094a25)))
+              child: CircularProgressIndicator(color: Color(0xFF1B4748)))
           : _opp == null
               ? const Center(child: Text('Opportunity not found'))
               : RefreshIndicator(
                   onRefresh: _loadOpportunity,
-                  color: const Color(0xFF094a25),
+                  color: const Color(0xFF1B4748),
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     child: Column(
@@ -281,7 +281,7 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
           ),
           onPressed: _extendOpportunity,
           child: const Text('Extend',
-              style: TextStyle(color: Color(0xFFf8b324), fontSize: 11)),
+              style: TextStyle(color: Color(0xFFF8BB25), fontSize: 11)),
         ));
       }
       actions.add(TextButton(
@@ -292,7 +292,7 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
         ),
         onPressed: () {},
         child: const Text('Edit',
-            style: TextStyle(color: Color(0xFFf8b324), fontSize: 11)),
+            style: TextStyle(color: Color(0xFFF8BB25), fontSize: 11)),
       ));
       actions.add(TextButton(
         style: TextButton.styleFrom(
@@ -319,7 +319,7 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
         ),
         onPressed: _deleteOpportunity,
         child: const Text('Delete',
-            style: TextStyle(color: Color(0xFFbc2023), fontSize: 11)),
+            style: TextStyle(color: Color(0xFFF48900), fontSize: 11)),
       ));
     } else {
       if (!_isExpired) {
@@ -342,7 +342,7 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
                   },
             style: ElevatedButton.styleFrom(
               backgroundColor:
-                  _hasApplied ? Colors.grey.shade400 : const Color(0xFFf8b324),
+                  _hasApplied ? Colors.grey.shade400 : const Color(0xFFF8BB25),
               foregroundColor: Colors.black87,
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               minimumSize: Size.zero,
@@ -379,7 +379,7 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
 
   Widget _categoryBar() {
     return Container(
-      color: const Color(0xFF0a5c2e),
+      color: const Color(0xFF296968),
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Column(
@@ -457,7 +457,7 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFbc2023),
+                          color: const Color(0xFFF48900),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: const Text('Expired',
@@ -479,9 +479,9 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
   Widget _imagePlaceholder() => Container(
         height: 220,
         width: double.infinity,
-        color: const Color(0xFF094a25).withValues(alpha: 0.1),
+        color: const Color(0xFF1B4748).withValues(alpha: 0.1),
         child:
-            const Icon(Icons.trending_up, color: Color(0xFF094a25), size: 60),
+            const Icon(Icons.trending_up, color: Color(0xFF1B4748), size: 60),
       );
 
   // ─── Applications (owner view) ────────────────────────────────────────────
@@ -518,7 +518,7 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
                       child: OutlinedButton(
                         onPressed: () {},
                         style: OutlinedButton.styleFrom(
-                            foregroundColor: const Color(0xFF094a25)),
+                            foregroundColor: const Color(0xFF1B4748)),
                         child: const Text('Show More'),
                       ),
                     ),
@@ -572,7 +572,7 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
                           style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF094a25)),
+                              color: Color(0xFF1B4748)),
                         ),
                         TextSpan(
                           text: '$firstName $lastName'.trim(),
@@ -598,7 +598,7 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
                   }
                 }),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF094a25),
+                  backgroundColor: const Color(0xFF1B4748),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   minimumSize: Size.zero,
@@ -611,7 +611,7 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
               ElevatedButton(
                 onPressed: () => _acceptApplication(id),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFbc2023),
+                  backgroundColor: const Color(0xFFF48900),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   minimumSize: Size.zero,
@@ -681,7 +681,7 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
                         }
                       },
                       style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF094a25),
+                          foregroundColor: const Color(0xFF1B4748),
                           padding: const EdgeInsets.symmetric(
                               horizontal: 14, vertical: 6)),
                       child: const Text('Edit', style: TextStyle(fontSize: 12)),
@@ -691,7 +691,7 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
                       ElevatedButton(
                         onPressed: () => _deleteApplication(id),
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFbc2023),
+                            backgroundColor: const Color(0xFFF48900),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 14, vertical: 6)),
                         child: const Text('Delete',
@@ -713,7 +713,7 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
   Widget _sectionHeader(String title) => Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        color: const Color(0xFF094a25),
+        color: const Color(0xFF1B4748),
         child: Text(title,
             style: const TextStyle(
                 color: Colors.white,
@@ -732,7 +732,7 @@ class _OpportunityDetailScreenState extends State<OpportunityDetailScreen> {
                   style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF094a25))),
+                      color: Color(0xFF1B4748))),
             ),
             Expanded(
               child: Text(value,

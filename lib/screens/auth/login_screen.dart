@@ -47,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
         statusBarBrightness: Brightness.dark,
       ),
       child: Scaffold(
-        backgroundColor: const Color(0xFF094a25),
+        backgroundColor: const Color(0xFF1B4748),
         body: SafeArea(
           child: Center(
             child: SingleChildScrollView(
@@ -82,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: const BorderSide(
-                            color: Color(0xFFf8b324)),
+                            color: Color(0xFFF8BB25)),
                       ),
                     ),
                   ),
@@ -116,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: const BorderSide(
-                            color: Color(0xFFf8b324)),
+                            color: Color(0xFFF8BB25)),
                       ),
                     ),
                     onSubmitted: (_) => _login(),
@@ -130,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         value: _rememberMe,
                         onChanged: (v) =>
                             setState(() => _rememberMe = v ?? false),
-                        activeColor: const Color(0xFFf8b324),
+                        activeColor: const Color(0xFFF8BB25),
                         checkColor: Colors.black,
                         side:
                             const BorderSide(color: Colors.white54),
@@ -160,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: ElevatedButton(
                       onPressed: auth.isLoading ? null : _login,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFbc2023),
+                        backgroundColor: const Color(0xFFF48900),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8)),
                       ),

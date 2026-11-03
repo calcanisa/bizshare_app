@@ -17,9 +17,9 @@ class FeatureScreen extends StatefulWidget {
 }
 
 class _FeatureScreenState extends State<FeatureScreen> {
-  static const _green = Color(0xFF094a25);
-  static const _red = Color(0xFFbc2023);
-  static const _yellow = Color(0xFFf8b324);
+  static const _green = Color(0xFF1B4748);
+  static const _red = Color(0xFFF48900);
+  static const _yellow = Color(0xFFF8BB25);
 
   bool _featureTop = false;
   bool _featureHighlight = false;

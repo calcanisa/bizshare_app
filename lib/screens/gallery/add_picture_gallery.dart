@@ -85,7 +85,7 @@ class _AddPictureGalleryScreenState extends State<AddPictureGalleryScreen> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(msg),
-      backgroundColor: error ? const Color(0xFFbc2023) : const Color(0xFF094a25),
+      backgroundColor: error ? const Color(0xFFF48900) : const Color(0xFF1B4748),
     ));
   }
 
@@ -217,7 +217,7 @@ class _AddPictureGalleryScreenState extends State<AddPictureGalleryScreen> {
         title: Text(widget.title,
             style: const TextStyle(
                 color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600)),
-        backgroundColor: const Color(0xFF094a25),
+        backgroundColor: const Color(0xFF1B4748),
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           if (_saving)
@@ -252,13 +252,13 @@ class _AddPictureGalleryScreenState extends State<AddPictureGalleryScreen> {
               padding: const EdgeInsets.all(12),
               margin: const EdgeInsets.only(bottom: 20),
               decoration: BoxDecoration(
-                color: const Color(0xFFf0f7f3),
+                color: const Color(0xFFE8F3F2),
                 borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: const Color(0xFF094a25).withOpacity(0.2)),
+                border: Border.all(color: const Color(0xFF1B4748).withOpacity(0.2)),
               ),
               child: Text(
                 'You are limited to ${widget.limit} pictures per gallery.',
-                style: const TextStyle(fontSize: 13, color: Color(0xFF094a25)),
+                style: const TextStyle(fontSize: 13, color: Color(0xFF1B4748)),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -278,7 +278,7 @@ class _AddPictureGalleryScreenState extends State<AddPictureGalleryScreen> {
                     borderRadius: BorderRadius.circular(6)),
                 focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(6),
-                    borderSide: const BorderSide(color: Color(0xFF094a25))),
+                    borderSide: const BorderSide(color: Color(0xFF1B4748))),
                 contentPadding: const EdgeInsets.symmetric(
                     horizontal: 12, vertical: 10),
                 counterStyle: const TextStyle(fontSize: 11),
@@ -292,15 +292,15 @@ class _AddPictureGalleryScreenState extends State<AddPictureGalleryScreen> {
               child: OutlinedButton.icon(
                 onPressed: _saving ? null : _pickImages,
                 icon: const Icon(Icons.add_photo_alternate_outlined,
-                    color: Color(0xFF094a25)),
+                    color: Color(0xFF1B4748)),
                 label: Text(
                   _images.isEmpty
                       ? 'Browse for Pictures'
                       : 'Add More (${_images.length}/${widget.limit})',
-                  style: const TextStyle(color: Color(0xFF094a25)),
+                  style: const TextStyle(color: Color(0xFF1B4748)),
                 ),
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Color(0xFF094a25)),
+                  side: const BorderSide(color: Color(0xFF1B4748)),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(6)),
@@ -354,7 +354,7 @@ class _AddPictureGalleryScreenState extends State<AddPictureGalleryScreen> {
                             width: 22,
                             height: 22,
                             decoration: const BoxDecoration(
-                              color: Color(0xFFbc2023),
+                              color: Color(0xFFF48900),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(Icons.close,
@@ -375,7 +375,7 @@ class _AddPictureGalleryScreenState extends State<AddPictureGalleryScreen> {
               child: TextButton(
                 onPressed: _saving ? null : () => Navigator.pop(context),
                 child: const Text('Cancel',
-                    style: TextStyle(color: Color(0xFFbc2023))),
+                    style: TextStyle(color: Color(0xFFF48900))),
               ),
             ),
           ],

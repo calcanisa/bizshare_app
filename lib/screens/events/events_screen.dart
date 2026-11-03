@@ -270,7 +270,7 @@ class _EventsScreenState extends State<EventsScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: const BoxDecoration(
-                    color: Color(0xFF094a25),
+                    color: Color(0xFF1B4748),
                     borderRadius:
                         BorderRadius.vertical(top: Radius.circular(16)),
                   ),
@@ -298,7 +298,7 @@ class _EventsScreenState extends State<EventsScreen> {
                           _loadEvents(refresh: true);
                         },
                         child: const Text('Reset',
-                            style: TextStyle(color: Color(0xFFf8b324))),
+                            style: TextStyle(color: Color(0xFFF8BB25))),
                       ),
                     ],
                   ),
@@ -327,7 +327,7 @@ class _EventsScreenState extends State<EventsScreen> {
                                       style: TextStyle(
                                           color: Colors.black45, fontSize: 13)),
                                   selected: _tempCity == null,
-                                  selectedTileColor: const Color(0xFF094a25)
+                                  selectedTileColor: const Color(0xFF1B4748)
                                       .withValues(alpha: 0.1),
                                   onTap: () =>
                                       setSheetState(() => _tempCity = null),
@@ -339,8 +339,8 @@ class _EventsScreenState extends State<EventsScreen> {
                                 title: Text(city['name'] ?? '',
                                     style: const TextStyle(fontSize: 13)),
                                 selected: _tempCity == city['id'],
-                                selectedColor: const Color(0xFF094a25),
-                                selectedTileColor: const Color(0xFF094a25)
+                                selectedColor: const Color(0xFF1B4748),
+                                selectedTileColor: const Color(0xFF1B4748)
                                     .withValues(alpha: 0.1),
                                 onTap: () =>
                                     setSheetState(() => _tempCity = city['id']),
@@ -447,7 +447,7 @@ class _EventsScreenState extends State<EventsScreen> {
                         _loadEvents(refresh: true);
                       },
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF094a25),
+                          backgroundColor: const Color(0xFF1B4748),
                           padding: const EdgeInsets.symmetric(vertical: 14)),
                       child: const Text('Apply Filters',
                           style: TextStyle(color: Colors.white, fontSize: 16)),
@@ -467,7 +467,7 @@ class _EventsScreenState extends State<EventsScreen> {
         child: Text(label,
             style: const TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF094a25),
+                color: Color(0xFF1B4748),
                 fontSize: 13)),
       );
 
@@ -506,7 +506,7 @@ class _EventsScreenState extends State<EventsScreen> {
     return Column(
       children: [
         Container(
-          color: const Color(0xFF094a25),
+          color: const Color(0xFF1B4748),
           child: Row(
             children: [
               _tabBtn(1, 'My Events'),
@@ -528,11 +528,11 @@ class _EventsScreenState extends State<EventsScreen> {
         onTap: () => setState(() => _tab = index),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
-          color: active ? Colors.white : const Color(0xFF094a25),
+          color: active ? Colors.white : const Color(0xFF1B4748),
           child: Text(label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: active ? const Color(0xFF094a25) : Colors.white60,
+                color: active ? const Color(0xFF1B4748) : Colors.white60,
                 fontSize: 13,
                 fontWeight: active ? FontWeight.bold : FontWeight.normal,
               )),
@@ -544,7 +544,7 @@ class _EventsScreenState extends State<EventsScreen> {
   Widget _myEventsTab() {
     if (_loadingMine) {
       return const Center(
-          child: CircularProgressIndicator(color: Color(0xFF094a25)));
+          child: CircularProgressIndicator(color: Color(0xFF1B4748)));
     }
 
     final currentEvents =
@@ -557,12 +557,12 @@ class _EventsScreenState extends State<EventsScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text('You have not created any events.',
-                style: TextStyle(color: Color(0xFF094a25))),
+                style: TextStyle(color: Color(0xFF1B4748))),
             const SizedBox(height: 12),
             ElevatedButton.icon(
               onPressed: _openAddEvent,
               style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF094a25)),
+                  backgroundColor: const Color(0xFF1B4748)),
               icon: const Icon(Icons.add, color: Colors.white),
               label: const Text('Create Event',
                   style: TextStyle(color: Colors.white)),
@@ -574,7 +574,7 @@ class _EventsScreenState extends State<EventsScreen> {
 
     return RefreshIndicator(
       onRefresh: _loadMyEvents,
-      color: const Color(0xFF094a25),
+      color: const Color(0xFF1B4748),
       child: ListView(
         children: [
           Padding(
@@ -582,7 +582,7 @@ class _EventsScreenState extends State<EventsScreen> {
             child: ElevatedButton.icon(
               onPressed: _openAddEvent,
               style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF094a25),
+                  backgroundColor: const Color(0xFF1B4748),
                   minimumSize: const Size(double.infinity, 44)),
               icon: const Icon(Icons.add, color: Colors.white),
               label: const Text('Create New Event',
@@ -606,11 +606,11 @@ class _EventsScreenState extends State<EventsScreen> {
   Widget _listHeader(String title) => Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        color: const Color(0xFF094a25),
+        color: const Color(0xFF1B4748),
         margin: const EdgeInsets.only(bottom: 4),
         child: Text(title,
             style: const TextStyle(
-                color: Color(0xFFf8b324), fontWeight: FontWeight.bold)),
+                color: Color(0xFFF8BB25), fontWeight: FontWeight.bold)),
       );
 
   Widget _myEventCard(Map<String, dynamic> event, {bool past = false}) {
@@ -649,8 +649,8 @@ class _EventsScreenState extends State<EventsScreen> {
                       width: double.infinity,
                       fit: BoxFit.cover,
                       errorWidget: (_, __, ___) => Container(
-                          height: 160, color: const Color(0xFF094a25)))
-                  : Container(height: 120, color: const Color(0xFF094a25)),
+                          height: 160, color: const Color(0xFF1B4748)))
+                  : Container(height: 120, color: const Color(0xFF1B4748)),
             ),
             Padding(
               padding: const EdgeInsets.all(12),
@@ -661,7 +661,7 @@ class _EventsScreenState extends State<EventsScreen> {
                       style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF094a25))),
+                          color: Color(0xFF1B4748))),
                   const SizedBox(height: 6),
                   _eventDetail('Starts', _formatDateTime(startDate)),
                   _eventDetail('Ends', _formatDateTime(endDate)),
@@ -674,7 +674,7 @@ class _EventsScreenState extends State<EventsScreen> {
                           child: OutlinedButton(
                             onPressed: () => _openEditEvent(event),
                             style: OutlinedButton.styleFrom(
-                                foregroundColor: const Color(0xFF094a25),
+                                foregroundColor: const Color(0xFF1B4748),
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 4)),
                             child: const Text('Edit',
@@ -696,7 +696,7 @@ class _EventsScreenState extends State<EventsScreen> {
                               );
                             },
                             style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFf8b324),
+                                backgroundColor: const Color(0xFFF8BB25),
                                 foregroundColor: Colors.black87,
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 4)),
@@ -709,7 +709,7 @@ class _EventsScreenState extends State<EventsScreen> {
                           child: ElevatedButton(
                             onPressed: () => _deleteEvent(event['id']),
                             style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFbc2023),
+                                backgroundColor: const Color(0xFFF48900),
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 4)),
                             child: const Text('Delete',
@@ -738,7 +738,7 @@ class _EventsScreenState extends State<EventsScreen> {
           Text('$label: ',
               style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF094a25),
+                  color: Color(0xFF1B4748),
                   fontSize: 12)),
           Text(value,
               style: const TextStyle(fontSize: 12, color: Colors.black54)),
@@ -784,18 +784,18 @@ class _EventsScreenState extends State<EventsScreen> {
                               horizontal: 12, vertical: 4),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? const Color(0xFF094a25)
+                                ? const Color(0xFF1B4748)
                                 : Colors.white,
                             borderRadius: BorderRadius.circular(4),
                             border: Border.all(
-                                color: const Color(0xFF094a25), width: 1),
+                                color: const Color(0xFF1B4748), width: 1),
                           ),
                           child: Text(prov['name'] ?? '',
                               style: TextStyle(
                                   fontSize: 12,
                                   color: isSelected
                                       ? Colors.white
-                                      : const Color(0xFF094a25))),
+                                      : const Color(0xFF1B4748))),
                         ),
                       );
                     },
@@ -806,7 +806,7 @@ class _EventsScreenState extends State<EventsScreen> {
                 Stack(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.tune, color: Color(0xFF094a25)),
+                      icon: const Icon(Icons.tune, color: Color(0xFF1B4748)),
                       onPressed: _openFilterSheet,
                     ),
                     if (_hasActiveFilters)
@@ -817,7 +817,7 @@ class _EventsScreenState extends State<EventsScreen> {
                           width: 8,
                           height: 8,
                           decoration: const BoxDecoration(
-                            color: Color(0xFFbc2023),
+                            color: Color(0xFFF48900),
                             shape: BoxShape.circle,
                           ),
                         ),
@@ -887,18 +887,18 @@ class _EventsScreenState extends State<EventsScreen> {
           child: _selectedProvince == null
               ? const Center(
                   child: Text('Select a province above to start',
-                      style: TextStyle(color: Color(0xFF094a25))))
+                      style: TextStyle(color: Color(0xFF1B4748))))
               : _loadingAll && _events.isEmpty
                   ? const Center(
                       child:
-                          CircularProgressIndicator(color: Color(0xFF094a25)))
+                          CircularProgressIndicator(color: Color(0xFF1B4748)))
                   : _events.isEmpty
                       ? const Center(
                           child: Text('No events found',
-                              style: TextStyle(color: Color(0xFF094a25))))
+                              style: TextStyle(color: Color(0xFF1B4748))))
                       : RefreshIndicator(
                           onRefresh: () => _loadEvents(refresh: true),
-                          color: const Color(0xFF094a25),
+                          color: const Color(0xFF1B4748),
                           child: ListView.builder(
                             controller: _scrollController,
                             itemCount: _events.length + (_hasMore ? 1 : 0),
@@ -908,7 +908,7 @@ class _EventsScreenState extends State<EventsScreen> {
                                   child: Padding(
                                     padding: EdgeInsets.all(16),
                                     child: CircularProgressIndicator(
-                                        color: Color(0xFF094a25)),
+                                        color: Color(0xFF1B4748)),
                                   ),
                                 );
                               }
@@ -980,7 +980,7 @@ class _EventsScreenState extends State<EventsScreen> {
                         style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF094a25))),
+                            color: Color(0xFF1B4748))),
                     if (description.isNotEmpty) ...[
                       const SizedBox(height: 4),
                       Text(
@@ -1021,8 +1021,8 @@ class _EventsScreenState extends State<EventsScreen> {
   Widget _imagePlaceholder() => Container(
         width: 80,
         height: 80,
-        color: const Color(0xFF094a25).withValues(alpha: 0.1),
+        color: const Color(0xFF1B4748).withValues(alpha: 0.1),
         child: const Icon(Icons.event_outlined,
-            color: Color(0xFF094a25), size: 32),
+            color: Color(0xFF1B4748), size: 32),
       );
 }

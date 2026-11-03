@@ -106,7 +106,7 @@ class _AdBannerState extends State<AdBanner> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
               decoration: const BoxDecoration(
-                color: Color(0xFF094a25),
+                color: Color(0xFF1B4748),
                 borderRadius: BorderRadius.vertical(top: Radius.circular(7)),
               ),
               child: const Text('Sponsored',
@@ -139,7 +139,7 @@ class _AdBannerState extends State<AdBanner> {
                           style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF094a25))),
+                              color: Color(0xFF1B4748))),
                     if (adText.isNotEmpty) ...[
                       const SizedBox(height: 4),
                       Text(adText,

@@ -4,7 +4,7 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 android {
-    namespace = "com.example.sesha_app"
+    namespace = "co.za.bizshare.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
     compileOptions {
@@ -15,7 +15,7 @@ android {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
     defaultConfig {
-        applicationId = "com.example.sesha_app"
+        applicationId = "co.za.bizshare.app"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

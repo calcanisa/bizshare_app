@@ -317,7 +317,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: const BoxDecoration(
-                    color: Color(0xFF094a25),
+                    color: Color(0xFF1B4748),
                     borderRadius:
                         BorderRadius.vertical(top: Radius.circular(16)),
                   ),
@@ -343,7 +343,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                           });
                         },
                         child: const Text('Reset',
-                            style: TextStyle(color: Color(0xFFf8b324))),
+                            style: TextStyle(color: Color(0xFFF8BB25))),
                       ),
                     ],
                   ),
@@ -483,7 +483,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                         _loadBusinesses(refresh: true);
                       },
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF094a25),
+                          backgroundColor: const Color(0xFF1B4748),
                           padding: const EdgeInsets.symmetric(vertical: 14)),
                       child: const Text('Apply Filters',
                           style: TextStyle(color: Colors.white, fontSize: 16)),
@@ -503,7 +503,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
         child: Text(label,
             style: const TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF094a25),
+                color: Color(0xFF1B4748),
                 fontSize: 13)),
       );
 
@@ -542,7 +542,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
     return Column(
       children: [
         Container(
-          color: const Color(0xFF094a25),
+          color: const Color(0xFF1B4748),
           child: Row(
             children: [
               _tabBtn(1, 'My Businesses'),
@@ -573,11 +573,11 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
         },
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
-          color: active ? Colors.white : const Color(0xFF094a25),
+          color: active ? Colors.white : const Color(0xFF1B4748),
           child: Text(label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: active ? const Color(0xFF094a25) : Colors.white60,
+                color: active ? const Color(0xFF1B4748) : Colors.white60,
                 fontSize: 13,
                 fontWeight: active ? FontWeight.bold : FontWeight.normal,
               )),
@@ -591,25 +591,25 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
   Widget _myBusinessesTab() {
     if (_loadingMine) {
       return const Center(
-          child: CircularProgressIndicator(color: Color(0xFF094a25)));
+          child: CircularProgressIndicator(color: Color(0xFF1B4748)));
     }
     return RefreshIndicator(
       onRefresh: _loadMyBusinesses,
-      color: const Color(0xFF094a25),
+      color: const Color(0xFF1B4748),
       child: _myBusinesses.isEmpty
           ? ListView(
               children: [
                 const SizedBox(height: 60),
                 const Center(
                   child: Text('You have not created any business listings.',
-                      style: TextStyle(color: Color(0xFF094a25))),
+                      style: TextStyle(color: Color(0xFF1B4748))),
                 ),
                 const SizedBox(height: 16),
                 Center(
                   child: ElevatedButton.icon(
                     onPressed: _openAddBusiness,
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF094a25),
+                        backgroundColor: const Color(0xFF1B4748),
                         padding: const EdgeInsets.symmetric(
                             horizontal: 20, vertical: 12)),
                     icon: const Icon(Icons.add, color: Colors.white),
@@ -628,7 +628,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                     child: ElevatedButton.icon(
                       onPressed: _openAddBusiness,
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF094a25),
+                          backgroundColor: const Color(0xFF1B4748),
                           padding: const EdgeInsets.symmetric(vertical: 12)),
                       icon: const Icon(Icons.add, color: Colors.white),
                       label: const Text('Create New Business',
@@ -677,17 +677,17 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                       width: double.infinity,
                       fit: BoxFit.cover,
                       errorWidget: (_, __, ___) => Container(
-                          height: 140, color: const Color(0xFF094a25)))
-                  : Container(height: 140, color: const Color(0xFF094a25)),
+                          height: 140, color: const Color(0xFF1B4748)))
+                  : Container(height: 140, color: const Color(0xFF1B4748)),
             ),
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(10),
-              color: const Color(0xFF094a25),
+              color: const Color(0xFF1B4748),
               child: Text(name,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                      color: Color(0xFFf8b324),
+                      color: Color(0xFFF8BB25),
                       fontWeight: FontWeight.bold,
                       fontSize: 15)),
             ),
@@ -700,7 +700,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                       child: OutlinedButton(
                         onPressed: () => _openEditBusiness(business),
                         style: OutlinedButton.styleFrom(
-                            foregroundColor: const Color(0xFF094a25)),
+                            foregroundColor: const Color(0xFF1B4748)),
                         child: const Text('Edit'),
                       ),
                     ),
@@ -719,7 +719,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFf8b324),
+                            backgroundColor: const Color(0xFFF8BB25),
                             foregroundColor: Colors.black87),
                         child: const Text('Feature'),
                       ),
@@ -730,7 +730,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                     child: ElevatedButton(
                       onPressed: () => _deleteBusiness(business['id']),
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFbc2023)),
+                          backgroundColor: const Color(0xFFF48900)),
                       child: const Text('Delete',
                           style: TextStyle(color: Colors.white)),
                     ),
@@ -749,16 +749,16 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
   Widget _followingTab() {
     if (_loadingFollowing) {
       return const Center(
-          child: CircularProgressIndicator(color: Color(0xFF094a25)));
+          child: CircularProgressIndicator(color: Color(0xFF1B4748)));
     }
     if (_following.isEmpty) {
       return const Center(
           child: Text('You are not following any businesses.',
-              style: TextStyle(color: Color(0xFF094a25))));
+              style: TextStyle(color: Color(0xFF1B4748))));
     }
     return RefreshIndicator(
       onRefresh: _loadFollowing,
-      color: const Color(0xFF094a25),
+      color: const Color(0xFF1B4748),
       child: ListView.builder(
         itemCount: _following.length,
         itemBuilder: (context, index) => _followingCard(_following[index]),
@@ -802,8 +802,8 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                           width: double.infinity,
                           fit: BoxFit.cover,
                           errorWidget: (_, __, ___) => Container(
-                              height: 140, color: const Color(0xFF094a25)))
-                      : Container(height: 140, color: const Color(0xFF094a25)),
+                              height: 140, color: const Color(0xFF1B4748)))
+                      : Container(height: 140, color: const Color(0xFF1B4748)),
                 ),
                 if (hasUpdates)
                   Positioned(
@@ -813,7 +813,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFf8b324),
+                        color: const Color(0xFFF8BB25),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: const Text('Updated',
@@ -826,11 +826,11 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(10),
-              color: const Color(0xFF094a25),
+              color: const Color(0xFF1B4748),
               child: Text(name,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                      color: Color(0xFFf8b324),
+                      color: Color(0xFFF8BB25),
                       fontWeight: FontWeight.bold,
                       fontSize: 15)),
             ),
@@ -842,7 +842,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                     child: OutlinedButton(
                       onPressed: () => _unfollow(business['id']),
                       style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF094a25)),
+                          foregroundColor: const Color(0xFF1B4748)),
                       child: const Text('Unfollow'),
                     ),
                   ),
@@ -895,18 +895,18 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                               horizontal: 12, vertical: 4),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? const Color(0xFF094a25)
+                                ? const Color(0xFF1B4748)
                                 : Colors.white,
                             borderRadius: BorderRadius.circular(4),
                             border: Border.all(
-                                color: const Color(0xFF094a25), width: 1),
+                                color: const Color(0xFF1B4748), width: 1),
                           ),
                           child: Text(cat['name'] ?? '',
                               style: TextStyle(
                                   fontSize: 12,
                                   color: isSelected
                                       ? Colors.white
-                                      : const Color(0xFF094a25))),
+                                      : const Color(0xFF1B4748))),
                         ),
                       );
                     },
@@ -917,7 +917,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                 Stack(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.tune, color: Color(0xFF094a25)),
+                      icon: const Icon(Icons.tune, color: Color(0xFF1B4748)),
                       onPressed: _openFilterSheet,
                     ),
                     if (_hasActiveFilters)
@@ -928,7 +928,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                           width: 8,
                           height: 8,
                           decoration: const BoxDecoration(
-                            color: Color(0xFFbc2023),
+                            color: Color(0xFFF48900),
                             shape: BoxShape.circle,
                           ),
                         ),
@@ -1032,18 +1032,18 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
           child: _selectedCategory == null
               ? const Center(
                   child: Text('Select a category above to start',
-                      style: TextStyle(color: Color(0xFF094a25))))
+                      style: TextStyle(color: Color(0xFF1B4748))))
               : _loadingAll && _businesses.isEmpty
                   ? const Center(
                       child:
-                          CircularProgressIndicator(color: Color(0xFF094a25)))
+                          CircularProgressIndicator(color: Color(0xFF1B4748)))
                   : _businesses.isEmpty
                       ? const Center(
                           child: Text('No businesses found',
-                              style: TextStyle(color: Color(0xFF094a25))))
+                              style: TextStyle(color: Color(0xFF1B4748))))
                       : RefreshIndicator(
                           onRefresh: () => _loadBusinesses(refresh: true),
-                          color: const Color(0xFF094a25),
+                          color: const Color(0xFF1B4748),
                           child: ListView.builder(
                             controller: _scrollController,
                             itemCount: _businesses.length + (_hasMore ? 1 : 0),
@@ -1053,7 +1053,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                   child: Padding(
                                     padding: EdgeInsets.all(16),
                                     child: CircularProgressIndicator(
-                                        color: Color(0xFF094a25)),
+                                        color: Color(0xFF1B4748)),
                                   ),
                                 );
                               }
@@ -1113,7 +1113,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                         style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF094a25))),
+                            color: Color(0xFF1B4748))),
                     if (description.isNotEmpty) ...[
                       const SizedBox(height: 4),
                       Text(
@@ -1148,7 +1148,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
   Widget _logoPlaceholder() => Container(
         width: 70,
         height: 70,
-        color: const Color(0xFF094a25).withValues(alpha: 0.1),
-        child: const Icon(Icons.business, color: Color(0xFF094a25), size: 32),
+        color: const Color(0xFF1B4748).withValues(alpha: 0.1),
+        child: const Icon(Icons.business, color: Color(0xFF1B4748), size: 32),
       );
 }

@@ -105,7 +105,7 @@ class _WebsiteDetailScreenState extends State<WebsiteDetailScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF094a25),
+        backgroundColor: const Color(0xFF1B4748),
         iconTheme: const IconThemeData(color: Colors.white),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,7 +118,7 @@ class _WebsiteDetailScreenState extends State<WebsiteDetailScreen> {
             if (category != null)
               Text(
                 category['name']?.toString() ?? '',
-                style: const TextStyle(color: Color(0xFFf8b324), fontSize: 11),
+                style: const TextStyle(color: Color(0xFFF8BB25), fontSize: 11),
               ),
           ],
         ),
@@ -128,12 +128,12 @@ class _WebsiteDetailScreenState extends State<WebsiteDetailScreen> {
               TextButton(
                 onPressed: () {}, // TODO: edit modal
                 child: const Text('Edit',
-                    style: TextStyle(color: Color(0xFFf8b324), fontSize: 12)),
+                    style: TextStyle(color: Color(0xFFF8BB25), fontSize: 12)),
               ),
               TextButton(
                 onPressed: _deleteListing,
                 child: const Text('Delete',
-                    style: TextStyle(color: Color(0xFFbc2023), fontSize: 12)),
+                    style: TextStyle(color: Color(0xFFF48900), fontSize: 12)),
               ),
             ] else
               TextButton(
@@ -146,12 +146,12 @@ class _WebsiteDetailScreenState extends State<WebsiteDetailScreen> {
       ),
       body: _loading
           ? const Center(
-              child: CircularProgressIndicator(color: Color(0xFF094a25)))
+              child: CircularProgressIndicator(color: Color(0xFF1B4748)))
           : _listing == null
               ? const Center(child: Text('Listing not found'))
               : RefreshIndicator(
                   onRefresh: _loadListing,
-                  color: const Color(0xFF094a25),
+                  color: const Color(0xFF1B4748),
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     child: Column(
@@ -211,8 +211,8 @@ class _WebsiteDetailScreenState extends State<WebsiteDetailScreen> {
   Widget _imagePlaceholder() => Container(
         height: 220,
         width: double.infinity,
-        color: const Color(0xFF094a25).withValues(alpha: 0.1),
-        child: const Icon(Icons.language, color: Color(0xFF094a25), size: 60),
+        color: const Color(0xFF1B4748).withValues(alpha: 0.1),
+        child: const Icon(Icons.language, color: Color(0xFF1B4748), size: 60),
       );
 
   // ─── Details ──────────────────────────────────────────────────────────────
@@ -230,7 +230,7 @@ class _WebsiteDetailScreenState extends State<WebsiteDetailScreen> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            color: const Color(0xFF094a25),
+            color: const Color(0xFF1B4748),
             child: const Text('Basic Info',
                 style: TextStyle(
                     color: Colors.white,
@@ -246,7 +246,7 @@ class _WebsiteDetailScreenState extends State<WebsiteDetailScreen> {
                     style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF094a25))),
+                        color: Color(0xFF1B4748))),
                 const SizedBox(height: 8),
                 Text(description,
                     style: const TextStyle(
@@ -258,7 +258,7 @@ class _WebsiteDetailScreenState extends State<WebsiteDetailScreen> {
                     child: ElevatedButton.icon(
                       onPressed: () => _openUrl(url),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF094a25),
+                        backgroundColor: const Color(0xFF1B4748),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8)),

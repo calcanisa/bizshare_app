@@ -62,7 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   Widget build(BuildContext context) {
     if (_loading) {
       return const Center(
-          child: CircularProgressIndicator(color: Color(0xFF094a25)));
+          child: CircularProgressIndicator(color: Color(0xFF1B4748)));
     }
     if (_profile == null) {
       return const Center(child: Text('Could not load profile'));
@@ -75,7 +75,7 @@ class _ProfileScreenState extends State<ProfileScreen>
 
     return RefreshIndicator(
       onRefresh: _loadProfile,
-      color: const Color(0xFF094a25),
+      color: const Color(0xFF1B4748),
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
@@ -88,8 +88,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                       imageUrl: hero,
                       fit: BoxFit.cover,
                       errorWidget: (_, __, ___) =>
-                          Container(color: const Color(0xFF094a25)))
-                  : Container(color: const Color(0xFF094a25)),
+                          Container(color: const Color(0xFF1B4748)))
+                  : Container(color: const Color(0xFF1B4748)),
             ),
             Container(
               color: Colors.white,
@@ -117,7 +117,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF094a25))),
+                                color: Color(0xFF1B4748))),
                         if (headline.isNotEmpty)
                           Text(headline,
                               style: const TextStyle(
@@ -129,7 +129,7 @@ class _ProfileScreenState extends State<ProfileScreen>
               ),
             ),
             Container(
-              color: const Color(0xFF094a25),
+              color: const Color(0xFF1B4748),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -160,7 +160,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              color: isActive ? const Color(0xFFf8b324) : Colors.transparent,
+              color: isActive ? const Color(0xFFF8BB25) : Colors.transparent,
               width: 2,
             ),
           ),
@@ -168,7 +168,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         child: Text(
           label,
           style: TextStyle(
-            color: isActive ? const Color(0xFFf8b324) : Colors.white60,
+            color: isActive ? const Color(0xFFF8BB25) : Colors.white60,
             fontSize: 13,
           ),
         ),
@@ -196,8 +196,8 @@ class _ProfileScreenState extends State<ProfileScreen>
   Widget _picPlaceholder() => Container(
         width: 80,
         height: 80,
-        color: const Color(0xFF094a25).withValues(alpha: 0.1),
-        child: const Icon(Icons.person, color: Color(0xFF094a25), size: 40),
+        color: const Color(0xFF1B4748).withValues(alpha: 0.1),
+        child: const Icon(Icons.person, color: Color(0xFF1B4748), size: 40),
       );
 
   Widget _sectionHeader(String title) => Container(
@@ -218,7 +218,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         children: [
           Text('$label: ',
               style: const TextStyle(
-                  fontWeight: FontWeight.bold, color: Color(0xFF094a25))),
+                  fontWeight: FontWeight.bold, color: Color(0xFF1B4748))),
           Expanded(
               child:
                   Text(value, style: const TextStyle(color: Colors.black87))),
@@ -282,7 +282,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       const SizedBox(height: 4),
                       Text(link['affiliate'] ?? '',
                           style: const TextStyle(
-                              fontSize: 12, color: Color(0xFF094a25)),
+                              fontSize: 12, color: Color(0xFF1B4748)),
                           textAlign: TextAlign.center),
                     ],
                   ),
@@ -346,7 +346,7 @@ class _ProfileScreenState extends State<ProfileScreen>
             children: [
               Text(edu['institution'] ?? '',
                   style: const TextStyle(
-                      fontWeight: FontWeight.bold, color: Color(0xFF094a25))),
+                      fontWeight: FontWeight.bold, color: Color(0xFF1B4748))),
               if ((edu['qualification'] ?? '').isNotEmpty)
                 Text('Qualification: ${edu['qualification']}',
                     style: const TextStyle(fontSize: 13)),
@@ -375,7 +375,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                     padding:
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF094a25),
+                      color: const Color(0xFF1B4748),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(skill['name'] ?? skill['title'] ?? '',
@@ -403,7 +403,7 @@ class _ProfileScreenState extends State<ProfileScreen>
             children: [
               Text(exp['position'] ?? '',
                   style: const TextStyle(
-                      fontWeight: FontWeight.bold, color: Color(0xFF094a25))),
+                      fontWeight: FontWeight.bold, color: Color(0xFF1B4748))),
               if ((exp['company'] ?? '').isNotEmpty)
                 Text('Company: ${exp['company']}',
                     style: const TextStyle(fontSize: 13)),
@@ -438,7 +438,7 @@ class _ProfileScreenState extends State<ProfileScreen>
             ),
           ),
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF094a25),
+            backgroundColor: const Color(0xFF1B4748),
             foregroundColor: Colors.white,
             minimumSize: const Size(double.infinity, 48),
             shape:
@@ -588,7 +588,7 @@ class _ProfileScreenState extends State<ProfileScreen>
               child: Row(
                 children: [
                   const Icon(Icons.location_on_outlined,
-                      color: Color(0xFF094a25), size: 16),
+                      color: Color(0xFF1B4748), size: 16),
                   const SizedBox(width: 8),
                   Text(locationStr,
                       style: const TextStyle(color: Colors.black87)),
@@ -601,7 +601,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           const SizedBox(height: 8),
           _sectionHeader('Social Networks'),
           ...socialProfiles.map((social) => ListTile(
-                leading: const Icon(Icons.link, color: Color(0xFF094a25)),
+                leading: const Icon(Icons.link, color: Color(0xFF1B4748)),
                 title: Text(social['network'] ?? ''),
                 subtitle: Text(social['url'] ?? '',
                     style: const TextStyle(fontSize: 12)),
@@ -645,7 +645,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   child: Text(gallery['title'] ?? '',
                       style: const TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF094a25))),
+                          color: Color(0xFF1B4748))),
                 ),
                 SizedBox(
                   height: 120,

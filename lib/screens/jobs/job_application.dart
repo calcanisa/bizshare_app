@@ -16,9 +16,9 @@ class JobApplicationScreen extends StatefulWidget {
 }
 
 class _JobApplicationScreenState extends State<JobApplicationScreen> {
-  static const _green = Color(0xFF094a25);
-  static const _red = Color(0xFFbc2023);
-  static const _yellow = Color(0xFFf8b324);
+  static const _green = Color(0xFF1B4748);
+  static const _red = Color(0xFFF48900);
+  static const _yellow = Color(0xFFF8BB25);
 
   final _pitchCtrl = TextEditingController();
   bool _appAccepted = false;

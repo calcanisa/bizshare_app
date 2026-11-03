@@ -234,7 +234,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF094a25),
+        backgroundColor: const Color(0xFF1B4748),
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           _business?['name'] ?? 'Business',
@@ -245,12 +245,12 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
       ),
       body: _loading
           ? const Center(
-              child: CircularProgressIndicator(color: Color(0xFF094a25)))
+              child: CircularProgressIndicator(color: Color(0xFF1B4748)))
           : _business == null
               ? const Center(child: Text('Business not found'))
               : RefreshIndicator(
                   onRefresh: _loadBusiness,
-                  color: const Color(0xFF094a25),
+                  color: const Color(0xFF1B4748),
                   child: CustomScrollView(
                     slivers: [
                       // Hero image
@@ -319,7 +319,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
       actions.add(TextButton(
         onPressed: () {}, // TODO: edit
         child: const Text('Edit',
-            style: TextStyle(color: Color(0xFFf8b324), fontSize: 12)),
+            style: TextStyle(color: Color(0xFFF8BB25), fontSize: 12)),
       ));
       actions.add(TextButton(
         onPressed: () async {
@@ -363,7 +363,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFF094a25),
+                color: const Color(0xFF1B4748),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: const Row(
@@ -384,8 +384,8 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
   Widget _heroPlaceholder() => Container(
         width: double.infinity,
         height: 180,
-        color: const Color(0xFF094a25).withOpacity(0.15),
-        child: const Icon(Icons.business, color: Color(0xFF094a25), size: 60),
+        color: const Color(0xFF1B4748).withOpacity(0.15),
+        child: const Icon(Icons.business, color: Color(0xFF1B4748), size: 60),
       );
 
   // ─── Info card ───────────────────────────────────────────────────────────
@@ -434,7 +434,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                         style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF094a25))),
+                            color: Color(0xFF1B4748))),
                     if (slogan.isNotEmpty) ...[
                       const SizedBox(height: 3),
                       Text(slogan,
@@ -458,8 +458,8 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                             onPressed: _toggleFollow,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: _isFollowing
-                                  ? const Color(0xFFbc2023)
-                                  : const Color(0xFF094a25),
+                                  ? const Color(0xFFF48900)
+                                  : const Color(0xFF1B4748),
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 14, vertical: 6),
                               minimumSize: Size.zero,
@@ -524,7 +524,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                 style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF094a25))),
+                    color: Color(0xFF1B4748))),
             const SizedBox(height: 2),
             Text(value,
                 style: const TextStyle(fontSize: 13, color: Colors.black87)),
@@ -544,14 +544,14 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                 style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF094a25))),
+                    color: Color(0xFF1B4748))),
             const SizedBox(height: 2),
             GestureDetector(
               onTap: () => _openUrl(url),
               child: Text(url,
                   style: const TextStyle(
                       fontSize: 13,
-                      color: Color(0xFF094a25),
+                      color: Color(0xFF1B4748),
                       decoration: TextDecoration.underline)),
             ),
             const SizedBox(height: 6),
@@ -564,8 +564,8 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
   Widget _logoPlaceholder() => Container(
         width: 72,
         height: 72,
-        color: const Color(0xFF094a25).withValues(alpha: 0.1),
-        child: const Icon(Icons.business, color: Color(0xFF094a25), size: 32),
+        color: const Color(0xFF1B4748).withValues(alpha: 0.1),
+        child: const Icon(Icons.business, color: Color(0xFF1B4748), size: 32),
       );
 
   // ─── Tab bar ──────────────────────────────────────────────────────────────
@@ -581,7 +581,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
       (7, 'Reviews'),
     ];
     return Container(
-      color: const Color(0xFF094a25),
+      color: const Color(0xFF1B4748),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
@@ -598,14 +598,14 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
                 decoration: BoxDecoration(
-                  color: active ? Colors.white : const Color(0xFF094a25),
+                  color: active ? Colors.white : const Color(0xFF1B4748),
                   border: active
                       ? null
                       : const Border(right: BorderSide(color: Colors.white12)),
                 ),
                 child: Text(t.$2,
                     style: TextStyle(
-                      color: active ? const Color(0xFF094a25) : Colors.white70,
+                      color: active ? const Color(0xFF1B4748) : Colors.white70,
                       fontSize: 12,
                       fontWeight: active ? FontWeight.bold : FontWeight.normal,
                     )),
@@ -664,7 +664,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF094a25),
+                  backgroundColor: const Color(0xFF1B4748),
                   minimumSize: const Size(double.infinity, 44),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10)),
@@ -700,7 +700,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(_timeAgo(createdAt?.toString()),
-              style: const TextStyle(fontSize: 11, color: Color(0xFF094a25))),
+              style: const TextStyle(fontSize: 11, color: Color(0xFF1B4748))),
           if (images.isNotEmpty) ...[
             const SizedBox(height: 8),
             SizedBox(
@@ -774,7 +774,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF094a25),
+                backgroundColor: const Color(0xFF1B4748),
                 minimumSize: const Size(double.infinity, 44),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -861,7 +861,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                         padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
                           color:
-                              const Color(0xFF094a25).withValues(alpha: 0.85),
+                              const Color(0xFF1B4748).withValues(alpha: 0.85),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: const Icon(Icons.edit,
@@ -876,7 +876,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                 style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF094a25)),
+                    color: Color(0xFF1B4748)),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis),
             if (product['price'] != null) ...[
@@ -885,7 +885,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                   style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFFbc2023))),
+                      color: Color(0xFFF48900))),
             ],
             if (product['description'] != null) ...[
               const SizedBox(height: 4),
@@ -903,7 +903,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                 child: const Text('View Product',
                     style: TextStyle(
                         fontSize: 11,
-                        color: Color(0xFF094a25),
+                        color: Color(0xFF1B4748),
                         decoration: TextDecoration.underline)),
               ),
             ],
@@ -938,7 +938,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                 if (result != null && mounted) _loadBusiness();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF094a25),
+                backgroundColor: const Color(0xFF1B4748),
                 minimumSize: const Size(double.infinity, 44),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -986,7 +986,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
               style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF094a25))),
+                  color: Color(0xFF1B4748))),
           if (pitch.isNotEmpty) ...[
             const SizedBox(height: 6),
             Text(pitch.length > 150 ? '${pitch.substring(0, 150)}...' : pitch,
@@ -999,7 +999,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                 style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF094a25))),
+                    color: Color(0xFF1B4748))),
           ],
         ],
       ),
@@ -1064,7 +1064,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF094a25),
+                  backgroundColor: const Color(0xFF1B4748),
                   minimumSize: const Size(double.infinity, 44),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -1106,7 +1106,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
               style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF094a25))),
+                  color: Color(0xFF1B4748))),
           const SizedBox(height: 6),
           if (branch['street'] != null)
             _metaRow('Street', branch['street'].toString()),
@@ -1129,7 +1129,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                         child: const Text('Show',
                             style: TextStyle(
                                 fontSize: 11,
-                                color: Color(0xFF094a25),
+                                color: Color(0xFF1B4748),
                                 decoration: TextDecoration.underline)),
                       ),
               ],
@@ -1152,7 +1152,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                         child: const Text('Show',
                             style: TextStyle(
                                 fontSize: 11,
-                                color: Color(0xFF094a25),
+                                color: Color(0xFF1B4748),
                                 decoration: TextDecoration.underline)),
                       ),
               ],
@@ -1224,13 +1224,13 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
       ),
       child: Row(
         children: [
-          Icon(_socialIcon(network), color: const Color(0xFF094a25), size: 20),
+          Icon(_socialIcon(network), color: const Color(0xFF1B4748), size: 20),
           const SizedBox(width: 10),
           Text(network,
               style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF094a25))),
+                  color: Color(0xFF1B4748))),
           const SizedBox(width: 10),
           Expanded(
             child: GestureDetector(
@@ -1238,7 +1238,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
               child: Text(url,
                   style: const TextStyle(
                       fontSize: 12,
-                      color: Color(0xFF094a25),
+                      color: Color(0xFF1B4748),
                       decoration: TextDecoration.underline),
                   overflow: TextOverflow.ellipsis),
             ),
@@ -1262,7 +1262,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
               child: const Padding(
                 padding: EdgeInsets.only(left: 8),
                 child: Icon(Icons.edit_outlined,
-                    color: Color(0xFF094a25), size: 18),
+                    color: Color(0xFF1B4748), size: 18),
               ),
             ),
         ],
@@ -1309,7 +1309,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                 if (result != null && mounted) _loadBusiness();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF094a25),
+                backgroundColor: const Color(0xFF1B4748),
                 minimumSize: const Size(double.infinity, 44),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -1332,7 +1332,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                 if (result != null && mounted) _loadBusiness();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF094a25),
+                backgroundColor: const Color(0xFF1B4748),
                 minimumSize: const Size(double.infinity, 44),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -1375,7 +1375,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                   style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF094a25))),
+                      color: Color(0xFF1B4748))),
             ),
             if (_isOwner)
               GestureDetector(
@@ -1393,7 +1393,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                   if (result != null && mounted) _loadBusiness();
                 },
                 child: const Icon(Icons.edit_outlined,
-                    color: Color(0xFF094a25), size: 18),
+                    color: Color(0xFF1B4748), size: 18),
               ),
           ],
         ),
@@ -1437,7 +1437,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                   style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF094a25))),
+                      color: Color(0xFF1B4748))),
             ),
             if (_isOwner)
               GestureDetector(
@@ -1455,7 +1455,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                   if (result != null && mounted) _loadBusiness();
                 },
                 child: const Icon(Icons.edit_outlined,
-                    color: Color(0xFF094a25), size: 18),
+                    color: Color(0xFF1B4748), size: 18),
               ),
           ],
         ),
@@ -1532,7 +1532,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                     style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF094a25))),
+                        color: Color(0xFF1B4748))),
                 const SizedBox(height: 4),
                 Text(
                     description.length > 150
@@ -1555,7 +1555,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
       return const Padding(
         padding: EdgeInsets.all(40),
         child:
-            Center(child: CircularProgressIndicator(color: Color(0xFF094a25))),
+            Center(child: CircularProgressIndicator(color: Color(0xFF1B4748))),
       );
     }
     if (_reviews.isEmpty) {
@@ -1578,7 +1578,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                   if (result != null && mounted) _loadReviews();
                 },
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF094a25)),
+                    backgroundColor: const Color(0xFF1B4748)),
                 child: const Text('Write a Review',
                     style: TextStyle(color: Colors.white)),
               ),
@@ -1607,7 +1607,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                   if (result != null && mounted) _loadReviews();
                 },
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF094a25)),
+                    backgroundColor: const Color(0xFF1B4748)),
                 child: const Text('Write a Review',
                     style: TextStyle(color: Colors.white)),
               ),
@@ -1671,14 +1671,14 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                     style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF094a25))),
+                        color: Color(0xFF1B4748))),
               ),
               if (rating != null)
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF094a25),
+                    color: const Color(0xFF1B4748),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text('$rating/10',
@@ -1716,7 +1716,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                         style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF094a25))),
+                            color: Color(0xFF1B4748))),
                     const SizedBox(height: 4),
                     Text(resp['response']?.toString() ?? '',
                         style: const TextStyle(
@@ -1746,7 +1746,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                 ElevatedButton(
                   onPressed: () => _submitReviewResponse(reviewId),
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF094a25),
+                      backgroundColor: const Color(0xFF1B4748),
                       padding: const EdgeInsets.symmetric(
                           horizontal: 14, vertical: 6)),
                   child: const Text('Submit',
@@ -1756,7 +1756,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                 TextButton(
                   onPressed: () => setState(() => _replyingTo = null),
                   child: const Text('Cancel',
-                      style: TextStyle(color: Color(0xFFbc2023))),
+                      style: TextStyle(color: Color(0xFFF48900))),
                 ),
               ],
             ),
@@ -1765,7 +1765,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
             TextButton(
               onPressed: () => setState(() => _replyingTo = reviewId),
               child: const Text('Respond',
-                  style: TextStyle(color: Color(0xFF094a25))),
+                  style: TextStyle(color: Color(0xFF1B4748))),
             ),
           ],
 
@@ -1789,7 +1789,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                     if (result != null && mounted) _loadReviews();
                   },
                   style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF094a25),
+                      foregroundColor: const Color(0xFF1B4748),
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 4)),
                   child: const Text('Edit', style: TextStyle(fontSize: 12)),
@@ -1808,7 +1808,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                           TextButton(
                               onPressed: () => Navigator.pop(ctx, true),
                               child: const Text('Delete',
-                                  style: TextStyle(color: Color(0xFFbc2023)))),
+                                  style: TextStyle(color: Color(0xFFF48900)))),
                         ],
                       ),
                     );
@@ -1823,7 +1823,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFbc2023),
+                      backgroundColor: const Color(0xFFF48900),
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 4)),
                   child: const Text('Delete',
@@ -1855,7 +1855,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
         padding: const EdgeInsets.all(30),
         child: Center(
           child: Text(msg,
-              style: const TextStyle(color: Color(0xFF094a25), fontSize: 13),
+              style: const TextStyle(color: Color(0xFF1B4748), fontSize: 13),
               textAlign: TextAlign.center),
         ),
       );
@@ -1934,7 +1934,7 @@ class _SectionLabel extends StatelessWidget {
         style: const TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF094a25),
+            color: Color(0xFF1B4748),
             letterSpacing: 0.5));
   }
 }
@@ -2060,6 +2060,6 @@ class _LightboxDialogState extends State<_LightboxDialog> {
 Widget _logoPlaceholder() => Container(
       width: 72,
       height: 72,
-      color: const Color(0xFF094a25).withValues(alpha: 0.1),
-      child: const Icon(Icons.business, color: Color(0xFF094a25), size: 32),
+      color: const Color(0xFF1B4748).withValues(alpha: 0.1),
+      child: const Icon(Icons.business, color: Color(0xFF1B4748), size: 32),
     );

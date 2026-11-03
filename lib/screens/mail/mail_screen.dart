@@ -387,7 +387,7 @@ class _MailScreenState extends State<MailScreen> {
     return Column(
       children: [
         Container(
-          color: const Color(0xFF094a25),
+          color: const Color(0xFF1B4748),
           child: Row(
             children: [
               _tabBtn(1, 'Received'),
@@ -418,11 +418,11 @@ class _MailScreenState extends State<MailScreen> {
         },
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
-          color: active ? Colors.white : const Color(0xFF094a25),
+          color: active ? Colors.white : const Color(0xFF1B4748),
           child: Text(label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: active ? const Color(0xFF094a25) : Colors.white60,
+                color: active ? const Color(0xFF1B4748) : Colors.white60,
                 fontSize: 13,
                 fontWeight: active ? FontWeight.bold : FontWeight.normal,
               )),
@@ -441,18 +441,18 @@ class _MailScreenState extends State<MailScreen> {
         Expanded(
           child: _loadingInbox
               ? const Center(
-                  child: CircularProgressIndicator(color: Color(0xFF094a25)))
+                  child: CircularProgressIndicator(color: Color(0xFF1B4748)))
               : _filteredInbox.isEmpty
                   ? const Center(
                       child: Text('No messages',
-                          style: TextStyle(color: Color(0xFF094a25))))
+                          style: TextStyle(color: Color(0xFF1B4748))))
                   : RefreshIndicator(
                       onRefresh: () async {
                         _inbox = [];
                         _filteredInbox = [];
                         await _loadInbox();
                       },
-                      color: const Color(0xFF094a25),
+                      color: const Color(0xFF1B4748),
                       child: ListView.builder(
                         itemCount: _filteredInbox.length,
                         itemBuilder: (ctx, i) => _inboxCard(
@@ -484,7 +484,7 @@ class _MailScreenState extends State<MailScreen> {
                   hint: const Text('Origin', style: TextStyle(fontSize: 12)),
                   isDense: true,
                   style:
-                      const TextStyle(fontSize: 12, color: Color(0xFF094a25)),
+                      const TextStyle(fontSize: 12, color: Color(0xFF1B4748)),
                   items: [
                     const DropdownMenuItem(
                         value: null,
@@ -515,7 +515,7 @@ class _MailScreenState extends State<MailScreen> {
                 builder: (ctx, child) => Theme(
                   data: Theme.of(ctx).copyWith(
                     colorScheme:
-                        const ColorScheme.light(primary: Color(0xFF094a25)),
+                        const ColorScheme.light(primary: Color(0xFF1B4748)),
                   ),
                   child: child!,
                 ),
@@ -530,11 +530,11 @@ class _MailScreenState extends State<MailScreen> {
               decoration: BoxDecoration(
                 border: Border.all(
                     color: _dateFromReceived != null
-                        ? const Color(0xFF094a25)
+                        ? const Color(0xFF1B4748)
                         : Colors.black12),
                 borderRadius: BorderRadius.circular(6),
                 color: _dateFromReceived != null
-                    ? const Color(0xFF094a25).withValues(alpha: 0.08)
+                    ? const Color(0xFF1B4748).withValues(alpha: 0.08)
                     : null,
               ),
               child: Row(
@@ -542,7 +542,7 @@ class _MailScreenState extends State<MailScreen> {
                   Icon(Icons.calendar_today,
                       size: 13,
                       color: _dateFromReceived != null
-                          ? const Color(0xFF094a25)
+                          ? const Color(0xFF1B4748)
                           : Colors.black45),
                   const SizedBox(width: 4),
                   Text(
@@ -552,7 +552,7 @@ class _MailScreenState extends State<MailScreen> {
                     style: TextStyle(
                         fontSize: 12,
                         color: _dateFromReceived != null
-                            ? const Color(0xFF094a25)
+                            ? const Color(0xFF1B4748)
                             : Colors.black45),
                   ),
                 ],
@@ -568,7 +568,7 @@ class _MailScreenState extends State<MailScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF094a25),
+                  color: const Color(0xFF1B4748),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: const Text('Reset',
@@ -593,17 +593,17 @@ class _MailScreenState extends State<MailScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
       decoration: BoxDecoration(
         color: isSelected
-            ? const Color(0xFF094a25).withValues(alpha: 0.08)
+            ? const Color(0xFF1B4748).withValues(alpha: 0.08)
             : isRead
                 ? Colors.white
-                : const Color(0xFF094a25).withOpacity(0.05),
+                : const Color(0xFF1B4748).withOpacity(0.05),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
             color: isSelected
-                ? const Color(0xFF094a25).withOpacity(0.4)
+                ? const Color(0xFF1B4748).withOpacity(0.4)
                 : isRead
                     ? Colors.grey.shade200
-                    : const Color(0xFF094a25).withOpacity(0.2)),
+                    : const Color(0xFF1B4748).withOpacity(0.2)),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
@@ -623,7 +623,7 @@ class _MailScreenState extends State<MailScreen> {
               if (_selectedReceived.isNotEmpty)
                 Checkbox(
                   value: isSelected,
-                  activeColor: const Color(0xFF094a25),
+                  activeColor: const Color(0xFF1B4748),
                   onChanged: (v) => setState(() {
                     if (v == true) {
                       _selectedReceived.add(id);
@@ -635,7 +635,7 @@ class _MailScreenState extends State<MailScreen> {
               else
                 CircleAvatar(
                   radius: 18,
-                  backgroundColor: const Color(0xFF094a25),
+                  backgroundColor: const Color(0xFF1B4748),
                   child: Text(
                     sender.isNotEmpty ? sender[0].toUpperCase() : '?',
                     style: const TextStyle(
@@ -658,7 +658,7 @@ class _MailScreenState extends State<MailScreen> {
                                   fontWeight: isRead
                                       ? FontWeight.normal
                                       : FontWeight.bold,
-                                  color: const Color(0xFF094a25))),
+                                  color: const Color(0xFF1B4748))),
                         ),
                         Text(_formatDate(msg['created_at']?.toString()),
                             style: const TextStyle(
@@ -685,11 +685,11 @@ class _MailScreenState extends State<MailScreen> {
                                   Colors.blueGrey),
                             if (hasReplies) ...[
                               const SizedBox(width: 4),
-                              _pill('Replied', const Color(0xFF094a25)),
+                              _pill('Replied', const Color(0xFF1B4748)),
                             ],
                             if (!isRead) ...[
                               const SizedBox(width: 4),
-                              _pill('Unread', const Color(0xFFbc2023)),
+                              _pill('Unread', const Color(0xFFF48900)),
                             ],
                           ],
                         ),
@@ -714,18 +714,18 @@ class _MailScreenState extends State<MailScreen> {
         Expanded(
           child: _loadingSent
               ? const Center(
-                  child: CircularProgressIndicator(color: Color(0xFF094a25)))
+                  child: CircularProgressIndicator(color: Color(0xFF1B4748)))
               : _filteredSent.isEmpty
                   ? const Center(
                       child: Text('No sent messages',
-                          style: TextStyle(color: Color(0xFF094a25))))
+                          style: TextStyle(color: Color(0xFF1B4748))))
                   : RefreshIndicator(
                       onRefresh: () async {
                         _sent = [];
                         _filteredSent = [];
                         await _loadSent();
                       },
-                      color: const Color(0xFF094a25),
+                      color: const Color(0xFF1B4748),
                       child: ListView.builder(
                         itemCount: _filteredSent.length,
                         itemBuilder: (ctx, i) =>
@@ -753,7 +753,7 @@ class _MailScreenState extends State<MailScreen> {
                 builder: (ctx, child) => Theme(
                   data: Theme.of(ctx).copyWith(
                     colorScheme:
-                        const ColorScheme.light(primary: Color(0xFF094a25)),
+                        const ColorScheme.light(primary: Color(0xFF1B4748)),
                   ),
                   child: child!,
                 ),
@@ -768,11 +768,11 @@ class _MailScreenState extends State<MailScreen> {
               decoration: BoxDecoration(
                 border: Border.all(
                     color: _dateFromSent != null
-                        ? const Color(0xFF094a25)
+                        ? const Color(0xFF1B4748)
                         : Colors.black12),
                 borderRadius: BorderRadius.circular(6),
                 color: _dateFromSent != null
-                    ? const Color(0xFF094a25).withValues(alpha: 0.08)
+                    ? const Color(0xFF1B4748).withValues(alpha: 0.08)
                     : null,
               ),
               child: Row(
@@ -780,7 +780,7 @@ class _MailScreenState extends State<MailScreen> {
                   Icon(Icons.calendar_today,
                       size: 13,
                       color: _dateFromSent != null
-                          ? const Color(0xFF094a25)
+                          ? const Color(0xFF1B4748)
                           : Colors.black45),
                   const SizedBox(width: 4),
                   Text(
@@ -790,7 +790,7 @@ class _MailScreenState extends State<MailScreen> {
                     style: TextStyle(
                         fontSize: 12,
                         color: _dateFromSent != null
-                            ? const Color(0xFF094a25)
+                            ? const Color(0xFF1B4748)
                             : Colors.black45),
                   ),
                 ],
@@ -808,7 +808,7 @@ class _MailScreenState extends State<MailScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF094a25),
+                  color: const Color(0xFF1B4748),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: const Text('Reset',
@@ -831,12 +831,12 @@ class _MailScreenState extends State<MailScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
       decoration: BoxDecoration(
         color: isSelected
-            ? const Color(0xFF094a25).withValues(alpha: 0.08)
+            ? const Color(0xFF1B4748).withValues(alpha: 0.08)
             : Colors.white,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
             color: isSelected
-                ? const Color(0xFF094a25).withOpacity(0.4)
+                ? const Color(0xFF1B4748).withOpacity(0.4)
                 : Colors.grey.shade200),
       ),
       child: InkWell(
@@ -856,7 +856,7 @@ class _MailScreenState extends State<MailScreen> {
               if (_selectedSent.isNotEmpty)
                 Checkbox(
                   value: isSelected,
-                  activeColor: const Color(0xFF094a25),
+                  activeColor: const Color(0xFF1B4748),
                   onChanged: (v) => setState(() {
                     if (v == true) {
                       _selectedSent.add(id);
@@ -883,7 +883,7 @@ class _MailScreenState extends State<MailScreen> {
                               style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w500,
-                                  color: Color(0xFF094a25))),
+                                  color: Color(0xFF1B4748))),
                         ),
                         Text(_formatDate(msg['created_at']?.toString()),
                             style: const TextStyle(
@@ -921,17 +921,17 @@ class _MailScreenState extends State<MailScreen> {
         Expanded(
           child: _loadingTrash
               ? const Center(
-                  child: CircularProgressIndicator(color: Color(0xFF094a25)))
+                  child: CircularProgressIndicator(color: Color(0xFF1B4748)))
               : _trash.isEmpty
                   ? const Center(
                       child: Text('Trash is empty',
-                          style: TextStyle(color: Color(0xFF094a25))))
+                          style: TextStyle(color: Color(0xFF1B4748))))
                   : RefreshIndicator(
                       onRefresh: () async {
                         _trash = [];
                         await _loadTrash();
                       },
-                      color: const Color(0xFF094a25),
+                      color: const Color(0xFF1B4748),
                       child: ListView.builder(
                         itemCount: _trash.length,
                         itemBuilder: (ctx, i) =>
@@ -959,7 +959,7 @@ class _MailScreenState extends State<MailScreen> {
               icon: const Icon(Icons.delete_forever, size: 15),
               label: const Text('Empty Trash', style: TextStyle(fontSize: 12)),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFbc2023),
+                backgroundColor: const Color(0xFFF48900),
                 foregroundColor: Colors.white,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -980,12 +980,12 @@ class _MailScreenState extends State<MailScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
       decoration: BoxDecoration(
         color: isSelected
-            ? const Color(0xFF094a25).withValues(alpha: 0.08)
+            ? const Color(0xFF1B4748).withValues(alpha: 0.08)
             : Colors.grey.shade50,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
             color: isSelected
-                ? const Color(0xFF094a25).withOpacity(0.4)
+                ? const Color(0xFF1B4748).withOpacity(0.4)
                 : Colors.grey.shade200),
       ),
       child: InkWell(
@@ -1004,7 +1004,7 @@ class _MailScreenState extends State<MailScreen> {
               if (_selectedTrash.isNotEmpty)
                 Checkbox(
                   value: isSelected,
-                  activeColor: const Color(0xFF094a25),
+                  activeColor: const Color(0xFF1B4748),
                   onChanged: (v) => setState(() {
                     if (v == true) {
                       _selectedTrash.add(id);
@@ -1072,7 +1072,7 @@ class _MailScreenState extends State<MailScreen> {
     final isTrash = mailType == 'trash';
 
     return Container(
-      color: const Color(0xFF094a25).withValues(alpha: 0.08),
+      color: const Color(0xFF1B4748).withValues(alpha: 0.08),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: Row(
         children: [
@@ -1080,7 +1080,7 @@ class _MailScreenState extends State<MailScreen> {
               style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF094a25))),
+                  color: Color(0xFF1B4748))),
           const Spacer(),
           if (!isTrash) ...[
             _actionBtn(
@@ -1122,8 +1122,8 @@ class _MailScreenState extends State<MailScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
           decoration: BoxDecoration(
             color: isDestructive
-                ? const Color(0xFFbc2023)
-                : const Color(0xFF094a25),
+                ? const Color(0xFFF48900)
+                : const Color(0xFF1B4748),
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(label,
@@ -1205,7 +1205,7 @@ class _ReadMessageSheetState extends State<_ReadMessageSheet> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: const BoxDecoration(
-                color: Color(0xFF094a25),
+                color: Color(0xFF1B4748),
                 borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
               ),
               child: Row(
@@ -1224,13 +1224,13 @@ class _ReadMessageSheetState extends State<_ReadMessageSheet> {
                       TextButton(
                         onPressed: () => setState(() => _replying = true),
                         child: const Text('Reply',
-                            style: TextStyle(color: Color(0xFFf8b324))),
+                            style: TextStyle(color: Color(0xFFF8BB25))),
                       ),
                     if (widget.onTrash != null)
                       TextButton(
                         onPressed: widget.onTrash,
                         child: const Text('Trash',
-                            style: TextStyle(color: Color(0xFFbc2023))),
+                            style: TextStyle(color: Color(0xFFF48900))),
                       ),
                   ],
                 ],
@@ -1267,7 +1267,7 @@ class _ReadMessageSheetState extends State<_ReadMessageSheet> {
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                           borderSide:
-                              const BorderSide(color: Color(0xFF094a25)),
+                              const BorderSide(color: Color(0xFF1B4748)),
                         ),
                         contentPadding: const EdgeInsets.all(12),
                       ),
@@ -1290,7 +1290,7 @@ class _ReadMessageSheetState extends State<_ReadMessageSheet> {
                                     });
                                   },
                             style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF094a25)),
+                                backgroundColor: const Color(0xFF1B4748)),
                             child: _sending
                                 ? const SizedBox(
                                     height: 16,
@@ -1309,7 +1309,7 @@ class _ReadMessageSheetState extends State<_ReadMessageSheet> {
                               _replyController.clear();
                             }),
                             style: OutlinedButton.styleFrom(
-                                foregroundColor: const Color(0xFF094a25)),
+                                foregroundColor: const Color(0xFF1B4748)),
                             child: const Text('Cancel'),
                           ),
                         ),
@@ -1323,17 +1323,17 @@ class _ReadMessageSheetState extends State<_ReadMessageSheet> {
                         style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF094a25))),
+                            color: Color(0xFF1B4748))),
                     const SizedBox(height: 8),
                     ...replies.map((r) => Container(
                           margin: const EdgeInsets.only(bottom: 8),
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF094a25).withOpacity(0.05),
+                            color: const Color(0xFF1B4748).withOpacity(0.05),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
                                 color:
-                                    const Color(0xFF094a25).withOpacity(0.15)),
+                                    const Color(0xFF1B4748).withOpacity(0.15)),
                           ),
                           child: Text(r['reply_text']?.toString() ?? '',
                               style: const TextStyle(

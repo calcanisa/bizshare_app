@@ -327,7 +327,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: const BoxDecoration(
-                    color: Color(0xFF094a25),
+                    color: Color(0xFF1B4748),
                     borderRadius:
                         BorderRadius.vertical(top: Radius.circular(16)),
                   ),
@@ -350,7 +350,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                           });
                         },
                         child: const Text('Reset',
-                            style: TextStyle(color: Color(0xFFf8b324))),
+                            style: TextStyle(color: Color(0xFFF8BB25))),
                       ),
                     ],
                   ),
@@ -455,7 +455,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                         _fetchAllOpps(page: 1);
                       },
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF094a25),
+                          backgroundColor: const Color(0xFF1B4748),
                           padding: const EdgeInsets.symmetric(vertical: 14)),
                       child: const Text('Apply Filters',
                           style: TextStyle(color: Colors.white, fontSize: 16)),
@@ -475,7 +475,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
         child: Text(label,
             style: const TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF094a25),
+                color: Color(0xFF1B4748),
                 fontSize: 13)),
       );
 
@@ -514,12 +514,12 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   Widget build(BuildContext context) {
     if (_loadingAccount) {
       return const Center(
-          child: CircularProgressIndicator(color: Color(0xFF094a25)));
+          child: CircularProgressIndicator(color: Color(0xFF1B4748)));
     }
     return Column(
       children: [
         Container(
-          color: const Color(0xFF094a25),
+          color: const Color(0xFF1B4748),
           child: Row(
             children: [
               if (_hasMembership) _tabBtn(1, 'You Added'),
@@ -553,11 +553,11 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
         },
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
-          color: active ? Colors.white : const Color(0xFF094a25),
+          color: active ? Colors.white : const Color(0xFF1B4748),
           child: Text(label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: active ? const Color(0xFF094a25) : Colors.white60,
+                color: active ? const Color(0xFF1B4748) : Colors.white60,
                 fontSize: 12,
                 fontWeight: active ? FontWeight.bold : FontWeight.normal,
               )),
@@ -571,7 +571,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   Widget _myOppsTab() {
     if (_loadingMine) {
       return const Center(
-          child: CircularProgressIndicator(color: Color(0xFF094a25)));
+          child: CircularProgressIndicator(color: Color(0xFF1B4748)));
     }
     if (_myOpps.isEmpty) {
       return Center(
@@ -579,7 +579,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text('You have not posted any opportunities.',
-                style: TextStyle(color: Color(0xFF094a25))),
+                style: TextStyle(color: Color(0xFF1B4748))),
             const SizedBox(height: 12),
             ElevatedButton(
               onPressed: () => Navigator.push(
@@ -596,7 +596,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF094a25)),
+                  backgroundColor: const Color(0xFF1B4748)),
               child:
                   const Text('Post One', style: TextStyle(color: Colors.white)),
             ),
@@ -606,7 +606,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     }
     return RefreshIndicator(
       onRefresh: _loadMyOpps,
-      color: const Color(0xFF094a25),
+      color: const Color(0xFF1B4748),
       child: ListView(
         children: [
           Padding(
@@ -626,7 +626,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF094a25),
+                  backgroundColor: const Color(0xFF1B4748),
                   minimumSize: const Size(double.infinity, 44)),
               icon: const Icon(Icons.add, color: Colors.white),
               label: const Text('Post Opportunity',
@@ -652,11 +652,11 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   Widget _listHeader(String title) => Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        color: const Color(0xFF094a25),
+        color: const Color(0xFF1B4748),
         margin: const EdgeInsets.only(bottom: 4),
         child: Text(title,
             style: const TextStyle(
-                color: Color(0xFFf8b324), fontWeight: FontWeight.bold)),
+                color: Color(0xFFF8BB25), fontWeight: FontWeight.bold)),
       );
 
   Widget _myOppCard(Map<String, dynamic> opp, {required bool past}) {
@@ -715,7 +715,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                 fontWeight: FontWeight.bold,
                                 color: past
                                     ? Colors.black54
-                                    : const Color(0xFF094a25))),
+                                    : const Color(0xFF1B4748))),
                         const SizedBox(height: 4),
                         Text(
                             description.length > 60
@@ -729,8 +729,8 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                             _metaTag(
                               isOnline ? 'Online' : 'Offline',
                               isOnline
-                                  ? const Color(0xFF094a25)
-                                  : const Color(0xFFbc2023),
+                                  ? const Color(0xFF1B4748)
+                                  : const Color(0xFFF48900),
                             ),
                             if (category != null) ...[
                               const SizedBox(width: 6),
@@ -755,7 +755,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                 style: const TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xFF094a25)))
+                                    color: Color(0xFF1B4748)))
                             : const Text('Value: Quote',
                                 style: TextStyle(
                                     fontSize: 12, color: Colors.black45)),
@@ -787,7 +787,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                           ),
                         ),
                         style: OutlinedButton.styleFrom(
-                            foregroundColor: const Color(0xFF094a25),
+                            foregroundColor: const Color(0xFF1B4748),
                             padding: const EdgeInsets.symmetric(vertical: 4)),
                         child:
                             const Text('Edit', style: TextStyle(fontSize: 12)),
@@ -808,7 +808,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFf8b324),
+                            backgroundColor: const Color(0xFFF8BB25),
                             foregroundColor: Colors.black87,
                             padding: const EdgeInsets.symmetric(vertical: 4)),
                         child: const Text('Feature',
@@ -821,7 +821,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                     child: ElevatedButton(
                       onPressed: () => _deleteOpp(opp['id']),
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFbc2023),
+                          backgroundColor: const Color(0xFFF48900),
                           padding: const EdgeInsets.symmetric(vertical: 4)),
                       child: const Text('Delete',
                           style: TextStyle(color: Colors.white, fontSize: 12)),
@@ -841,17 +841,17 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   Widget _myAppsTab() {
     if (_loadingApps) {
       return const Center(
-          child: CircularProgressIndicator(color: Color(0xFF094a25)));
+          child: CircularProgressIndicator(color: Color(0xFF1B4748)));
     }
     if (_myApps.isEmpty) {
       return const Center(
         child: Text('You have not applied to any opportunities.',
-            style: TextStyle(color: Color(0xFF094a25))),
+            style: TextStyle(color: Color(0xFF1B4748))),
       );
     }
     return RefreshIndicator(
       onRefresh: _loadMyApps,
-      color: const Color(0xFF094a25),
+      color: const Color(0xFF1B4748),
       child: ListView.builder(
         itemCount: _myApps.length,
         itemBuilder: (context, index) =>
@@ -887,7 +887,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                 style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF094a25))),
+                    color: Color(0xFF1B4748))),
             const SizedBox(height: 6),
             if (createdAt != null)
               Text('Date Applied: ${_formatDate(createdAt.toString())}',
@@ -902,7 +902,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                   child: OutlinedButton(
                     onPressed: () {}, // TODO: edit application
                     style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFF094a25),
+                        foregroundColor: const Color(0xFF1B4748),
                         padding: const EdgeInsets.symmetric(vertical: 4)),
                     child: const Text('Edit', style: TextStyle(fontSize: 12)),
                   ),
@@ -912,7 +912,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                   child: ElevatedButton(
                     onPressed: () => _deleteApplication(app['id']),
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFbc2023),
+                        backgroundColor: const Color(0xFFF48900),
                         padding: const EdgeInsets.symmetric(vertical: 4)),
                     child: const Text('Delete',
                         style: TextStyle(color: Colors.white, fontSize: 12)),
@@ -941,7 +941,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
               Stack(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.tune, color: Color(0xFF094a25)),
+                    icon: const Icon(Icons.tune, color: Color(0xFF1B4748)),
                     onPressed: _openFilterSheet,
                   ),
                   if (_hasActiveFilters)
@@ -952,7 +952,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                         width: 8,
                         height: 8,
                         decoration: const BoxDecoration(
-                          color: Color(0xFFbc2023),
+                          color: Color(0xFFF48900),
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -972,7 +972,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                     value: _selectedOrdering,
                     isDense: true,
                     style:
-                        const TextStyle(fontSize: 12, color: Color(0xFF094a25)),
+                        const TextStyle(fontSize: 12, color: Color(0xFF1B4748)),
                     items: const [
                       DropdownMenuItem(
                           value: 'date-last', child: Text('Newest First')),
@@ -1078,7 +1078,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                         value: _selectedPageSize,
                         isDense: true,
                         style: const TextStyle(
-                            fontSize: 12, color: Color(0xFF094a25)),
+                            fontSize: 12, color: Color(0xFF1B4748)),
                         items: [20, 50, 100]
                             .map((s) =>
                                 DropdownMenuItem(value: s, child: Text('$s')))
@@ -1100,14 +1100,14 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
         Expanded(
           child: _loadingAll
               ? const Center(
-                  child: CircularProgressIndicator(color: Color(0xFF094a25)))
+                  child: CircularProgressIndicator(color: Color(0xFF1B4748)))
               : _allOpps.isEmpty
                   ? const Center(
                       child: Text('There are no opportunities at the moment.',
-                          style: TextStyle(color: Color(0xFF094a25))))
+                          style: TextStyle(color: Color(0xFF1B4748))))
                   : RefreshIndicator(
                       onRefresh: () => _fetchAllOpps(page: 1),
-                      color: const Color(0xFF094a25),
+                      color: const Color(0xFF1B4748),
                       child: ListView.builder(
                         itemCount: _allOpps.length + 1, // +1 for pagination
                         itemBuilder: (context, index) {
@@ -1142,13 +1142,13 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: const Color(0xFF094a25).withValues(alpha: 0.08),
+              color: const Color(0xFF1B4748).withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text('Page $_currentPage of $totalPages',
                 style: const TextStyle(
                     fontSize: 12,
-                    color: Color(0xFF094a25),
+                    color: Color(0xFF1B4748),
                     fontWeight: FontWeight.bold)),
           ),
           if (_hasNext) ...[
@@ -1165,11 +1165,11 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xFF094a25)),
+            border: Border.all(color: const Color(0xFF1B4748)),
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(label,
-              style: const TextStyle(fontSize: 12, color: Color(0xFF094a25))),
+              style: const TextStyle(fontSize: 12, color: Color(0xFF1B4748))),
         ),
       );
 
@@ -1235,14 +1235,14 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                   style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
-                                      color: Color(0xFF094a25))),
+                                      color: Color(0xFF1B4748))),
                             ),
                             const SizedBox(width: 6),
                             _metaTag(
                               isOnline ? 'Online' : 'Offline',
                               isOnline
-                                  ? const Color(0xFF094a25)
-                                  : const Color(0xFFbc2023),
+                                  ? const Color(0xFF1B4748)
+                                  : const Color(0xFFF48900),
                             ),
                           ],
                         ),
@@ -1280,7 +1280,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
                                 color: oppValue != null
-                                    ? const Color(0xFF094a25)
+                                    ? const Color(0xFF1B4748)
                                     : Colors.black45)),
                         if (validUntil != null) ...[
                           const SizedBox(height: 2),
@@ -1294,14 +1294,14 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                           Row(
                             children: [
                               const Icon(Icons.people_outline,
-                                  size: 13, color: Color(0xFFf8b324)),
+                                  size: 13, color: Color(0xFFF8BB25)),
                               const SizedBox(width: 3),
                               Text(
                                   '${applications.length} application${applications.length == 1 ? '' : 's'}',
                                   style: const TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.bold,
-                                      color: Color(0xFFf8b324))),
+                                      color: Color(0xFFF8BB25))),
                             ],
                           ),
                         ],
@@ -1312,7 +1312,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                     OutlinedButton(
                       onPressed: () {}, // TODO: edit
                       style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF094a25),
+                          foregroundColor: const Color(0xFF1B4748),
                           padding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 4)),
                       child: const Text('Edit', style: TextStyle(fontSize: 12)),
@@ -1321,7 +1321,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                     ElevatedButton(
                       onPressed: () => _deleteOpp(opp['id']),
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFbc2023),
+                          backgroundColor: const Color(0xFFF48900),
                           padding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 4)),
                       child: const Text('Delete',
@@ -1348,7 +1348,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                       style: ElevatedButton.styleFrom(
                           backgroundColor: applied
                               ? Colors.grey.shade400
-                              : const Color(0xFF094a25),
+                              : const Color(0xFF1B4748),
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 8)),
                       child: Text(applied ? 'Applied' : 'Apply',
@@ -1382,21 +1382,21 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
         margin: const EdgeInsets.only(right: 6),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: const Color(0xFF094a25).withValues(alpha: 0.1),
+          color: const Color(0xFF1B4748).withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(16),
           border:
-              Border.all(color: const Color(0xFF094a25).withValues(alpha: 0.3)),
+              Border.all(color: const Color(0xFF1B4748).withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(label,
-                style: const TextStyle(fontSize: 11, color: Color(0xFF094a25))),
+                style: const TextStyle(fontSize: 11, color: Color(0xFF1B4748))),
             const SizedBox(width: 4),
             GestureDetector(
               onTap: onRemove,
               child:
-                  const Icon(Icons.close, size: 12, color: Color(0xFF094a25)),
+                  const Icon(Icons.close, size: 12, color: Color(0xFF1B4748)),
             ),
           ],
         ),
@@ -1405,8 +1405,8 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   Widget _imagePlaceholder() => Container(
         width: 80,
         height: 80,
-        color: const Color(0xFF094a25).withValues(alpha: 0.1),
+        color: const Color(0xFF1B4748).withValues(alpha: 0.1),
         child:
-            const Icon(Icons.work_outline, color: Color(0xFF094a25), size: 30),
+            const Icon(Icons.work_outline, color: Color(0xFF1B4748), size: 30),
       );
 }

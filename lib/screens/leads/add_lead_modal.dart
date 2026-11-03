@@ -193,7 +193,7 @@ class _AddLeadModalState extends State<AddLeadModal> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF094a25),
+        backgroundColor: const Color(0xFF1B4748),
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           widget.action == 'edit'
@@ -376,7 +376,7 @@ class _AddLeadModalState extends State<AddLeadModal> {
                   OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0xFF094a25)),
+                borderSide: const BorderSide(color: Color(0xFF1B4748)),
               ),
               contentPadding: const EdgeInsets.all(12),
             ),
@@ -390,7 +390,7 @@ class _AddLeadModalState extends State<AddLeadModal> {
               children: [
                 Checkbox(
                   value: _accepted,
-                  activeColor: const Color(0xFF094a25),
+                  activeColor: const Color(0xFF1B4748),
                   onChanged: (v) => setState(() => _accepted = v ?? false),
                 ),
                 const Text('I accept the '),
@@ -398,7 +398,7 @@ class _AddLeadModalState extends State<AddLeadModal> {
                   onTap: () {},
                   child: const Text('terms',
                       style: TextStyle(
-                          color: Color(0xFF094a25),
+                          color: Color(0xFF1B4748),
                           decoration: TextDecoration.underline)),
                 ),
               ],
@@ -413,7 +413,7 @@ class _AddLeadModalState extends State<AddLeadModal> {
                 child: ElevatedButton(
                   onPressed: _canSave && !_saving ? _save : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF094a25),
+                    backgroundColor: const Color(0xFF1B4748),
                     disabledBackgroundColor: Colors.grey.shade300,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
@@ -437,8 +437,8 @@ class _AddLeadModalState extends State<AddLeadModal> {
                 child: OutlinedButton(
                   onPressed: widget.onCancel,
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFFbc2023),
-                    side: const BorderSide(color: Color(0xFFbc2023)),
+                    foregroundColor: const Color(0xFFF48900),
+                    side: const BorderSide(color: Color(0xFFF48900)),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8)),
@@ -458,7 +458,7 @@ class _AddLeadModalState extends State<AddLeadModal> {
 
   Widget _fieldLabel(String label) => Text(label,
       style: const TextStyle(
-          fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF094a25)));
+          fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF1B4748)));
 
   Widget _textField(
     TextEditingController controller, {
@@ -478,7 +478,7 @@ class _AddLeadModalState extends State<AddLeadModal> {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: const BorderSide(color: Color(0xFF094a25)),
+            borderSide: const BorderSide(color: Color(0xFF1B4748)),
           ),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -530,7 +530,7 @@ class _AddLeadModalState extends State<AddLeadModal> {
           Radio<String>(
             value: value,
             groupValue: groupValue,
-            activeColor: const Color(0xFF094a25),
+            activeColor: const Color(0xFF1B4748),
             onChanged: onChanged,
           ),
           Text(label,

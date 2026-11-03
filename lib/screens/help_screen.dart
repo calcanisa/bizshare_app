@@ -10,7 +10,7 @@ class HelpScreen extends StatefulWidget {
 }
 
 class _HelpScreenState extends State<HelpScreen> {
-  static const _green = Color(0xFF094a25);
+  static const _green = Color(0xFF1B4748);
 
   static const _pages = [
     ('', 'Overview'),
@@ -111,19 +111,19 @@ class _HelpScreenState extends State<HelpScreen> {
     switch (_activePage) {
       case '':
         return _helpBlock('The Help System', [
-          'We want you to be able to use SESHA as easy as possible. We created this help so that you know how to do things that are not self explanatory.',
-          'Please tap on the tab above of the section you need assistance with. Should any information be missing or need further explanation please email us at support@sesha.co.za and we will respond as soon as possible.',
+          'We want you to be able to use BizShare as easy as possible. We created this help so that you know how to do things that are not self explanatory.',
+          'Please tap on the tab above of the section you need assistance with. Should any information be missing or need further explanation please email us at support@bizshare.co.za and we will respond as soon as possible.',
         ]);
       case 'account':
         return _helpBlock('Account Help', [
-          'Your account page is one of the more important pages on the app as it controls access, your membership, Sesha Passive and other important functions.',
-          'If you are a Sesha Passive member then you will see two tabs. One is for your account and the other is for Sesha Passive where you monitor your progress.',
+          'Your account page is one of the more important pages on the app as it controls access, your membership, BizShare Passive and other important functions.',
+          'If you are a BizShare Passive member then you will see two tabs. One is for your account and the other is for BizShare Passive where you monitor your progress.',
           'To edit your account tap the Edit button. Your account will switch to edit mode where you can update your details section by section.',
         ]);
       case 'advertise':
         return _helpBlock('Advertising Help', [
           'Your account must have a positive balance exceeding R500 in order for you to place any ads.',
-          'Advertising on Sesha is easy. Tap the Create button, choose your goal, give your ad a title, add text, a link and schedule when it will run.',
+          'Advertising on BizShare is easy. Tap the Create button, choose your goal, give your ad a title, add text, a link and schedule when it will run.',
           'You can set a budget per interval — ads stop running when that limit is reached for that time period.',
           'Ads can be extended to display more information when users tap a special button. You can add extra text, more images, a video and an extra link.',
         ]);
@@ -131,7 +131,7 @@ class _HelpScreenState extends State<HelpScreen> {
         return _helpBlock('Alerts Help', [
           'There are two types of alerts: User Alerts and System Alerts.',
           'User alerts are specific to you as an individual, like when someone messages one of your businesses or applies to one of your jobs.',
-          'System alerts are announcements from Sesha about major news or improvements.',
+          'System alerts are announcements from BizShare about major news or improvements.',
         ]);
       case 'bookmarks':
         return _helpBlock('Bookmarks Help', [
@@ -155,7 +155,7 @@ class _HelpScreenState extends State<HelpScreen> {
         return _helpBlock('Dashboard Help', [
           'The dashboard is your starting point. At the top is the header with the logo, notifications, mail and cart.',
           'Below is your profile preview with your profile picture and name.',
-          'Below your profile is a list of applications available on Sesha. Tap on any application to open it.',
+          'Below your profile is a list of applications available on BizShare. Tap on any application to open it.',
         ]);
       case 'directory':
         return _helpBlock('Directory Help', [
@@ -195,7 +195,7 @@ class _HelpScreenState extends State<HelpScreen> {
         ]);
       case 'profile':
         return _helpBlock('Profile Help', [
-          'Your profile is a vital part of Sesha — people can see your skills and why they should connect with you.',
+          'Your profile is a vital part of BizShare — people can see your skills and why they should connect with you.',
           'Your profile has tabs for General info, Professional info, Content, Contact details and Media.',
           'If you have a membership you can generate a PDF CV from your Professional tab.',
         ]);

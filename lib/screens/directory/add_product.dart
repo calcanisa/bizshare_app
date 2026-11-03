@@ -43,8 +43,8 @@ class AddProductScreen extends StatefulWidget {
 }
 
 class _AddProductScreenState extends State<AddProductScreen> {
-  static const _green = Color(0xFF094a25);
-  static const _red = Color(0xFFbc2023);
+  static const _green = Color(0xFF1B4748);
+  static const _red = Color(0xFFF48900);
 
   final _formKey = GlobalKey<FormState>();
   final _titleCtrl = TextEditingController();
@@ -523,7 +523,7 @@ class _ImagePickerWidget extends StatelessWidget {
   final VoidCallback onPick;
   final VoidCallback onRemove;
 
-  static const _green = Color(0xFF094a25);
+  static const _green = Color(0xFF1B4748);
 
   const _ImagePickerWidget({
     required this.imageFile,
@@ -655,8 +655,8 @@ class _StagedProductCard extends StatelessWidget {
   final _StagedProduct product;
   final VoidCallback onRemove;
 
-  static const _red = Color(0xFFbc2023);
-  static const _green = Color(0xFF094a25);
+  static const _red = Color(0xFFF48900);
+  static const _green = Color(0xFF1B4748);
 
   const _StagedProductCard({required this.product, required this.onRemove});
 

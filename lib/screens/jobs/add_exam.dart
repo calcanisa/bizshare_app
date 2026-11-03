@@ -126,7 +126,7 @@ class _AddExamModalState extends State<AddExamModal> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF094a25),
+        backgroundColor: const Color(0xFF1B4748),
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(title,
             style: const TextStyle(color: Colors.white, fontSize: 15)),
@@ -206,8 +206,8 @@ class _AddExamModalState extends State<AddExamModal> {
             OutlinedButton.icon(
               onPressed: () => setState(() => _addingQuestion = true),
               style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFF094a25),
-                side: const BorderSide(color: Color(0xFF094a25)),
+                foregroundColor: const Color(0xFF1B4748),
+                side: const BorderSide(color: Color(0xFF1B4748)),
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
               icon: const Icon(Icons.add, size: 18),
@@ -228,7 +228,7 @@ class _AddExamModalState extends State<AddExamModal> {
               children: [
                 Checkbox(
                   value: _accepted,
-                  activeColor: const Color(0xFF094a25),
+                  activeColor: const Color(0xFF1B4748),
                   onChanged: (v) => setState(() => _accepted = v ?? false),
                 ),
                 const Text('I accept the '),
@@ -236,7 +236,7 @@ class _AddExamModalState extends State<AddExamModal> {
                   onTap: () {},
                   child: const Text('terms',
                       style: TextStyle(
-                          color: Color(0xFF094a25),
+                          color: Color(0xFF1B4748),
                           decoration: TextDecoration.underline)),
                 ),
               ],
@@ -251,7 +251,7 @@ class _AddExamModalState extends State<AddExamModal> {
                 child: ElevatedButton(
                   onPressed: _save,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF094a25),
+                    backgroundColor: const Color(0xFF1B4748),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8)),
@@ -268,8 +268,8 @@ class _AddExamModalState extends State<AddExamModal> {
                 child: OutlinedButton(
                   onPressed: widget.onCancel,
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFFbc2023),
-                    side: const BorderSide(color: Color(0xFFbc2023)),
+                    foregroundColor: const Color(0xFFF48900),
+                    side: const BorderSide(color: Color(0xFFF48900)),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8)),
@@ -310,12 +310,12 @@ class _AddExamModalState extends State<AddExamModal> {
                     style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF094a25))),
+                        color: Color(0xFF1B4748))),
               ),
               GestureDetector(
                 onTap: () => setState(() => _questions.removeAt(index)),
                 child:
-                    const Icon(Icons.close, size: 18, color: Color(0xFFbc2023)),
+                    const Icon(Icons.close, size: 18, color: Color(0xFFF48900)),
               ),
             ],
           ),
@@ -359,7 +359,7 @@ class _AddExamModalState extends State<AddExamModal> {
         color: Colors.grey.shade50,
         borderRadius: BorderRadius.circular(8),
         border:
-            Border.all(color: const Color(0xFF094a25).withValues(alpha: 0.3)),
+            Border.all(color: const Color(0xFF1B4748).withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -436,7 +436,7 @@ class _AddExamModalState extends State<AddExamModal> {
                     label: const Text('Add Choice',
                         style: TextStyle(fontSize: 12)),
                     style: TextButton.styleFrom(
-                        foregroundColor: const Color(0xFF094a25)),
+                        foregroundColor: const Color(0xFF1B4748)),
                   ),
                 if (_addingChoice)
                   TextButton(
@@ -446,7 +446,7 @@ class _AddExamModalState extends State<AddExamModal> {
                     }),
                     child: const Text('Done',
                         style:
-                            TextStyle(fontSize: 12, color: Color(0xFF094a25))),
+                            TextStyle(fontSize: 12, color: Color(0xFF1B4748))),
                   ),
               ],
             ),
@@ -462,7 +462,7 @@ class _AddExamModalState extends State<AddExamModal> {
                   ElevatedButton(
                     onPressed: _addOption,
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF094a25),
+                        backgroundColor: const Color(0xFF1B4748),
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 10)),
                     child: const Text('Add',
@@ -481,7 +481,7 @@ class _AddExamModalState extends State<AddExamModal> {
               ElevatedButton(
                 onPressed: _pushQuestion,
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF094a25),
+                    backgroundColor: const Color(0xFF1B4748),
                     padding: const EdgeInsets.symmetric(
                         horizontal: 24, vertical: 8)),
                 child: const Text('Add',
@@ -491,8 +491,8 @@ class _AddExamModalState extends State<AddExamModal> {
               OutlinedButton(
                 onPressed: () => setState(() => _resetQuestionForm()),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFFbc2023),
-                  side: const BorderSide(color: Color(0xFFbc2023)),
+                  foregroundColor: const Color(0xFFF48900),
+                  side: const BorderSide(color: Color(0xFFF48900)),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                 ),
@@ -511,7 +511,7 @@ class _AddExamModalState extends State<AddExamModal> {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFF094a25),
+          color: const Color(0xFF1B4748),
           borderRadius: BorderRadius.circular(6),
         ),
         child: Text(title,
@@ -523,7 +523,7 @@ class _AddExamModalState extends State<AddExamModal> {
 
   Widget _fieldLabel(String label) => Text(label,
       style: const TextStyle(
-          fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF094a25)));
+          fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF1B4748)));
 
   Widget _textField(
     TextEditingController controller, {
@@ -543,7 +543,7 @@ class _AddExamModalState extends State<AddExamModal> {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: const BorderSide(color: Color(0xFF094a25)),
+            borderSide: const BorderSide(color: Color(0xFF1B4748)),
           ),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 10),

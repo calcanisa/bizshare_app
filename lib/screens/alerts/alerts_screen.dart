@@ -108,12 +108,12 @@ class _AlertsScreenState extends State<AlertsScreen> {
   Color _alertColor(String? type) {
     switch (type?.toLowerCase()) {
       case 'info':
-        return const Color(0xFF094a25);
+        return const Color(0xFF1B4748);
       case 'warning':
-        return const Color(0xFFf8b324);
+        return const Color(0xFFF8BB25);
       case 'error':
       case 'danger':
-        return const Color(0xFFbc2023);
+        return const Color(0xFFF48900);
       case 'success':
         return Colors.teal;
       default:
@@ -143,13 +143,13 @@ class _AlertsScreenState extends State<AlertsScreen> {
 
     if (loading) {
       return const Center(
-          child: CircularProgressIndicator(color: Color(0xFF094a25)));
+          child: CircularProgressIndicator(color: Color(0xFF1B4748)));
     }
 
     return Column(
       children: [
         Container(
-          color: const Color(0xFF094a25),
+          color: const Color(0xFF1B4748),
           child: Row(
             children: [
               _tabBtn(1, 'User Alerts'),
@@ -171,11 +171,11 @@ class _AlertsScreenState extends State<AlertsScreen> {
         onTap: () => setState(() => _tab = index),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
-          color: active ? Colors.white : const Color(0xFF094a25),
+          color: active ? Colors.white : const Color(0xFF1B4748),
           child: Text(label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: active ? const Color(0xFF094a25) : Colors.white60,
+                color: active ? const Color(0xFF1B4748) : Colors.white60,
                 fontSize: 13,
                 fontWeight: active ? FontWeight.bold : FontWeight.normal,
               )),
@@ -189,14 +189,14 @@ class _AlertsScreenState extends State<AlertsScreen> {
   Widget _userAlertsTab() {
     if (_loadingUser) {
       return const Center(
-          child: CircularProgressIndicator(color: Color(0xFF094a25)));
+          child: CircularProgressIndicator(color: Color(0xFF1B4748)));
     }
     return RefreshIndicator(
       onRefresh: () async {
         _userAlerts = [];
         await _loadUserAlerts();
       },
-      color: const Color(0xFF094a25),
+      color: const Color(0xFF1B4748),
       child: ListView(
         children: [
           _sectionHeader('Current User Alerts'),
@@ -228,14 +228,14 @@ class _AlertsScreenState extends State<AlertsScreen> {
   Widget _systemAlertsTab() {
     if (_loadingSystem) {
       return const Center(
-          child: CircularProgressIndicator(color: Color(0xFF094a25)));
+          child: CircularProgressIndicator(color: Color(0xFF1B4748)));
     }
     return RefreshIndicator(
       onRefresh: () async {
         _systemAlerts = [];
         await _loadSystemAlerts();
       },
-      color: const Color(0xFF094a25),
+      color: const Color(0xFF1B4748),
       child: ListView(
         children: [
           _sectionHeader('Current System Alerts'),
@@ -267,11 +267,11 @@ class _AlertsScreenState extends State<AlertsScreen> {
   Widget _sectionHeader(String title) => Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        color: const Color(0xFF094a25),
+        color: const Color(0xFF1B4748),
         margin: const EdgeInsets.only(top: 4, bottom: 2),
         child: Text(title,
             style: const TextStyle(
-                color: Color(0xFFf8b324),
+                color: Color(0xFFF8BB25),
                 fontWeight: FontWeight.bold,
                 fontSize: 13)),
       );
@@ -281,7 +281,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         color: Colors.white,
         child: Text(msg,
-            style: const TextStyle(fontSize: 13, color: Color(0xFF094a25))),
+            style: const TextStyle(fontSize: 13, color: Color(0xFF1B4748))),
       );
 
   Widget _alertCard(
@@ -363,7 +363,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
                     onPressed: () =>
                         _dismissAlert(alert['id'], isSystem: isSystem),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFbc2023),
+                      backgroundColor: const Color(0xFFF48900),
                       padding: const EdgeInsets.symmetric(
                           horizontal: 14, vertical: 6),
                     ),

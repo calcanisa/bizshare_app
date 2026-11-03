@@ -239,7 +239,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: const BoxDecoration(
-                    color: Color(0xFF094a25),
+                    color: Color(0xFF1B4748),
                     borderRadius:
                         BorderRadius.vertical(top: Radius.circular(16)),
                   ),
@@ -257,7 +257,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
                           _tempCategory = null;
                         }),
                         child: const Text('Reset',
-                            style: TextStyle(color: Color(0xFFf8b324))),
+                            style: TextStyle(color: Color(0xFFF8BB25))),
                       ),
                     ],
                   ),
@@ -310,7 +310,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
                         _fetchAllListings(page: 1);
                       },
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF094a25),
+                          backgroundColor: const Color(0xFF1B4748),
                           padding: const EdgeInsets.symmetric(vertical: 14)),
                       child: const Text('Apply Filters',
                           style: TextStyle(color: Colors.white, fontSize: 16)),
@@ -330,7 +330,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
         child: Text(label,
             style: const TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF094a25),
+                color: Color(0xFF1B4748),
                 fontSize: 13)),
       );
 
@@ -369,12 +369,12 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
   Widget build(BuildContext context) {
     if (_loadingAccount) {
       return const Center(
-          child: CircularProgressIndicator(color: Color(0xFF094a25)));
+          child: CircularProgressIndicator(color: Color(0xFF1B4748)));
     }
     return Column(
       children: [
         Container(
-          color: const Color(0xFF094a25),
+          color: const Color(0xFF1B4748),
           child: Row(
             children: [
               _tabBtn(1, 'Your Listings'),
@@ -402,11 +402,11 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
         },
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
-          color: active ? Colors.white : const Color(0xFF094a25),
+          color: active ? Colors.white : const Color(0xFF1B4748),
           child: Text(label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: active ? const Color(0xFF094a25) : Colors.white60,
+                color: active ? const Color(0xFF1B4748) : Colors.white60,
                 fontSize: 13,
                 fontWeight: active ? FontWeight.bold : FontWeight.normal,
               )),
@@ -420,7 +420,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
   Widget _myListingsTab() {
     if (_loadingMine) {
       return const Center(
-          child: CircularProgressIndicator(color: Color(0xFF094a25)));
+          child: CircularProgressIndicator(color: Color(0xFF1B4748)));
     }
 
     final atLimit = _myListings.length >= _webLimit;
@@ -442,7 +442,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
                     const Text('Add Website', style: TextStyle(fontSize: 13)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
-                      atLimit ? Colors.grey.shade400 : const Color(0xFFf8b324),
+                      atLimit ? Colors.grey.shade400 : const Color(0xFFF8BB25),
                   foregroundColor: Colors.black87,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -455,7 +455,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            color: const Color(0xFFf8b324).withOpacity(0.15),
+            color: const Color(0xFFF8BB25).withOpacity(0.15),
             child: Text(
                 'You\'ve reached your $_webLimit listing limit. Upgrade your membership to add more.',
                 style: const TextStyle(fontSize: 12, color: Colors.black87)),
@@ -467,12 +467,12 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text('You do not have any listings.',
-                          style: TextStyle(color: Color(0xFF094a25))),
+                          style: TextStyle(color: Color(0xFF1B4748))),
                       const SizedBox(height: 12),
                       ElevatedButton(
                         onPressed: _openAddWebsite,
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF094a25)),
+                            backgroundColor: const Color(0xFF1B4748)),
                         child: const Text('Add One',
                             style: TextStyle(color: Colors.white)),
                       ),
@@ -481,7 +481,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
                 )
               : RefreshIndicator(
                   onRefresh: _loadMyListings,
-                  color: const Color(0xFF094a25),
+                  color: const Color(0xFF1B4748),
                   child: ListView.builder(
                     padding: const EdgeInsets.all(12),
                     itemCount: _myListings.length,
@@ -541,7 +541,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
                         style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF094a25))),
+                            color: Color(0xFF1B4748))),
                     const SizedBox(height: 4),
                     if (type != null) _metaRow('Type', type['name'] ?? ''),
                     if (category != null)
@@ -553,7 +553,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
                           child: OutlinedButton(
                             onPressed: () => _openEditWebsite(listing),
                             style: OutlinedButton.styleFrom(
-                                foregroundColor: const Color(0xFF094a25),
+                                foregroundColor: const Color(0xFF1B4748),
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 4)),
                             child: const Text('Edit',
@@ -565,9 +565,9 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
                           child: OutlinedButton(
                             onPressed: () {}, // TODO: feature
                             style: OutlinedButton.styleFrom(
-                                foregroundColor: const Color(0xFFf8b324),
+                                foregroundColor: const Color(0xFFF8BB25),
                                 side:
-                                    const BorderSide(color: Color(0xFFf8b324)),
+                                    const BorderSide(color: Color(0xFFF8BB25)),
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 4)),
                             child: const Text('Feature',
@@ -579,7 +579,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
                           child: ElevatedButton(
                             onPressed: () => _deleteListing(listing['id']),
                             style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFbc2023),
+                                backgroundColor: const Color(0xFFF48900),
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 4)),
                             child: const Text('Delete',
@@ -612,7 +612,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
               Stack(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.tune, color: Color(0xFF094a25)),
+                    icon: const Icon(Icons.tune, color: Color(0xFF1B4748)),
                     onPressed: _openFilterSheet,
                   ),
                   if (_hasActiveFilters)
@@ -623,7 +623,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
                         width: 8,
                         height: 8,
                         decoration: const BoxDecoration(
-                          color: Color(0xFFbc2023),
+                          color: Color(0xFFF48900),
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -642,7 +642,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
                     value: _selectedOrdering,
                     isDense: true,
                     style:
-                        const TextStyle(fontSize: 12, color: Color(0xFF094a25)),
+                        const TextStyle(fontSize: 12, color: Color(0xFF1B4748)),
                     items: const [
                       DropdownMenuItem(
                           value: 'title-asc', child: Text('Name A-Z')),
@@ -714,7 +714,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
                         value: _selectedPageSize,
                         isDense: true,
                         style: const TextStyle(
-                            fontSize: 12, color: Color(0xFF094a25)),
+                            fontSize: 12, color: Color(0xFF1B4748)),
                         items: [20, 50, 100]
                             .map((s) =>
                                 DropdownMenuItem(value: s, child: Text('$s')))
@@ -734,14 +734,14 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
         Expanded(
           child: _loadingAll
               ? const Center(
-                  child: CircularProgressIndicator(color: Color(0xFF094a25)))
+                  child: CircularProgressIndicator(color: Color(0xFF1B4748)))
               : _allListings.isEmpty
                   ? const Center(
                       child: Text('No websites to display',
-                          style: TextStyle(color: Color(0xFF094a25))))
+                          style: TextStyle(color: Color(0xFF1B4748))))
                   : RefreshIndicator(
                       onRefresh: () => _fetchAllListings(page: 1),
-                      color: const Color(0xFF094a25),
+                      color: const Color(0xFF1B4748),
                       child: ListView.builder(
                         itemCount: _allListings.length + 1,
                         itemBuilder: (context, index) {
@@ -813,7 +813,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
                             style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF094a25))),
+                                color: Color(0xFF1B4748))),
                         const SizedBox(height: 5),
                         Text(
                             description.length > 100
@@ -840,14 +840,14 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(Icons.open_in_new,
-                              size: 14, color: Color(0xFF094a25)),
+                              size: 14, color: Color(0xFF1B4748)),
                           SizedBox(width: 4),
                           Text('See Website',
                               style: TextStyle(
                                   fontSize: 12,
-                                  color: Color(0xFF094a25),
+                                  color: Color(0xFF1B4748),
                                   decoration: TextDecoration.underline,
-                                  decorationColor: Color(0xFF094a25))),
+                                  decorationColor: Color(0xFF1B4748))),
                         ],
                       ),
                     ),
@@ -856,7 +856,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
                     OutlinedButton(
                       onPressed: () => _openEditWebsite(listing),
                       style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF094a25),
+                          foregroundColor: const Color(0xFF1B4748),
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 4)),
                       child: const Text('Edit', style: TextStyle(fontSize: 12)),
@@ -865,8 +865,8 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
                     OutlinedButton(
                       onPressed: () {}, // TODO: feature
                       style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFFf8b324),
-                          side: const BorderSide(color: Color(0xFFf8b324)),
+                          foregroundColor: const Color(0xFFF8BB25),
+                          side: const BorderSide(color: Color(0xFFF8BB25)),
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 4)),
                       child:
@@ -876,7 +876,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
                     ElevatedButton(
                       onPressed: () => _deleteListing(listing['id']),
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFbc2023),
+                          backgroundColor: const Color(0xFFF48900),
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 4)),
                       child: const Text('Delete',
@@ -910,13 +910,13 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: const Color(0xFF094a25).withValues(alpha: 0.08),
+              color: const Color(0xFF1B4748).withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text('Page $_currentPage of $totalPages',
                 style: const TextStyle(
                     fontSize: 12,
-                    color: Color(0xFF094a25),
+                    color: Color(0xFF1B4748),
                     fontWeight: FontWeight.bold)),
           ),
           if (_hasNext) ...[
@@ -933,11 +933,11 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xFF094a25)),
+            border: Border.all(color: const Color(0xFF1B4748)),
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(label,
-              style: const TextStyle(fontSize: 12, color: Color(0xFF094a25))),
+              style: const TextStyle(fontSize: 12, color: Color(0xFF1B4748))),
         ),
       );
 
@@ -951,7 +951,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
                   style: const TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF094a25))),
+                      color: Color(0xFF1B4748))),
               TextSpan(
                   text: value,
                   style: const TextStyle(fontSize: 11, color: Colors.black87)),
@@ -964,21 +964,21 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
         margin: const EdgeInsets.only(right: 6),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: const Color(0xFF094a25).withValues(alpha: 0.1),
+          color: const Color(0xFF1B4748).withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(16),
           border:
-              Border.all(color: const Color(0xFF094a25).withValues(alpha: 0.3)),
+              Border.all(color: const Color(0xFF1B4748).withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(label,
-                style: const TextStyle(fontSize: 11, color: Color(0xFF094a25))),
+                style: const TextStyle(fontSize: 11, color: Color(0xFF1B4748))),
             const SizedBox(width: 4),
             GestureDetector(
               onTap: onRemove,
               child:
-                  const Icon(Icons.close, size: 12, color: Color(0xFF094a25)),
+                  const Icon(Icons.close, size: 12, color: Color(0xFF1B4748)),
             ),
           ],
         ),
@@ -987,7 +987,7 @@ class _WebsitesScreenState extends State<WebsitesScreen> {
   Widget _imagePlaceholder() => Container(
         width: 80,
         height: 80,
-        color: const Color(0xFF094a25).withValues(alpha: 0.1),
-        child: const Icon(Icons.language, color: Color(0xFF094a25), size: 30),
+        color: const Color(0xFF1B4748).withValues(alpha: 0.1),
+        child: const Icon(Icons.language, color: Color(0xFF1B4748), size: 30),
       );
 }

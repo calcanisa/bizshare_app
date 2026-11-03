@@ -284,7 +284,7 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF094a25),
+        backgroundColor: const Color(0xFF1B4748),
         iconTheme: const IconThemeData(color: Colors.white),
         titleSpacing: 0,
         title: Padding(
@@ -319,7 +319,7 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
                   );
                 },
                 child: const Text('Edit',
-                    style: TextStyle(color: Color(0xFFf8b324), fontSize: 12)),
+                    style: TextStyle(color: Color(0xFFF8BB25), fontSize: 12)),
               ),
               TextButton(
                 style: TextButton.styleFrom(
@@ -347,7 +347,7 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap),
                 onPressed: _deleteAd,
                 child: const Text('Delete',
-                    style: TextStyle(color: Color(0xFFbc2023), fontSize: 12)),
+                    style: TextStyle(color: Color(0xFFF48900), fontSize: 12)),
               ),
             ] else
               TextButton(
@@ -371,12 +371,12 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
       ),
       body: _loading
           ? const Center(
-              child: CircularProgressIndicator(color: Color(0xFF094a25)))
+              child: CircularProgressIndicator(color: Color(0xFF1B4748)))
           : _ad == null
               ? const Center(child: Text('Ad not found'))
               : RefreshIndicator(
                   onRefresh: _loadAd,
-                  color: const Color(0xFF094a25),
+                  color: const Color(0xFF1B4748),
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     child: Column(
@@ -409,7 +409,7 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
     return Column(
       children: [
         Container(
-          color: const Color(0xFF0a5c2e),
+          color: const Color(0xFF296968),
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Text(
@@ -440,7 +440,7 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFbc2023),
+                    color: const Color(0xFFF48900),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: const Text('Expired',
@@ -466,7 +466,7 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF094a25),
+                    backgroundColor: const Color(0xFF1B4748),
                     padding:
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     minimumSize: Size.zero,
@@ -581,7 +581,7 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
               style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF094a25))),
+                  color: Color(0xFF1B4748))),
           const SizedBox(height: 6),
           Text(adbody,
               style: const TextStyle(
@@ -644,12 +644,12 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
                               horizontal: 10, vertical: 5),
                           decoration: BoxDecoration(
                             color:
-                                const Color(0xFF094a25).withValues(alpha: 0.08),
+                                const Color(0xFF1B4748).withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(e.toString(),
                               style: const TextStyle(
-                                  fontSize: 12, color: Color(0xFF094a25))),
+                                  fontSize: 12, color: Color(0xFF1B4748))),
                         ))
                     .toList(),
               ),
@@ -708,12 +708,12 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
                               horizontal: 10, vertical: 5),
                           decoration: BoxDecoration(
                             color:
-                                const Color(0xFF094a25).withValues(alpha: 0.08),
+                                const Color(0xFF1B4748).withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(e.toString(),
                               style: const TextStyle(
-                                  fontSize: 12, color: Color(0xFF094a25))),
+                                  fontSize: 12, color: Color(0xFF1B4748))),
                         ))
                     .toList(),
               ),
@@ -770,7 +770,7 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
                               child: const Text('Tap to reveal',
                                   style: TextStyle(
                                       fontSize: 12,
-                                      color: Color(0xFF094a25),
+                                      color: Color(0xFF1B4748),
                                       decoration: TextDecoration.underline)),
                             ),
                     ],
@@ -803,7 +803,7 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
                     style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF094a25))),
+                        color: Color(0xFF1B4748))),
                 const SizedBox(height: 6),
                 TextField(
                   controller: _messageController,
@@ -815,7 +815,7 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
                         borderRadius: BorderRadius.circular(8)),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFF094a25)),
+                      borderSide: const BorderSide(color: Color(0xFF1B4748)),
                     ),
                     contentPadding: const EdgeInsets.all(12),
                   ),
@@ -825,7 +825,7 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
                     style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF094a25))),
+                        color: Color(0xFF1B4748))),
                 const SizedBox(height: 6),
                 TextField(
                   controller: _phoneController,
@@ -837,7 +837,7 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
                         borderRadius: BorderRadius.circular(8)),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFF094a25)),
+                      borderSide: const BorderSide(color: Color(0xFF1B4748)),
                     ),
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 12, vertical: 10),
@@ -850,14 +850,14 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
                           fontSize: 12,
                           color: _messageError.contains('successfully')
                               ? Colors.green
-                              : const Color(0xFFbc2023))),
+                              : const Color(0xFFF48900))),
                 ],
                 const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed:
                       _daysLeft > 0 && !_sendingMessage ? _sendMessage : null,
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF094a25),
+                      backgroundColor: const Color(0xFF1B4748),
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 12)),
                   child: _sendingMessage
@@ -902,7 +902,7 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
                     style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF094a25))),
+                        color: Color(0xFF1B4748))),
                 const SizedBox(height: 6),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -938,7 +938,7 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
                 ElevatedButton(
                   onPressed: _calculateFinance,
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF094a25),
+                      backgroundColor: const Color(0xFF1B4748),
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 12)),
                   child: const Text('Calculate Payment',
@@ -973,7 +973,7 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
               style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF094a25))),
+                  color: Color(0xFF1B4748))),
           const SizedBox(height: 4),
           TextField(
             controller: controller,
@@ -983,7 +983,7 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
                   OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0xFF094a25)),
+                borderSide: const BorderSide(color: Color(0xFF1B4748)),
               ),
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -1003,7 +1003,7 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
                 style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF094a25))),
+                    color: Color(0xFF1B4748))),
           ],
         ),
       );
@@ -1013,7 +1013,7 @@ class _ClassifiedDetailScreenState extends State<ClassifiedDetailScreen> {
   Widget _sectionHeader(String title) => Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        color: const Color(0xFF094a25),
+        color: const Color(0xFF1B4748),
         child: Text(title,
             style: const TextStyle(
                 color: Colors.white,

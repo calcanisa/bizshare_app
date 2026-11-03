@@ -22,8 +22,8 @@ class AddServiceScreen extends StatefulWidget {
 }
 
 class _AddServiceScreenState extends State<AddServiceScreen> {
-  static const _green = Color(0xFF094a25);
-  static const _red = Color(0xFFbc2023);
+  static const _green = Color(0xFF1B4748);
+  static const _red = Color(0xFFF48900);
 
   static const _intervalOptions = [
     ('hour', 'Per Hour'),

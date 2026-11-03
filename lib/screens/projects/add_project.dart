@@ -21,8 +21,8 @@ class AddProjectScreen extends StatefulWidget {
 }
 
 class _AddProjectScreenState extends State<AddProjectScreen> {
-  static const _green = Color(0xFF094a25);
-  static const _red = Color(0xFFbc2023);
+  static const _green = Color(0xFF1B4748);
+  static const _red = Color(0xFFF48900);
 
   final _titleCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
@@ -318,17 +318,17 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color:
-                              const Color(0xFFf8b324).withValues(alpha: 0.12),
+                              const Color(0xFFF8BB25).withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                              color: const Color(0xFFf8b324)
+                              color: const Color(0xFFF8BB25)
                                   .withValues(alpha: 0.4)),
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Icon(Icons.lightbulb_outline,
-                                color: Color(0xFFf8b324), size: 18),
+                                color: Color(0xFFF8BB25), size: 18),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(

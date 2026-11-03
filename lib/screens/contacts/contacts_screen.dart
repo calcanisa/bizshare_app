@@ -245,7 +245,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
     return Column(
       children: [
         Container(
-          color: const Color(0xFF094a25),
+          color: const Color(0xFF1B4748),
           child: Row(
             children: [
               _tabBtn(1, 'Contacts'),
@@ -267,11 +267,11 @@ class _ContactsScreenState extends State<ContactsScreen> {
         onTap: () => setState(() => _tab = index),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
-          color: active ? Colors.white : const Color(0xFF094a25),
+          color: active ? Colors.white : const Color(0xFF1B4748),
           child: Text(label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: active ? const Color(0xFF094a25) : Colors.white60,
+                color: active ? const Color(0xFF1B4748) : Colors.white60,
                 fontSize: 13,
                 fontWeight: active ? FontWeight.bold : FontWeight.normal,
               )),
@@ -302,7 +302,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                         borderRadius: BorderRadius.circular(8)),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFF094a25)),
+                      borderSide: const BorderSide(color: Color(0xFF1B4748)),
                     ),
                     contentPadding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -340,7 +340,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFf8b324),
+                    backgroundColor: const Color(0xFFF8BB25),
                     foregroundColor: Colors.black87,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 12, vertical: 10)),
@@ -358,7 +358,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                   if (result != null && mounted) _loadContacts(page: 1);
                 },
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF094a25),
+                    backgroundColor: const Color(0xFF1B4748),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 12, vertical: 10)),
@@ -383,7 +383,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                   Text('${_selectedContacts.length} selected',
                       style: const TextStyle(
                           fontSize: 12,
-                          color: Color(0xFF094a25),
+                          color: Color(0xFF1B4748),
                           fontWeight: FontWeight.bold)),
                   const SizedBox(width: 8),
                   _actionBtn('Delete', _bulkDeleteContacts,
@@ -412,7 +412,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                       _contacts
                           .every((c) => _selectedContacts.contains(c['id'])),
                   tristate: true,
-                  activeColor: const Color(0xFF094a25),
+                  activeColor: const Color(0xFF1B4748),
                   onChanged: (_) {
                     setState(() {
                       if (_contacts
@@ -459,14 +459,14 @@ class _ContactsScreenState extends State<ContactsScreen> {
         Expanded(
           child: _loadingContacts
               ? const Center(
-                  child: CircularProgressIndicator(color: Color(0xFF094a25)))
+                  child: CircularProgressIndicator(color: Color(0xFF1B4748)))
               : _contacts.isEmpty
                   ? const Center(
                       child: Text('No contacts found',
-                          style: TextStyle(color: Color(0xFF094a25))))
+                          style: TextStyle(color: Color(0xFF1B4748))))
                   : RefreshIndicator(
                       onRefresh: () => _loadContacts(page: 1),
-                      color: const Color(0xFF094a25),
+                      color: const Color(0xFF1B4748),
                       child: ListView.builder(
                         itemCount: _contacts.length + 1,
                         itemBuilder: (context, index) {
@@ -515,7 +515,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
     return Container(
       decoration: BoxDecoration(
         color: isSelected
-            ? const Color(0xFF094a25).withOpacity(0.06)
+            ? const Color(0xFF1B4748).withOpacity(0.06)
             : Colors.white,
         border: Border(bottom: BorderSide(color: Colors.grey.shade100)),
       ),
@@ -525,7 +525,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
             width: 44,
             child: Checkbox(
               value: isSelected,
-              activeColor: const Color(0xFF094a25),
+              activeColor: const Color(0xFF1B4748),
               onChanged: (_) => setState(() {
                 if (isSelected) {
                   _selectedContacts.remove(id);
@@ -550,7 +550,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
             width: 36,
             child: IconButton(
               icon: const Icon(Icons.edit_outlined,
-                  size: 16, color: Color(0xFF094a25)),
+                  size: 16, color: Color(0xFF1B4748)),
               onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -598,13 +598,13 @@ class _ContactsScreenState extends State<ContactsScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: const Color(0xFF094a25).withValues(alpha: 0.08),
+              color: const Color(0xFF1B4748).withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text('Page $_currentPage of $_totalPages',
                 style: const TextStyle(
                     fontSize: 12,
-                    color: Color(0xFF094a25),
+                    color: Color(0xFF1B4748),
                     fontWeight: FontWeight.bold)),
           ),
           if (_currentPage < _totalPages) ...[
@@ -640,7 +640,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                           borderSide:
-                              const BorderSide(color: Color(0xFF094a25)),
+                              const BorderSide(color: Color(0xFF1B4748)),
                         ),
                         contentPadding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 8),
@@ -670,7 +670,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFf8b324),
+                        backgroundColor: const Color(0xFFF8BB25),
                         foregroundColor: Colors.black87,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 10)),
@@ -718,7 +718,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                         label: Text('Reset',
                             style:
                                 TextStyle(fontSize: 11, color: Colors.white)),
-                        backgroundColor: Color(0xFFbc2023),
+                        backgroundColor: Color(0xFFF48900),
                         padding: EdgeInsets.zero,
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
@@ -742,7 +742,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                   Text('${_selectedGroups.length} selected',
                       style: const TextStyle(
                           fontSize: 12,
-                          color: Color(0xFF094a25),
+                          color: Color(0xFF1B4748),
                           fontWeight: FontWeight.bold)),
                   const SizedBox(width: 8),
                   _actionBtn('Delete', _bulkDeleteGroups, isDestructive: true),
@@ -771,7 +771,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                           .where((g) => g['is_default'] != true)
                           .every((g) => _selectedGroups.contains(g['id'])),
                   tristate: true,
-                  activeColor: const Color(0xFF094a25),
+                  activeColor: const Color(0xFF1B4748),
                   onChanged: (_) {
                     setState(() {
                       final editable = _filteredGroups
@@ -819,14 +819,14 @@ class _ContactsScreenState extends State<ContactsScreen> {
         Expanded(
           child: _loadingGroups
               ? const Center(
-                  child: CircularProgressIndicator(color: Color(0xFF094a25)))
+                  child: CircularProgressIndicator(color: Color(0xFF1B4748)))
               : _filteredGroups.isEmpty
                   ? const Center(
                       child: Text('No groups found',
-                          style: TextStyle(color: Color(0xFF094a25))))
+                          style: TextStyle(color: Color(0xFF1B4748))))
                   : RefreshIndicator(
                       onRefresh: _loadGroups,
-                      color: const Color(0xFF094a25),
+                      color: const Color(0xFF1B4748),
                       child: ListView.builder(
                         itemCount: _filteredGroups.length,
                         itemBuilder: (context, index) => _groupRow(
@@ -878,7 +878,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
     return Container(
       decoration: BoxDecoration(
         color: isSelected
-            ? const Color(0xFF094a25).withOpacity(0.06)
+            ? const Color(0xFF1B4748).withOpacity(0.06)
             : Colors.white,
         border: Border(bottom: BorderSide(color: Colors.grey.shade100)),
       ),
@@ -890,7 +890,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                 ? const SizedBox()
                 : Checkbox(
                     value: isSelected,
-                    activeColor: const Color(0xFF094a25),
+                    activeColor: const Color(0xFF1B4748),
                     onChanged: (_) => setState(() {
                       if (isSelected) {
                         _selectedGroups.remove(id);
@@ -918,12 +918,12 @@ class _ContactsScreenState extends State<ContactsScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 5, vertical: 2),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF094a25).withOpacity(0.12),
+                        color: const Color(0xFF1B4748).withOpacity(0.12),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: const Text('Default',
                           style:
-                              TextStyle(fontSize: 9, color: Color(0xFF094a25))),
+                              TextStyle(fontSize: 9, color: Color(0xFF1B4748))),
                     ),
                 ],
               ),
@@ -940,7 +940,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                 ? const SizedBox()
                 : IconButton(
                     icon: const Icon(Icons.edit_outlined,
-                        size: 16, color: Color(0xFF094a25)),
+                        size: 16, color: Color(0xFF1B4748)),
                     onPressed: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -972,7 +972,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
             value ? '✓' : '–',
             style: TextStyle(
                 fontSize: 13,
-                color: value ? const Color(0xFF094a25) : Colors.black26,
+                color: value ? const Color(0xFF1B4748) : Colors.black26,
                 fontWeight: value ? FontWeight.bold : FontWeight.normal),
           ),
         ),
@@ -987,7 +987,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: active ? const Color(0xFF094a25) : Colors.grey.shade200,
+          color: active ? const Color(0xFF1B4748) : Colors.grey.shade200,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Text(label,
@@ -1007,8 +1007,8 @@ class _ContactsScreenState extends State<ContactsScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
             color: isDestructive
-                ? const Color(0xFFbc2023)
-                : const Color(0xFF094a25),
+                ? const Color(0xFFF48900)
+                : const Color(0xFF1B4748),
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(label,
@@ -1021,11 +1021,11 @@ class _ContactsScreenState extends State<ContactsScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xFF094a25)),
+            border: Border.all(color: const Color(0xFF1B4748)),
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(label,
-              style: const TextStyle(fontSize: 12, color: Color(0xFF094a25))),
+              style: const TextStyle(fontSize: 12, color: Color(0xFF1B4748))),
         ),
       );
 }

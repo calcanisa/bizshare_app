@@ -1,4 +1,4 @@
-package com.example.sesha_app
+package co.za.bizshare.app
 
 import io.flutter.embedding.android.FlutterActivity
 

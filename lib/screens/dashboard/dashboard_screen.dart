@@ -44,11 +44,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
         builder: (context, provider, _) {
           if (provider.isLoading) {
             return const Center(
-                child: CircularProgressIndicator(color: Color(0xFF094a25)));
+                child: CircularProgressIndicator(color: Color(0xFF1B4748)));
           }
           return RefreshIndicator(
             onRefresh: provider.load,
-            color: const Color(0xFF094a25),
+            color: const Color(0xFF1B4748),
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
@@ -72,7 +72,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      color: const Color(0xFF094a25),
+      color: const Color(0xFF1B4748),
       child: Text(title,
           style: const TextStyle(
               color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
@@ -83,10 +83,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      color: const Color(0xFF094a25),
+      color: const Color(0xFF1B4748),
       child: Text(
         message.length > 80 ? '${message.substring(0, 80)}...' : message,
-        style: const TextStyle(color: Color(0xFFf8b324), fontSize: 13),
+        style: const TextStyle(color: Color(0xFFF8BB25), fontSize: 13),
         textAlign: TextAlign.center,
       ),
     );
@@ -183,7 +183,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF094a25)),
+                              color: Color(0xFF1B4748)),
                         ),
                       ),
                       if (about.isNotEmpty) ...[
@@ -219,8 +219,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Container(
       width: 80,
       height: 80,
-      color: const Color(0xFF094a25).withValues(alpha: 0.1),
-      child: const Icon(Icons.person, color: Color(0xFF094a25), size: 40),
+      color: const Color(0xFF1B4748).withValues(alpha: 0.1),
+      child: const Icon(Icons.person, color: Color(0xFF1B4748), size: 40),
     );
   }
 
@@ -233,7 +233,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF094a25))),
+                color: Color(0xFF1B4748))),
       ],
     );
   }
@@ -330,7 +330,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           width: 44,
                           height: 44,
                           decoration: BoxDecoration(
-                            color: const Color(0xFF094a25),
+                            color: const Color(0xFF1B4748),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Icon(item['icon'] as IconData,
@@ -342,7 +342,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF094a25)),
+                              color: Color(0xFF1B4748)),
                         ),
                         Text(
                           item['label'] as String,
@@ -465,7 +465,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: Text(
                   'No content created yet — statistics will appear here once you start adding content.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Color(0xFF094a25)),
+                  style: TextStyle(color: Color(0xFF1B4748)),
                 ),
               ),
             )
@@ -483,7 +483,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           border: Border(bottom: BorderSide(color: Colors.black12))),
       child: Row(
         children: [
-          Icon(s['icon'] as IconData, color: const Color(0xFF094a25), size: 28),
+          Icon(s['icon'] as IconData, color: const Color(0xFF1B4748), size: 28),
           const SizedBox(width: 12),
           Expanded(
             child: GestureDetector(
@@ -492,9 +492,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 s['label'] as String,
                 style: const TextStyle(
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF094a25),
+                    color: Color(0xFF1B4748),
                     decoration: TextDecoration.underline,
-                    decorationColor: Color(0xFF094a25)),
+                    decorationColor: Color(0xFF1B4748)),
               ),
             ),
           ),
@@ -520,7 +520,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF094a25))),
+                color: Color(0xFF1B4748))),
       ],
     );
   }

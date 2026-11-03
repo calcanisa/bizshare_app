@@ -512,7 +512,7 @@ class _AddJobModalState extends State<AddJobModal> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF094a25),
+        backgroundColor: const Color(0xFF1B4748),
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           widget.action == 'edit' ? 'Edit Job' : 'Add Job',
@@ -533,7 +533,7 @@ class _AddJobModalState extends State<AddJobModal> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: const Color(0xFF094a25).withOpacity(0.06),
+              color: const Color(0xFF1B4748).withOpacity(0.06),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Text(
@@ -583,7 +583,7 @@ class _AddJobModalState extends State<AddJobModal> {
             children: [
               Checkbox(
                 value: _marketRelated,
-                activeColor: const Color(0xFF094a25),
+                activeColor: const Color(0xFF1B4748),
                 onChanged: (v) => setState(() => _marketRelated = v ?? false),
               ),
               const Text('Market Related', style: TextStyle(fontSize: 13)),
@@ -794,7 +794,7 @@ class _AddJobModalState extends State<AddJobModal> {
                         onTap: () =>
                             setState(() => _selectedSkills.removeAt(e.key)),
                         child: const Icon(Icons.close,
-                            size: 16, color: Color(0xFFbc2023)),
+                            size: 16, color: Color(0xFFF48900)),
                       ),
                     ],
                   ),
@@ -808,8 +808,8 @@ class _AddJobModalState extends State<AddJobModal> {
                 setState(() => _addingSkills = true);
               },
               style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFF094a25),
-                side: const BorderSide(color: Color(0xFF094a25)),
+                foregroundColor: const Color(0xFF1B4748),
+                side: const BorderSide(color: Color(0xFF1B4748)),
               ),
               icon: const Icon(Icons.add, size: 16),
               label: const Text('Add A Skill'),
@@ -844,7 +844,7 @@ class _AddJobModalState extends State<AddJobModal> {
                                 style: const TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xFF094a25))),
+                                    color: Color(0xFF1B4748))),
                             if ((e.value['description'] ?? '').isNotEmpty) ...[
                               const SizedBox(height: 2),
                               Text(e.value['description'] ?? '',
@@ -857,7 +857,7 @@ class _AddJobModalState extends State<AddJobModal> {
                       GestureDetector(
                         onTap: () => setState(() => _duties.removeAt(e.key)),
                         child: const Icon(Icons.close,
-                            size: 16, color: Color(0xFFbc2023)),
+                            size: 16, color: Color(0xFFF48900)),
                       ),
                     ],
                   ),
@@ -868,8 +868,8 @@ class _AddJobModalState extends State<AddJobModal> {
             OutlinedButton.icon(
               onPressed: () => setState(() => _addingDuty = true),
               style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFF094a25),
-                side: const BorderSide(color: Color(0xFF094a25)),
+                foregroundColor: const Color(0xFF1B4748),
+                side: const BorderSide(color: Color(0xFF1B4748)),
               ),
               icon: const Icon(Icons.add, size: 16),
               label: const Text('Add A Duty'),
@@ -905,7 +905,7 @@ class _AddJobModalState extends State<AddJobModal> {
                               style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF094a25)),
+                                  color: Color(0xFF1B4748)),
                             ),
                             if ((e.value['description'] ?? '').isNotEmpty) ...[
                               const SizedBox(height: 2),
@@ -919,7 +919,7 @@ class _AddJobModalState extends State<AddJobModal> {
                       GestureDetector(
                         onTap: () => setState(() => _questions.removeAt(e.key)),
                         child: const Icon(Icons.close,
-                            size: 16, color: Color(0xFFbc2023)),
+                            size: 16, color: Color(0xFFF48900)),
                       ),
                     ],
                   ),
@@ -930,8 +930,8 @@ class _AddJobModalState extends State<AddJobModal> {
             OutlinedButton.icon(
               onPressed: () => setState(() => _addingQuestion = true),
               style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFF094a25),
-                side: const BorderSide(color: Color(0xFF094a25)),
+                foregroundColor: const Color(0xFF1B4748),
+                side: const BorderSide(color: Color(0xFF1B4748)),
               ),
               icon: const Icon(Icons.add, size: 16),
               label: const Text('Add A Question'),
@@ -966,7 +966,7 @@ class _AddJobModalState extends State<AddJobModal> {
                                 style: const TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xFF094a25))),
+                                    color: Color(0xFF1B4748))),
                             Text(
                                 '${(e.value['questions'] as List?)?.length ?? 0} questions',
                                 style: const TextStyle(
@@ -992,7 +992,7 @@ class _AddJobModalState extends State<AddJobModal> {
                           ),
                           child: const Text('Edit',
                               style: TextStyle(
-                                  color: Color(0xFF094a25), fontSize: 12)),
+                                  color: Color(0xFF1B4748), fontSize: 12)),
                         ),
                       GestureDetector(
                         onTap: () async {
@@ -1016,7 +1016,7 @@ class _AddJobModalState extends State<AddJobModal> {
                           }
                         },
                         child: const Icon(Icons.close,
-                            size: 16, color: Color(0xFFbc2023)),
+                            size: 16, color: Color(0xFFF48900)),
                       ),
                     ],
                   ),
@@ -1039,8 +1039,8 @@ class _AddJobModalState extends State<AddJobModal> {
                 ),
               ),
               style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFF094a25),
-                side: const BorderSide(color: Color(0xFF094a25)),
+                foregroundColor: const Color(0xFF1B4748),
+                side: const BorderSide(color: Color(0xFF1B4748)),
               ),
               icon: const Icon(Icons.add, size: 16),
               label: const Text('Add An Exam'),
@@ -1067,7 +1067,7 @@ class _AddJobModalState extends State<AddJobModal> {
             children: [
               Checkbox(
                 value: _published,
-                activeColor: const Color(0xFF094a25),
+                activeColor: const Color(0xFF1B4748),
                 onChanged: (v) => setState(() => _published = v ?? true),
               ),
               const Text('Publish immediately', style: TextStyle(fontSize: 13)),
@@ -1078,7 +1078,7 @@ class _AddJobModalState extends State<AddJobModal> {
               children: [
                 Checkbox(
                   value: _accepted,
-                  activeColor: const Color(0xFF094a25),
+                  activeColor: const Color(0xFF1B4748),
                   onChanged: (v) => setState(() => _accepted = v ?? false),
                 ),
                 const Text('I accept the '),
@@ -1086,7 +1086,7 @@ class _AddJobModalState extends State<AddJobModal> {
                   onTap: () {},
                   child: const Text('terms',
                       style: TextStyle(
-                          color: Color(0xFF094a25),
+                          color: Color(0xFF1B4748),
                           decoration: TextDecoration.underline)),
                 ),
               ],
@@ -1101,7 +1101,7 @@ class _AddJobModalState extends State<AddJobModal> {
                 child: ElevatedButton(
                   onPressed: _saving ? null : _save,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF094a25),
+                    backgroundColor: const Color(0xFF1B4748),
                     disabledBackgroundColor: Colors.grey.shade300,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
@@ -1125,8 +1125,8 @@ class _AddJobModalState extends State<AddJobModal> {
                 child: OutlinedButton(
                   onPressed: widget.onCancel,
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFFbc2023),
-                    side: const BorderSide(color: Color(0xFFbc2023)),
+                    foregroundColor: const Color(0xFFF48900),
+                    side: const BorderSide(color: Color(0xFFF48900)),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8)),
@@ -1205,7 +1205,7 @@ class _AddJobModalState extends State<AddJobModal> {
                                   onPressed: _pickImage,
                                   child: const Text('Upload Image',
                                       style:
-                                          TextStyle(color: Color(0xFF094a25)))),
+                                          TextStyle(color: Color(0xFF1B4748)))),
                             ],
                           ),
                         ),
@@ -1223,7 +1223,7 @@ class _AddJobModalState extends State<AddJobModal> {
           color: Colors.grey.shade50,
           borderRadius: BorderRadius.circular(8),
           border:
-              Border.all(color: const Color(0xFF094a25).withValues(alpha: 0.3)),
+              Border.all(color: const Color(0xFF1B4748).withValues(alpha: 0.3)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1286,7 +1286,7 @@ class _AddJobModalState extends State<AddJobModal> {
                 ElevatedButton(
                   onPressed: _addSkill,
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF094a25),
+                      backgroundColor: const Color(0xFF1B4748),
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 8)),
                   child: const Text('Add',
@@ -1296,8 +1296,8 @@ class _AddJobModalState extends State<AddJobModal> {
                 OutlinedButton(
                   onPressed: () => setState(() => _addingSkills = false),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFFbc2023),
-                    side: const BorderSide(color: Color(0xFFbc2023)),
+                    foregroundColor: const Color(0xFFF48900),
+                    side: const BorderSide(color: Color(0xFFF48900)),
                     padding:
                         const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                   ),
@@ -1317,7 +1317,7 @@ class _AddJobModalState extends State<AddJobModal> {
           color: Colors.grey.shade50,
           borderRadius: BorderRadius.circular(8),
           border:
-              Border.all(color: const Color(0xFF094a25).withValues(alpha: 0.3)),
+              Border.all(color: const Color(0xFF1B4748).withValues(alpha: 0.3)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1336,7 +1336,7 @@ class _AddJobModalState extends State<AddJobModal> {
                 ElevatedButton(
                   onPressed: _addDuty,
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF094a25),
+                      backgroundColor: const Color(0xFF1B4748),
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 8)),
                   child: const Text('Add',
@@ -1346,8 +1346,8 @@ class _AddJobModalState extends State<AddJobModal> {
                 OutlinedButton(
                   onPressed: () => setState(() => _addingDuty = false),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFFbc2023),
-                    side: const BorderSide(color: Color(0xFFbc2023)),
+                    foregroundColor: const Color(0xFFF48900),
+                    side: const BorderSide(color: Color(0xFFF48900)),
                     padding:
                         const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                   ),
@@ -1367,7 +1367,7 @@ class _AddJobModalState extends State<AddJobModal> {
           color: Colors.grey.shade50,
           borderRadius: BorderRadius.circular(8),
           border:
-              Border.all(color: const Color(0xFF094a25).withValues(alpha: 0.3)),
+              Border.all(color: const Color(0xFF1B4748).withValues(alpha: 0.3)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1386,7 +1386,7 @@ class _AddJobModalState extends State<AddJobModal> {
                 ElevatedButton(
                   onPressed: _addQuestion,
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF094a25),
+                      backgroundColor: const Color(0xFF1B4748),
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 8)),
                   child: const Text('Add',
@@ -1396,8 +1396,8 @@ class _AddJobModalState extends State<AddJobModal> {
                 OutlinedButton(
                   onPressed: () => setState(() => _addingQuestion = false),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFFbc2023),
-                    side: const BorderSide(color: Color(0xFFbc2023)),
+                    foregroundColor: const Color(0xFFF48900),
+                    side: const BorderSide(color: Color(0xFFF48900)),
                     padding:
                         const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                   ),
@@ -1415,7 +1415,7 @@ class _AddJobModalState extends State<AddJobModal> {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFF094a25),
+          color: const Color(0xFF1B4748),
           borderRadius: BorderRadius.circular(6),
         ),
         child: Text(title,
@@ -1427,7 +1427,7 @@ class _AddJobModalState extends State<AddJobModal> {
 
   Widget _fieldLabel(String label) => Text(label,
       style: const TextStyle(
-          fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF094a25)));
+          fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF1B4748)));
 
   Widget _field(
     String label,
@@ -1467,7 +1467,7 @@ class _AddJobModalState extends State<AddJobModal> {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: const BorderSide(color: Color(0xFF094a25)),
+            borderSide: const BorderSide(color: Color(0xFF1B4748)),
           ),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 10),

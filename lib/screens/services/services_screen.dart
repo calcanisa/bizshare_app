@@ -197,7 +197,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: const BoxDecoration(
-                    color: Color(0xFF094a25),
+                    color: Color(0xFF1B4748),
                     borderRadius:
                         BorderRadius.vertical(top: Radius.circular(16)),
                   ),
@@ -217,7 +217,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                           _maxRateController.clear();
                         }),
                         child: const Text('Reset',
-                            style: TextStyle(color: Color(0xFFf8b324))),
+                            style: TextStyle(color: Color(0xFFF8BB25))),
                       ),
                     ],
                   ),
@@ -262,7 +262,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                           const Padding(
                             padding: EdgeInsets.symmetric(horizontal: 8),
                             child: Text('—',
-                                style: TextStyle(color: Color(0xFF094a25))),
+                                style: TextStyle(color: Color(0xFF1B4748))),
                           ),
                           Expanded(
                             child: TextField(
@@ -315,7 +315,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                         _fetchServices(page: 1);
                       },
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF094a25),
+                          backgroundColor: const Color(0xFF1B4748),
                           padding: const EdgeInsets.symmetric(vertical: 14)),
                       child: const Text('Apply Filters',
                           style: TextStyle(color: Colors.white, fontSize: 16)),
@@ -335,7 +335,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
         child: Text(label,
             style: const TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF094a25),
+                color: Color(0xFF1B4748),
                 fontSize: 13)),
       );
 
@@ -380,7 +380,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
     return Column(
       children: [
         Container(
-          color: const Color(0xFF094a25),
+          color: const Color(0xFF1B4748),
           child: Row(
             children: [
               _tabBtn(1, 'Browse Services'),
@@ -405,11 +405,11 @@ class _ServicesScreenState extends State<ServicesScreen> {
         },
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
-          color: active ? Colors.white : const Color(0xFF094a25),
+          color: active ? Colors.white : const Color(0xFF1B4748),
           child: Text(label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: active ? const Color(0xFF094a25) : Colors.white60,
+                color: active ? const Color(0xFF1B4748) : Colors.white60,
                 fontSize: 13,
                 fontWeight: active ? FontWeight.bold : FontWeight.normal,
               )),
@@ -432,7 +432,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
               Stack(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.tune, color: Color(0xFF094a25)),
+                    icon: const Icon(Icons.tune, color: Color(0xFF1B4748)),
                     onPressed: _openFilterSheet,
                   ),
                   if (_hasActiveFilters)
@@ -443,7 +443,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                         width: 8,
                         height: 8,
                         decoration: const BoxDecoration(
-                          color: Color(0xFFbc2023),
+                          color: Color(0xFFF48900),
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -462,7 +462,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                     value: _ordering,
                     isDense: true,
                     style:
-                        const TextStyle(fontSize: 12, color: Color(0xFF094a25)),
+                        const TextStyle(fontSize: 12, color: Color(0xFF1B4748)),
                     items: const [
                       DropdownMenuItem(
                           value: 'date-last', child: Text('Newest First')),
@@ -550,7 +550,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                         value: _selectedPageSize,
                         isDense: true,
                         style: const TextStyle(
-                            fontSize: 12, color: Color(0xFF094a25)),
+                            fontSize: 12, color: Color(0xFF1B4748)),
                         items: [20, 50, 100]
                             .map((s) =>
                                 DropdownMenuItem(value: s, child: Text('$s')))
@@ -572,14 +572,14 @@ class _ServicesScreenState extends State<ServicesScreen> {
         Expanded(
           child: _loadingServices
               ? const Center(
-                  child: CircularProgressIndicator(color: Color(0xFF094a25)))
+                  child: CircularProgressIndicator(color: Color(0xFF1B4748)))
               : _services.isEmpty
                   ? const Center(
                       child: Text('No services found',
-                          style: TextStyle(color: Color(0xFF094a25))))
+                          style: TextStyle(color: Color(0xFF1B4748))))
                   : RefreshIndicator(
                       onRefresh: () => _fetchServices(page: 1),
-                      color: const Color(0xFF094a25),
+                      color: const Color(0xFF1B4748),
                       child: ListView.builder(
                         itemCount: _services.length + 1,
                         itemBuilder: (context, index) {
@@ -623,7 +623,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                   style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF094a25))),
+                      color: Color(0xFF1B4748))),
             const SizedBox(height: 6),
 
             // Pitch
@@ -642,7 +642,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                       style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF094a25))),
+                          color: Color(0xFF1B4748))),
                   if (interval != null && interval.isNotEmpty) ...[
                     const SizedBox(width: 6),
                     Container(
@@ -673,7 +673,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                       style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
-                          color: Color(0xFF094a25))),
+                          color: Color(0xFF1B4748))),
                 ],
               ),
             ],
@@ -701,7 +701,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                 label:
                     const Text('Add Request', style: TextStyle(fontSize: 13)),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFf8b324),
+                  backgroundColor: const Color(0xFFF8BB25),
                   foregroundColor: Colors.black87,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -713,7 +713,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
         Expanded(
           child: _loadingRequests
               ? const Center(
-                  child: CircularProgressIndicator(color: Color(0xFF094a25)))
+                  child: CircularProgressIndicator(color: Color(0xFF1B4748)))
               : _requests.isEmpty
                   ? Center(
                       child: Column(
@@ -721,12 +721,12 @@ class _ServicesScreenState extends State<ServicesScreen> {
                         children: [
                           const Text(
                               'You have not submitted any service requests.',
-                              style: TextStyle(color: Color(0xFF094a25))),
+                              style: TextStyle(color: Color(0xFF1B4748))),
                           const SizedBox(height: 12),
                           ElevatedButton(
                             onPressed: () {},
                             style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF094a25)),
+                                backgroundColor: const Color(0xFF1B4748)),
                             child: const Text('Submit One',
                                 style: TextStyle(color: Colors.white)),
                           ),
@@ -738,7 +738,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                         _requests = [];
                         await _loadRequests();
                       },
-                      color: const Color(0xFF094a25),
+                      color: const Color(0xFF1B4748),
                       child: ListView.builder(
                         padding: const EdgeInsets.all(12),
                         itemCount: _requests.length,
@@ -775,7 +775,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                   style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF094a25))),
+                      color: Color(0xFF1B4748))),
             const SizedBox(height: 6),
             Text(
                 description.length > 100
@@ -793,7 +793,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                   child: OutlinedButton(
                     onPressed: () {}, // TODO: edit request
                     style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFF094a25),
+                        foregroundColor: const Color(0xFF1B4748),
                         padding: const EdgeInsets.symmetric(vertical: 4)),
                     child: const Text('Edit', style: TextStyle(fontSize: 12)),
                   ),
@@ -803,7 +803,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                   child: ElevatedButton(
                     onPressed: () => _deleteRequest(request['id']),
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFbc2023),
+                        backgroundColor: const Color(0xFFF48900),
                         padding: const EdgeInsets.symmetric(vertical: 4)),
                     child: const Text('Delete',
                         style: TextStyle(color: Colors.white, fontSize: 12)),
@@ -837,13 +837,13 @@ class _ServicesScreenState extends State<ServicesScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: const Color(0xFF094a25).withValues(alpha: 0.08),
+              color: const Color(0xFF1B4748).withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text('Page $_currentPage of $totalPages',
                 style: const TextStyle(
                     fontSize: 12,
-                    color: Color(0xFF094a25),
+                    color: Color(0xFF1B4748),
                     fontWeight: FontWeight.bold)),
           ),
           if (_hasNext) ...[
@@ -860,11 +860,11 @@ class _ServicesScreenState extends State<ServicesScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xFF094a25)),
+            border: Border.all(color: const Color(0xFF1B4748)),
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(label,
-              style: const TextStyle(fontSize: 12, color: Color(0xFF094a25))),
+              style: const TextStyle(fontSize: 12, color: Color(0xFF1B4748))),
         ),
       );
 
@@ -893,21 +893,21 @@ class _ServicesScreenState extends State<ServicesScreen> {
         margin: const EdgeInsets.only(right: 6),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: const Color(0xFF094a25).withValues(alpha: 0.1),
+          color: const Color(0xFF1B4748).withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(16),
           border:
-              Border.all(color: const Color(0xFF094a25).withValues(alpha: 0.3)),
+              Border.all(color: const Color(0xFF1B4748).withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(label,
-                style: const TextStyle(fontSize: 11, color: Color(0xFF094a25))),
+                style: const TextStyle(fontSize: 11, color: Color(0xFF1B4748))),
             const SizedBox(width: 4),
             GestureDetector(
               onTap: onRemove,
               child:
-                  const Icon(Icons.close, size: 12, color: Color(0xFF094a25)),
+                  const Icon(Icons.close, size: 12, color: Color(0xFF1B4748)),
             ),
           ],
         ),

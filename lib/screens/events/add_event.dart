@@ -299,7 +299,7 @@ class _AddEventModalState extends State<AddEventModal> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF094a25),
+        backgroundColor: const Color(0xFF1B4748),
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           widget.action == 'edit' ? 'Edit Event' : 'Add Event',
@@ -320,7 +320,7 @@ class _AddEventModalState extends State<AddEventModal> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: const Color(0xFF094a25).withOpacity(0.06),
+              color: const Color(0xFF1B4748).withOpacity(0.06),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Text(
@@ -367,7 +367,7 @@ class _AddEventModalState extends State<AddEventModal> {
             children: [
               Checkbox(
                 value: _online,
-                activeColor: const Color(0xFF094a25),
+                activeColor: const Color(0xFF1B4748),
                 onChanged: (v) =>
                     setState(() => _online = v ?? false),
               ),
@@ -419,7 +419,7 @@ class _AddEventModalState extends State<AddEventModal> {
             children: [
               Checkbox(
                 value: _repeats,
-                activeColor: const Color(0xFF094a25),
+                activeColor: const Color(0xFF1B4748),
                 onChanged: (v) =>
                     setState(() => _repeats = v ?? false),
               ),
@@ -503,7 +503,7 @@ class _AddEventModalState extends State<AddEventModal> {
             children: [
               Checkbox(
                 value: _published,
-                activeColor: const Color(0xFF094a25),
+                activeColor: const Color(0xFF1B4748),
                 onChanged: (v) =>
                     setState(() => _published = v ?? true),
               ),
@@ -518,7 +518,7 @@ class _AddEventModalState extends State<AddEventModal> {
               children: [
                 Checkbox(
                   value: _accepted,
-                  activeColor: const Color(0xFF094a25),
+                  activeColor: const Color(0xFF1B4748),
                   onChanged: (v) =>
                       setState(() => _accepted = v ?? false),
                 ),
@@ -527,7 +527,7 @@ class _AddEventModalState extends State<AddEventModal> {
                   onTap: () {},
                   child: const Text('terms',
                       style: TextStyle(
-                          color: Color(0xFF094a25),
+                          color: Color(0xFF1B4748),
                           decoration: TextDecoration.underline)),
                 ),
               ],
@@ -542,7 +542,7 @@ class _AddEventModalState extends State<AddEventModal> {
                 child: ElevatedButton(
                   onPressed: _saving ? null : _save,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF094a25),
+                    backgroundColor: const Color(0xFF1B4748),
                     disabledBackgroundColor:
                         Colors.grey.shade300,
                     padding: const EdgeInsets.symmetric(
@@ -572,9 +572,9 @@ class _AddEventModalState extends State<AddEventModal> {
                 child: OutlinedButton(
                   onPressed: widget.onCancel,
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFFbc2023),
+                    foregroundColor: const Color(0xFFF48900),
                     side: const BorderSide(
-                        color: Color(0xFFbc2023)),
+                        color: Color(0xFFF48900)),
                     padding: const EdgeInsets.symmetric(
                         vertical: 14),
                     shape: RoundedRectangleBorder(
@@ -670,7 +670,7 @@ class _AddEventModalState extends State<AddEventModal> {
                                 onPressed: _pickFlyer,
                                 child: const Text('Choose Image',
                                     style: TextStyle(
-                                        color: Color(0xFF094a25))),
+                                        color: Color(0xFF1B4748))),
                               ),
                             ],
                           ),
@@ -705,7 +705,7 @@ class _AddEventModalState extends State<AddEventModal> {
           children: [
             Checkbox(
               value: d.$2,
-              activeColor: const Color(0xFF094a25),
+              activeColor: const Color(0xFF1B4748),
               onChanged: (v) => d.$3(v ?? false),
             ),
             Text(d.$1,
@@ -765,7 +765,7 @@ class _AddEventModalState extends State<AddEventModal> {
                         style: TextStyle(
                             fontSize: 13,
                             color: isSelected
-                                ? const Color(0xFF094a25)
+                                ? const Color(0xFF1B4748)
                                 : Colors.black87,
                             fontWeight: isSelected
                                 ? FontWeight.bold
@@ -777,7 +777,7 @@ class _AddEventModalState extends State<AddEventModal> {
                         : null,
                     trailing: isSelected
                         ? const Icon(Icons.check,
-                            color: Color(0xFF094a25), size: 18)
+                            color: Color(0xFF1B4748), size: 18)
                         : null,
                     onTap: () {
                       if (!isSelected) {
@@ -797,7 +797,7 @@ class _AddEventModalState extends State<AddEventModal> {
                 style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF094a25))),
+                    color: Color(0xFF1B4748))),
             const SizedBox(height: 6),
             ..._selectedVenues.asMap().entries.map((e) {
               final v = e.value;
@@ -825,7 +825,7 @@ class _AddEventModalState extends State<AddEventModal> {
                                   fontWeight:
                                       FontWeight.bold,
                                   color:
-                                      Color(0xFF094a25))),
+                                      Color(0xFF1B4748))),
                           if (v['street'] != null)
                             Text(v['street'],
                                 style: const TextStyle(
@@ -852,7 +852,7 @@ class _AddEventModalState extends State<AddEventModal> {
                           _selectedVenues.removeAt(e.key)),
                       child: const Text('Remove',
                           style: TextStyle(
-                              color: Color(0xFFbc2023),
+                              color: Color(0xFFF48900),
                               fontSize: 12)),
                     ),
                   ],
@@ -870,7 +870,7 @@ class _AddEventModalState extends State<AddEventModal> {
         padding: const EdgeInsets.symmetric(
             horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFF094a25),
+          color: const Color(0xFF1B4748),
           borderRadius: BorderRadius.circular(6),
         ),
         child: Text(title,
@@ -884,7 +884,7 @@ class _AddEventModalState extends State<AddEventModal> {
       style: const TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.bold,
-          color: Color(0xFF094a25)));
+          color: Color(0xFF1B4748)));
 
   Widget _textField(
     TextEditingController controller, {
@@ -906,7 +906,7 @@ class _AddEventModalState extends State<AddEventModal> {
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
             borderSide:
-                const BorderSide(color: Color(0xFF094a25)),
+                const BorderSide(color: Color(0xFF1B4748)),
           ),
           contentPadding: const EdgeInsets.symmetric(
               horizontal: 12, vertical: 10),
@@ -975,7 +975,7 @@ class _AddEventModalState extends State<AddEventModal> {
                 builder: (ctx, child) => Theme(
                   data: Theme.of(ctx).copyWith(
                     colorScheme: const ColorScheme.light(
-                        primary: Color(0xFF094a25)),
+                        primary: Color(0xFF1B4748)),
                   ),
                   child: child!,
                 ),

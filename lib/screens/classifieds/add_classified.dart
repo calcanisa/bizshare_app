@@ -455,7 +455,7 @@ class _AddClassifiedModalState extends State<AddClassifiedModal> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF094a25),
+        backgroundColor: const Color(0xFF1B4748),
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           widget.action == 'edit' ? 'Edit Classified' : 'Create Classified',
@@ -471,7 +471,7 @@ class _AddClassifiedModalState extends State<AddClassifiedModal> {
       ),
       body: _loading
           ? const Center(
-              child: CircularProgressIndicator(color: Color(0xFF094a25)))
+              child: CircularProgressIndicator(color: Color(0xFF1B4748)))
           : ListView(
               padding: const EdgeInsets.all(16),
               children: [
@@ -487,7 +487,7 @@ class _AddClassifiedModalState extends State<AddClassifiedModal> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF094a25).withOpacity(0.06),
+                      color: const Color(0xFF1B4748).withOpacity(0.06),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: const Text(
@@ -577,7 +577,7 @@ class _AddClassifiedModalState extends State<AddClassifiedModal> {
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
-                                color: Color(0xFF094a25))),
+                                color: Color(0xFF1B4748))),
                         const SizedBox(width: 4),
                         Expanded(
                           child: _textField(_priceController,
@@ -975,7 +975,7 @@ class _AddClassifiedModalState extends State<AddClassifiedModal> {
                     children: [
                       Checkbox(
                         value: _published,
-                        activeColor: const Color(0xFF094a25),
+                        activeColor: const Color(0xFF1B4748),
                         onChanged: (v) =>
                             setState(() => _published = v ?? true),
                       ),
@@ -990,7 +990,7 @@ class _AddClassifiedModalState extends State<AddClassifiedModal> {
                       children: [
                         Checkbox(
                           value: _accepted,
-                          activeColor: const Color(0xFF094a25),
+                          activeColor: const Color(0xFF1B4748),
                           onChanged: (v) =>
                               setState(() => _accepted = v ?? false),
                         ),
@@ -999,7 +999,7 @@ class _AddClassifiedModalState extends State<AddClassifiedModal> {
                           onTap: () {},
                           child: const Text('terms',
                               style: TextStyle(
-                                  color: Color(0xFF094a25),
+                                  color: Color(0xFF1B4748),
                                   decoration: TextDecoration.underline)),
                         ),
                       ],
@@ -1014,7 +1014,7 @@ class _AddClassifiedModalState extends State<AddClassifiedModal> {
                         child: ElevatedButton(
                           onPressed: _saving ? null : _save,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF094a25),
+                            backgroundColor: const Color(0xFF1B4748),
                             disabledBackgroundColor: Colors.grey.shade300,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
@@ -1039,8 +1039,8 @@ class _AddClassifiedModalState extends State<AddClassifiedModal> {
                         child: OutlinedButton(
                           onPressed: widget.onCancel,
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: const Color(0xFFbc2023),
-                            side: const BorderSide(color: Color(0xFFbc2023)),
+                            foregroundColor: const Color(0xFFF48900),
+                            side: const BorderSide(color: Color(0xFFF48900)),
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8)),
@@ -1088,17 +1088,17 @@ class _AddClassifiedModalState extends State<AddClassifiedModal> {
             width: 90,
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
             decoration: BoxDecoration(
-              color: selected ? const Color(0xFF094a25) : Colors.grey.shade100,
+              color: selected ? const Color(0xFF1B4748) : Colors.grey.shade100,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                   color: selected
-                      ? const Color(0xFF094a25)
+                      ? const Color(0xFF1B4748)
                       : Colors.grey.shade300),
             ),
             child: Column(
               children: [
                 Icon(icon,
-                    color: selected ? Colors.white : const Color(0xFF094a25),
+                    color: selected ? Colors.white : const Color(0xFF1B4748),
                     size: 28),
                 const SizedBox(height: 6),
                 Text(name,
@@ -1107,7 +1107,7 @@ class _AddClassifiedModalState extends State<AddClassifiedModal> {
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
                         color:
-                            selected ? Colors.white : const Color(0xFF094a25))),
+                            selected ? Colors.white : const Color(0xFF1B4748))),
               ],
             ),
           ),
@@ -1169,8 +1169,8 @@ class _AddClassifiedModalState extends State<AddClassifiedModal> {
             child: OutlinedButton.icon(
               onPressed: _pickImages,
               style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFF094a25),
-                side: const BorderSide(color: Color(0xFF094a25)),
+                foregroundColor: const Color(0xFF1B4748),
+                side: const BorderSide(color: Color(0xFF1B4748)),
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
               icon: const Icon(Icons.add_photo_alternate),
@@ -1239,7 +1239,7 @@ class _AddClassifiedModalState extends State<AddClassifiedModal> {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFF094a25),
+          color: const Color(0xFF1B4748),
           borderRadius: BorderRadius.circular(6),
         ),
         child: Text(title,
@@ -1251,7 +1251,7 @@ class _AddClassifiedModalState extends State<AddClassifiedModal> {
 
   Widget _fieldLabel(String label) => Text(label,
       style: const TextStyle(
-          fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF094a25)));
+          fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF1B4748)));
 
   Widget _field(
     String label,
@@ -1293,7 +1293,7 @@ class _AddClassifiedModalState extends State<AddClassifiedModal> {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: const BorderSide(color: Color(0xFF094a25)),
+            borderSide: const BorderSide(color: Color(0xFF1B4748)),
           ),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -1365,7 +1365,7 @@ class _AddClassifiedModalState extends State<AddClassifiedModal> {
           Radio<String>(
             value: value,
             groupValue: groupValue,
-            activeColor: const Color(0xFF094a25),
+            activeColor: const Color(0xFF1B4748),
             onChanged: onChanged,
           ),
           Text(label,
@@ -1392,8 +1392,8 @@ class _AddClassifiedModalState extends State<AddClassifiedModal> {
               return FilterChip(
                 label: Text(opt, style: const TextStyle(fontSize: 12)),
                 selected: isSelected,
-                selectedColor: const Color(0xFF094a25).withOpacity(0.15),
-                checkmarkColor: const Color(0xFF094a25),
+                selectedColor: const Color(0xFF1B4748).withOpacity(0.15),
+                checkmarkColor: const Color(0xFF1B4748),
                 onSelected: (v) {
                   final updated = List<String>.from(selected);
                   if (v) {
@@ -1432,7 +1432,7 @@ class _AddClassifiedModalState extends State<AddClassifiedModal> {
                 builder: (ctx, child) => Theme(
                   data: Theme.of(ctx).copyWith(
                     colorScheme:
-                        const ColorScheme.light(primary: Color(0xFF094a25)),
+                        const ColorScheme.light(primary: Color(0xFF1B4748)),
                   ),
                   child: child!,
                 ),

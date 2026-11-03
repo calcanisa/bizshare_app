@@ -297,7 +297,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: const BoxDecoration(
-                    color: Color(0xFF094a25),
+                    color: Color(0xFF1B4748),
                     borderRadius:
                         BorderRadius.vertical(top: Radius.circular(16)),
                   ),
@@ -329,7 +329,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
                           _loadProviders(refresh: true);
                         },
                         child: const Text('Reset',
-                            style: TextStyle(color: Color(0xFFf8b324))),
+                            style: TextStyle(color: Color(0xFFF8BB25))),
                       ),
                     ],
                   ),
@@ -452,7 +452,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
                         _loadProviders(refresh: true);
                       },
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF094a25),
+                          backgroundColor: const Color(0xFF1B4748),
                           padding: const EdgeInsets.symmetric(vertical: 14)),
                       child: const Text('Apply Filters',
                           style: TextStyle(color: Colors.white, fontSize: 16)),
@@ -472,7 +472,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
         child: Text(label,
             style: const TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF094a25),
+                color: Color(0xFF1B4748),
                 fontSize: 13)),
       );
 
@@ -511,7 +511,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
     return Column(
       children: [
         Container(
-          color: const Color(0xFF094a25),
+          color: const Color(0xFF1B4748),
           child: Row(
             children: [
               _tabBtn(1, 'Leads'),
@@ -542,11 +542,11 @@ class _LeadsScreenState extends State<LeadsScreen> {
         },
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
-          color: active ? Colors.white : const Color(0xFF094a25),
+          color: active ? Colors.white : const Color(0xFF1B4748),
           child: Text(label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: active ? const Color(0xFF094a25) : Colors.white60,
+                color: active ? const Color(0xFF1B4748) : Colors.white60,
                 fontSize: 13,
                 fontWeight: active ? FontWeight.bold : FontWeight.normal,
               )),
@@ -560,25 +560,25 @@ class _LeadsScreenState extends State<LeadsScreen> {
   Widget _leadsTab() {
     if (_loadingLeads) {
       return const Center(
-          child: CircularProgressIndicator(color: Color(0xFF094a25)));
+          child: CircularProgressIndicator(color: Color(0xFF1B4748)));
     }
     if (_leads.isEmpty) {
       return const Center(
         child: Text('You do not have any leads at the moment. Check back soon!',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Color(0xFF094a25))),
+            style: TextStyle(color: Color(0xFF1B4748))),
       );
     }
     return RefreshIndicator(
       onRefresh: _loadLeads,
-      color: const Color(0xFF094a25),
+      color: const Color(0xFF1B4748),
       child: ListView(
         children: [
           Padding(
             padding: const EdgeInsets.all(12),
             child: Text('You have ${_leads.length} leads',
                 style: const TextStyle(
-                    color: Color(0xFF094a25), fontWeight: FontWeight.bold)),
+                    color: Color(0xFF1B4748), fontWeight: FontWeight.bold)),
           ),
           ..._groupedLeads.map((group) {
             final groupLeads = group['leads'] as List;
@@ -589,10 +589,10 @@ class _LeadsScreenState extends State<LeadsScreen> {
                   width: double.infinity,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  color: const Color(0xFF094a25),
+                  color: const Color(0xFF1B4748),
                   child: Text(group['name'] as String,
                       style: const TextStyle(
-                          color: Color(0xFFf8b324),
+                          color: Color(0xFFF8BB25),
                           fontWeight: FontWeight.bold)),
                 ),
                 ...groupLeads.map((lead) => _leadCard(lead)),
@@ -649,7 +649,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF094a25),
+                    backgroundColor: const Color(0xFF1B4748),
                     padding: const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 6)),
                 child: const Text('View',
@@ -664,7 +664,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFf8b324),
+                    backgroundColor: const Color(0xFFF8BB25),
                     padding: const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 6)),
                 child: Text(
@@ -698,7 +698,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
               Stack(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.tune, color: Color(0xFF094a25)),
+                    icon: const Icon(Icons.tune, color: Color(0xFF1B4748)),
                     onPressed: _openFilterSheet,
                   ),
                   if (_hasActiveFilters)
@@ -709,7 +709,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
                         width: 8,
                         height: 8,
                         decoration: const BoxDecoration(
-                          color: Color(0xFFbc2023),
+                          color: Color(0xFFF48900),
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -766,14 +766,14 @@ class _LeadsScreenState extends State<LeadsScreen> {
         Expanded(
           child: _loadingProviders && _providers.isEmpty
               ? const Center(
-                  child: CircularProgressIndicator(color: Color(0xFF094a25)))
+                  child: CircularProgressIndicator(color: Color(0xFF1B4748)))
               : _providers.isEmpty
                   ? const Center(
                       child: Text('No providers found for your services',
-                          style: TextStyle(color: Color(0xFF094a25))))
+                          style: TextStyle(color: Color(0xFF1B4748))))
                   : RefreshIndicator(
                       onRefresh: () => _loadProviders(refresh: true),
-                      color: const Color(0xFF094a25),
+                      color: const Color(0xFF1B4748),
                       child: ListView.builder(
                         controller: _scrollController,
                         itemCount:
@@ -784,7 +784,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
                               child: Padding(
                                 padding: EdgeInsets.all(16),
                                 child: CircularProgressIndicator(
-                                    color: Color(0xFF094a25)),
+                                    color: Color(0xFF1B4748)),
                               ),
                             );
                           }
@@ -850,7 +850,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
                       style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF094a25))),
+                          color: Color(0xFF1B4748))),
                   if (description.isNotEmpty) ...[
                     const SizedBox(height: 4),
                     Text(
@@ -884,7 +884,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF094a25),
+                            color: const Color(0xFF1B4748),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(cat['name'] ?? '',
@@ -909,7 +909,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
   Widget _requestsTab() {
     if (_loadingRequests) {
       return const Center(
-          child: CircularProgressIndicator(color: Color(0xFF094a25)));
+          child: CircularProgressIndicator(color: Color(0xFF1B4748)));
     }
 
     final serviceRequests =
@@ -919,7 +919,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
 
     return RefreshIndicator(
       onRefresh: _loadRequests,
-      color: const Color(0xFF094a25),
+      color: const Color(0xFF1B4748),
       child: ListView(
         children: [
           // Create new request button
@@ -928,7 +928,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
             child: ElevatedButton.icon(
               onPressed: _openAddRequest,
               style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF094a25),
+                  backgroundColor: const Color(0xFF1B4748),
                   padding: const EdgeInsets.symmetric(vertical: 12)),
               icon: const Icon(Icons.add, color: Colors.white),
               label: const Text('Create New Request',
@@ -940,7 +940,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
               padding: EdgeInsets.all(20),
               child: Center(
                 child: Text('You have not submitted any requests.',
-                    style: TextStyle(color: Color(0xFF094a25))),
+                    style: TextStyle(color: Color(0xFF1B4748))),
               ),
             )
           else ...[
@@ -962,11 +962,11 @@ class _LeadsScreenState extends State<LeadsScreen> {
   Widget _listHeader(String title) => Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        color: const Color(0xFF094a25),
+        color: const Color(0xFF1B4748),
         margin: const EdgeInsets.only(bottom: 4),
         child: Text(title,
             style: const TextStyle(
-                color: Color(0xFFf8b324), fontWeight: FontWeight.bold)),
+                color: Color(0xFFF8BB25), fontWeight: FontWeight.bold)),
       );
 
   Widget _requestCard(Map<String, dynamic> request) {
@@ -994,7 +994,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
                 style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF094a25))),
+                    color: Color(0xFF1B4748))),
             if (description.isNotEmpty) ...[
               const SizedBox(height: 4),
               Text(
@@ -1024,7 +1024,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
                   child: OutlinedButton(
                     onPressed: () => _openEditRequest(request),
                     style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFF094a25),
+                        foregroundColor: const Color(0xFF1B4748),
                         padding: const EdgeInsets.symmetric(vertical: 4)),
                     child: const Text('Edit', style: TextStyle(fontSize: 12)),
                   ),
@@ -1034,7 +1034,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
                   child: ElevatedButton(
                     onPressed: () => _deleteRequest(request['id']),
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFbc2023),
+                        backgroundColor: const Color(0xFFF48900),
                         padding: const EdgeInsets.symmetric(vertical: 4)),
                     child: const Text('Delete',
                         style: TextStyle(color: Colors.white, fontSize: 12)),
@@ -1051,8 +1051,8 @@ class _LeadsScreenState extends State<LeadsScreen> {
   Widget _logoPlaceholder() => Container(
         width: 70,
         height: 70,
-        color: const Color(0xFF094a25).withValues(alpha: 0.1),
+        color: const Color(0xFF1B4748).withValues(alpha: 0.1),
         child: const Icon(Icons.people_outline,
-            color: Color(0xFF094a25), size: 32),
+            color: Color(0xFF1B4748), size: 32),
       );
 }

@@ -347,7 +347,7 @@ class _AddLocationModalState extends State<AddLocationModal> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF094a25),
+        backgroundColor: const Color(0xFF1B4748),
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(widget.title,
             style: const TextStyle(
@@ -524,13 +524,13 @@ class _AddLocationModalState extends State<AddLocationModal> {
               children: [
                 Checkbox(
                   value: _isVenue,
-                  activeColor: const Color(0xFF094a25),
+                  activeColor: const Color(0xFF1B4748),
                   onChanged: (v) =>
                       setState(() => _isVenue = v ?? false),
                 ),
                 const Text('This is a venue',
                     style: TextStyle(
-                        fontSize: 13, color: Color(0xFF094a25))),
+                        fontSize: 13, color: Color(0xFF1B4748))),
               ],
             ),
             const SizedBox(height: 8),
@@ -581,7 +581,7 @@ class _AddLocationModalState extends State<AddLocationModal> {
               children: [
                 Checkbox(
                   value: _accepted,
-                  activeColor: const Color(0xFF094a25),
+                  activeColor: const Color(0xFF1B4748),
                   onChanged: (v) =>
                       setState(() => _accepted = v ?? false),
                 ),
@@ -590,7 +590,7 @@ class _AddLocationModalState extends State<AddLocationModal> {
                   onTap: () {},
                   child: const Text('terms',
                       style: TextStyle(
-                          color: Color(0xFF094a25),
+                          color: Color(0xFF1B4748),
                           decoration:
                               TextDecoration.underline)),
                 ),
@@ -603,7 +603,7 @@ class _AddLocationModalState extends State<AddLocationModal> {
           if (_error.isNotEmpty) ...[
             Text(_error,
                 style: const TextStyle(
-                    color: Color(0xFFbc2023), fontSize: 13),
+                    color: Color(0xFFF48900), fontSize: 13),
                 textAlign: TextAlign.center),
             const SizedBox(height: 12),
           ],
@@ -615,7 +615,7 @@ class _AddLocationModalState extends State<AddLocationModal> {
                 child: ElevatedButton(
                   onPressed: _saving ? null : _save,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF094a25),
+                    backgroundColor: const Color(0xFF1B4748),
                     disabledBackgroundColor:
                         Colors.grey.shade300,
                     padding: const EdgeInsets.symmetric(
@@ -643,9 +643,9 @@ class _AddLocationModalState extends State<AddLocationModal> {
                 child: OutlinedButton(
                   onPressed: widget.onCancel,
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFFbc2023),
+                    foregroundColor: const Color(0xFFF48900),
                     side: const BorderSide(
-                        color: Color(0xFFbc2023)),
+                        color: Color(0xFFF48900)),
                     padding: const EdgeInsets.symmetric(
                         vertical: 14),
                     shape: RoundedRectangleBorder(
@@ -692,7 +692,7 @@ class _AddLocationModalState extends State<AddLocationModal> {
       style: const TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.bold,
-          color: Color(0xFF094a25)));
+          color: Color(0xFF1B4748)));
 
   Widget _textField(
     TextEditingController controller, {
@@ -716,7 +716,7 @@ class _AddLocationModalState extends State<AddLocationModal> {
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
             borderSide:
-                const BorderSide(color: Color(0xFF094a25)),
+                const BorderSide(color: Color(0xFF1B4748)),
           ),
           contentPadding: const EdgeInsets.symmetric(
               horizontal: 12, vertical: 10),
@@ -771,7 +771,7 @@ class _AddLocationModalState extends State<AddLocationModal> {
           Radio<String>(
             value: value,
             groupValue: groupValue,
-            activeColor: const Color(0xFF094a25),
+            activeColor: const Color(0xFF1B4748),
             onChanged: onChanged,
           ),
           Text(label,

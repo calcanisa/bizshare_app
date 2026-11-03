@@ -48,18 +48,18 @@ class _SeshaAppState extends State<SeshaApp> {
           ChangeNotifierProvider(create: (_) => CartProvider()),
         ],
         child: MaterialApp(
-          title: 'Sesha',
+          title: 'BizShare',
           debugShowCheckedModeBanner: false,
           themeMode: ThemeMode.light,
           darkTheme: ThemeData.dark().copyWith(
             colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color(0xFF094a25),
+              seedColor: const Color(0xFF1B4748),
               brightness: Brightness.dark,
             ),
           ),
           theme: ThemeData(
             colorScheme:
-                ColorScheme.fromSeed(seedColor: const Color(0xFF094a25)),
+                ColorScheme.fromSeed(seedColor: const Color(0xFF1B4748)),
             useMaterial3: true,
             appBarTheme: const AppBarTheme(
               systemOverlayStyle: SystemUiOverlayStyle(
